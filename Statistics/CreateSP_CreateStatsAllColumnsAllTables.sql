@@ -6,6 +6,8 @@
 	This query will create a stored procedure that, when executed, will create statistics on 
 	all columns, all tables in the Azure SQL Data Warehouse database.
 	
+	Source: https://docs.microsoft.com/en-us/azure/sql-data-warehouse/sql-data-warehouse-tables-statistics
+	
 	===========================
 	 EXECUTING THIS PROCEDURE:
 	===========================

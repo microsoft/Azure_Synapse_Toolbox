@@ -7,6 +7,8 @@
 	all statistics found in the current Azure SQL Data Warehouse database. Executing the procedure will NOT EXECUTE the 
 	update statements, rather it will return them for you to execute separately. 
 	
+	Source: https://docs.microsoft.com/en-us/azure/sql-data-warehouse/sql-data-warehouse-tables-statistics
+	
 	===========================
 	 EXECUTING THIS PROCEDURE:
 	===========================

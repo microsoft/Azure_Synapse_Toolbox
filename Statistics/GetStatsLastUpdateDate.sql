@@ -6,6 +6,8 @@
 	This query will return the last update date for all stats found in the current Azure SQL Data Warehouse Database. This is 
 	useful in detemrining if statistics updates jobs are working successfully, but does not gaurantee the statistics are still 
 	accurate, which varies depending on what changes have been made to the table since the last update.
+	
+	Source: https://docs.microsoft.com/en-us/azure/sql-data-warehouse/sql-data-warehouse-tables-statistics
 */
 
 SELECT
