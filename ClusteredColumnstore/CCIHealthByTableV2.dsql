@@ -54,7 +54,6 @@ INNER JOIN sys.pdw_table_distribution_properties tdp
 	ON tdp.object_id = t.object_id
 --INNER JOIN sys.partitions p
 --	ON P.object_id = t.object_id
-WHERE t.name = 'FactResellerSales'
 GROUP BY t.name,s.name,tdp.distribution_policy_desc,pt.max_column_id_used
 
 
