@@ -18,6 +18,7 @@ SELECT
 	s.name															as 'Schema_Name',
     t.name															as 'Table_Name',
 	tdp.distribution_policy_desc									as 'Distribution_type',
+	pt.max_column_id_used											as 'Number_Columns',
 	SUM(rg.Total_rows)												as 'Total_Rows',
 	MAX(p.partition_number)											as 'Partition_Count',
     SUM(CASE WHEN rg.State = 1 THEN 1 else 0 end)					as 'OPEN_Row_Groups',
@@ -53,6 +54,5 @@ INNER JOIN sys.pdw_table_distribution_properties as tdp
 	ON tdp.object_id = t.object_id
 INNER JOIN sys.partitions p
 	ON p.object_id = t.object_id
-GROUP BY t.name,s.name,tdp.distribution_policy_desc
+GROUP BY t.name,s.name,tdp.distribution_policy_desc,pt.max_column_id_used	
  
- ALTER INDEX ALL ON FactResellerSales REBUILD
