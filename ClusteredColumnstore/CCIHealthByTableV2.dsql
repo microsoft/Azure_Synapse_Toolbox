@@ -18,9 +18,9 @@ SELECT
 	s.name															as 'Schema_Name',
     t.name															as 'Table_Name',
 	tdp.distribution_policy_desc									as 'Distribution_type',
-	pt.max_column_id_used											as 'Number_Columns',
 	SUM(rg.Total_rows)												as 'Total_Rows',
-	MAX(p.partition_number)											as 'Partition_Count',
+	pt.max_column_id_used											as 'Column_Count',
+	--MAX(p.partition_number)											as 'Partition_Count',
     SUM(CASE WHEN rg.State = 1 THEN 1 else 0 end)					as 'OPEN_Row_Groups',
     SUM(CASE WHEN rg.State = 1 THEN rg.Total_rows else 0 end)		as 'OPEN_rows',
     MIN(CASE WHEN rg.State = 1 THEN rg.Total_rows else NULL end)	as 'MIN OPEN Row Group Rows',
@@ -49,10 +49,14 @@ INNER JOIN sys.pdw_table_mappings mp
 INNER JOIN sys.tables t
 	ON     mp.object_id = t.object_id
 INNER JOIN sys.schemas s
-       ON t.schema_id = s.schema_id
-INNER JOIN sys.pdw_table_distribution_properties as tdp
+    ON t.schema_id = s.schema_id
+INNER JOIN sys.pdw_table_distribution_properties tdp
 	ON tdp.object_id = t.object_id
-INNER JOIN sys.partitions p
-	ON p.object_id = t.object_id
-GROUP BY t.name,s.name,tdp.distribution_policy_desc,pt.max_column_id_used	
+--INNER JOIN sys.partitions p
+--	ON P.object_id = t.object_id
+WHERE t.name = 'FactResellerSales'
+GROUP BY t.name,s.name,tdp.distribution_policy_desc,pt.max_column_id_used
+
+
+
  
