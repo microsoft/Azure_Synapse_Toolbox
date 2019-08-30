@@ -1,0 +1,7 @@
+/*
+	========================================================
+	   Get QUery Store State
+	========================================================
+	 The following query will determine if Query Store is currently active, 
+     and whether it is currently collects runtime stats or not.
+*/
