@@ -14,7 +14,8 @@ SELECT
       WHEN 0 THEN 'Database::' + DB_NAME()
       WHEN 1 THEN OBJECT_NAME(perm.major_id)
       WHEN 3 THEN 'Schema::' + SCHEMA_NAME(perm.major_id) END AS 'Securable'
-       from sys.database_principals prin
+,	GETDATE() AS 'Collection_Date'
+FROM sys.database_principals prin
 JOIN sys.database_permissions perm
 ON prin.principal_id = perm.grantee_principal_id
 
@@ -54,6 +55,7 @@ SELECT
       WHEN 1 THEN OBJECT_NAME(pe.major_id)
       WHEN 3 THEN 'Schema::' + SCHEMA_NAME(pe.major_id) 
          ELSE 'Database::' + DB_NAME() END AS 'Securable'
+,	GETDATE() AS 'Collection_Date'
 FROM sys.database_role_members AS DRM  
 RIGHT OUTER JOIN sys.database_principals AS DP1  
    ON DRM.role_principal_id = DP1.principal_id  
