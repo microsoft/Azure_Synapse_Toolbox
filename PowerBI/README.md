@@ -1,6 +1,6 @@
 # This template is a work in progress and is not yet meant for use in production
 
-This template is a work in progress, but is in a usable state. 
+This template is a work in progress, but is in a usable state. It currently only has realtime pages from querying DMVs. It will  get historical data as well as I post updates. 
 
 # Variables
 
