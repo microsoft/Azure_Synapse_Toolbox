@@ -22,7 +22,9 @@ When you open the template it will as you to fill in a number of variables. A lo
 
 # Pre-Requisites
 
-There are currently no pre-requisites otehr than a running SQLDW Instance. In future releases there will be Log Analytics queries and the below pre-requisites will apply to that. 
+PowerBI Desktop installed on your machine. 
+
+There are currently no other pre-requisites other than a running SQLDW Instance. In future releases there will be Log Analytics queries and the below pre-requisites will apply to that. 
 
 Create a Log analytics workspace - save the WorkspaceID
 
