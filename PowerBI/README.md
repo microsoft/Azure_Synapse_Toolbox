@@ -4,16 +4,21 @@ This template is a work in progress, but is in a usable state.
 
 # Variables
 
-When you open the template it will as you to fill in a number of variables. 
+When you open the template it will as you to fill in a number of variables. A lot of these are for future use or will be removed later. 
 
-SQLDW_Servername: the name of the server your SQLDW resides on in the form sqldwname.database.windows.net
-DatbaseName: The name of your SQLDW Database
+**SQLDW_Servername:** the name of the server your SQLDW resides on in the form sqldwname.database.windows.net
 
-LogAnalyticsWorkspaceID: Not in use, enter any text value
-StorageAccountName: Not in use, enter any text value
-RangeStart: Not in use, enter any date value in the form 4/21/2020 1:00:00 AM
-RangeEnd: Not in use, enter any date value in the form 4/21/2020 1:00:00 AM
-SQLDW_Servername_short: Not in use, enter any text value
+**DatbaseName:** The name of your SQLDW Database
+
+**LogAnalyticsWorkspaceID:** Not in use, enter any text value
+
+**StorageAccountName:** Not in use, enter any text value
+
+**RangeStart:** Not in use, enter any date value in the form 4/21/2020 1:00:00 AM
+
+**RangeEnd:** Not in use, enter any date value in the form 4/21/2020 1:00:00 AM
+
+**SQLDW_Servername_short:** Not in use, enter any text value
 
 # Pre-Requisites
 
