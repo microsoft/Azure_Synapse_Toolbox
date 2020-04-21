@@ -24,11 +24,7 @@ When you open the template it will as you to fill in a number of variables. A lo
 
 PowerBI Desktop installed on your machine. 
 
-There are currently no other pre-requisites other than a running SQLDW Instance. In future releases there will be Log Analytics queries and the below pre-requisites will apply to that. 
-
-Create a Log analytics workspace - save the WorkspaceID
-
-On your SQLDW Instance, go to 'diagnostic settings' and create a new setting to send all diagnostics to your log analytics workspace. For now, you can leave out DMS_Workers and SQL Requests. These are very large and incur a high cost, so I am leaving them out for now. 
+There are currently no other pre-requisites other than a running SQLDW Instance. In future releases there will be Log Analytics queries and the below pre-requisites will apply to that.  
 
 # Messages about Native Database Queries
 
