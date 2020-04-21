@@ -2,6 +2,12 @@
 
 This template is a work in progress, but is in a usable state. It currently only has realtime pages from querying DMVs. It will  get historical data as well as I post updates. 
 
+# Pre-Requisites
+
+PowerBI Desktop installed on your machine. 
+
+There are currently no other pre-requisites other than a running SQLDW Instance. In future releases there will be Log Analytics queries and the below pre-requisites will apply to that.  
+
 # Variables
 
 When you open the template it will as you to fill in a number of variables. A lot of these are for future use or will be removed later. 
@@ -20,11 +26,7 @@ When you open the template it will as you to fill in a number of variables. A lo
 
 **SQLDW_Servername_short:** Not in use, enter any text value
 
-# Pre-Requisites
 
-PowerBI Desktop installed on your machine. 
-
-There are currently no other pre-requisites other than a running SQLDW Instance. In future releases there will be Log Analytics queries and the below pre-requisites will apply to that.  
 
 # Messages about Native Database Queries
 
