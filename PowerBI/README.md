@@ -1,4 +1,4 @@
-# This template is very much a beta
+# This template is a work in progress and is not yet meant for use in production
 
 This template is a work in progress, but is in a usable state. 
 
