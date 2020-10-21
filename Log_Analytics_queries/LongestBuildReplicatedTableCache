@@ -1,0 +1,53 @@
+let databaseName = '<database_name>';
+//Longest running BuildReplicatedTableCache
+AzureDiagnostics
+| where Category  == 'ExecRequests'
+| where Resource  == databaseName
+| where StatementType_s !in ('Batch','Execute')
+| summarize Session_ID=max(SessionId_s),      Request_ID=max(RequestId_s),      Submit_Time=max(SubmitTime_t),      Start_Time=max(StartTime_t),      End_Time=max(EndTime_t),      Command=max(Command_s),       Statement_Type=max(StatementType_s),     Resource_class=max(ResourceClass_s)      by RequestId_s
+| join kind= inner
+(
+    AzureDiagnostics
+    | where Category  == 'ExecRequests'
+    | where Resource  == databaseName
+    //| where StatementType_s !in ('Batch','Execute')
+    | where StatementType_s == 'BuildReplicatedTableCache'
+    | where EndTime_t > ago(7d)
+    | where StartTime_t > ago(7d)
+    | extend elapsedTime = EndTime_t - StartTime_t
+    | extend elapsedTime_min = elapsedTime/1m
+    | order by elapsedTime_min desc
+    | project Request_ID=RequestId_s,elapsedTime_min
+)
+on Request_ID
+| order by elapsedTime_min desc
+| project Session_ID,Request_ID,Submit_Time,Start_Time,End_Time,Elapsed_Time=elapsedTime_min,Command
+| limit 10
+
+/////////////////////////////////////////////////////////////////
+// Uncomment these sections to investigate further             //
+// To comment lines in bulk - select multiple lines and press  //
+// Uncomment block: ctrl+k then ctrl+u                         //
+// Comment block:   ctrl+k then ctrl+c                         //
+/////////////////////////////////////////////////////////////////
+
+
+// let databaseName = '<database_name>';
+// //Get Query Text snippet
+// AzureDiagnostics
+// | where Category  == 'ExecRequests'
+// | where Resource  == databaseName
+// | where RequestId_s == 'QID117009708' //Put your QueryID here
+// | order by TimeGenerated asc
+// | project TimeGenerated,SubmitTime_t,EndCompileTime_t,StartTime_t,EndTime_t,StatementType_s,ResourceClass_s,SessionId_s,RequestId_s,RootQueryId_s,Command_s,Status_s
+
+
+// let databaseName = '<database_name>';
+// //View the query steps with rowcounts
+// AzureDiagnostics
+// | where Category  == 'RequestSteps'
+// | where Resource  == databaseName
+// | where RequestId_s == 'QID117009708' //Put your QueryID here
+// | where Status_s != 'Running'
+// | summarize max(StartTime_t),max(EndTime_t),max(RequestId_s),max(OperationType_s),max(RowCount_d),max(Command_s),max(Status_s) by StepIndex_d
+// | order by StepIndex_d asc

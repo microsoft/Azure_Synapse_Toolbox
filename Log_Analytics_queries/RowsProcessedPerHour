@@ -1,0 +1,8 @@
+let databaseName = '<database_name>';
+//rows processed per hour
+AzureDiagnostics
+| where Category  == 'RequestSteps'
+| where Resource  == databaseName
+| where RowCount_d > 0
+| summarize Rows_Processed=sum(RowCount_d) by bin(TimeGenerated, 1hr)
+| limit 50
