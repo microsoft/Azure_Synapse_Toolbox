@@ -1,14 +1,11 @@
 ﻿<# Get_Objects_From_Explain.ps1
     
     Author: Nick.salch@Microsoft.com (Nicksalc)
-
     This tool will take in an explain XML, then detect all fo the following
     that are mentioned in the explain plan:
-
         Databases
         Tables
         Columns
-
     It will also output update stats statements for all tables invovled in the query. 
     
     Output is placed under c:\temp\Timestamp_Folder
@@ -53,7 +50,7 @@ $objectList > "$OutputFolder\ObjectList.txt"
 $tableList = $objectList | % {$_.split(".")[1] + "." +  $_.split(".")[2]}
 
 #Extract Shuffle Columns
-$shuffleColumnLines = ($xml | select-string "shuffle_columns")
+$shuffleColumnLines = ($explainXml | select-string "shuffle_columns")
 $ShuffleColumns = @()
 Foreach ($column in $shuffleColumnLines)
 {
