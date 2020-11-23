@@ -1,0 +1,11 @@
+AzureDiagnostics
+| where Category == 'ExecRequests'
+| where Resource == 'LASRIM-SQLDWDB-PRD'
+| where StatementType_s == 'BuildReplicatedTableCache'
+| where Command_s != ""
+| where ResourceClass_s != ""
+| project Command_s, TimeGenerated, RequestId_s
+| summarize LastRebuild=max(TimeGenerated), RebuildCount_7Days=count(RequestId_s), AvgRebuildsPerDay=count(RequestId_s) / 7 by Command_s
+| order by RebuildCount_7Days desc
+| limit 20
+
