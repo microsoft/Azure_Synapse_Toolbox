@@ -1,6 +1,7 @@
+let databaseName = '<database_name>';
 AzureDiagnostics
 | where Category == 'ExecRequests'
-| where Resource == 'LASRIM-SQLDWDB-PRD'
+| where Resource == databaseName
 | where StatementType_s == 'BuildReplicatedTableCache'
 | where Command_s != ""
 | where ResourceClass_s != ""
