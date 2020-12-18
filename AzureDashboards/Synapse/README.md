@@ -1,5 +1,5 @@
 # Pre-Requisites
-1. Existing Synapse SQL Pool not in a workspace (workspace version coming soon)
+1. Existing Synapse SQL Pool not in a workspace (workspace version coming soon!)
 2. Log Analytics Workspace has been created
 3. In the SQL Pool you want to monitor, go to the 'Diagnostics settings' blade and create a new setting to send data to Log Analytics. You should be selecting all categories EXCEPT SQLRequests and DMSWorkers. These two DMVs are very high traffic and can be turned on only when needed to investigate an issue to save dramatically on cost. They are not used in these dashboards. 
 
