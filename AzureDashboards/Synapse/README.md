@@ -19,3 +19,9 @@ NOTE: this Dashboard will be created as a shared dashboard. You can un-share it 
 # Guidance
 
 I will be providing more guidance about all of the value you can get out of this dashboard soon!
+
+# Example
+
+![Screenshot1](https://github.com/microsoft/Azure_Synapse_Toolbox/blob/master/AzureDashboards/Synapse/images/dashboardScreenshot1.png)
+![Screenshot2](https://github.com/microsoft/Azure_Synapse_Toolbox/blob/master/AzureDashboards/Synapse/images/dashboardScreenshot2.png)
+![Screenshot3](https://github.com/microsoft/Azure_Synapse_Toolbox/blob/master/AzureDashboards/Synapse/images/dashboardScreenshot3.png)
