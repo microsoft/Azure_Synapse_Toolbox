@@ -12,7 +12,7 @@ When filling in variables please note the following:
 * databaseName should be in ALL CAPS. This is because Log Analytics queries are case-sensitive and DB name is stored in all caps. 
 * For servername do not include .database.windows.net
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FAzure_Synapse_Toolbox%2Fmaster%2FAzureDashboards%2FSynapse%2FSynapseDashboardTemplateV1.4.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FAzure_Synapse_Toolbox%2Fmaster%2FAzureDashboards%2FSynapse%2FSynapseDashboardTemplateV1.5.json)
 
 NOTE: this Dashboard will be created as a shared dashboard. You can un-share it after importing. A future version will be imported as a private dashboard. 
 
