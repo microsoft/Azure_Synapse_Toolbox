@@ -1,6 +1,6 @@
-**This Template is a work in progress and should not be used in production. 
+# This template is a work in progress and should not be used in production. 
 
-***To use the template:
+## To use the template:
 1. Create a new workbook in Azure Monitor
 2. Click edit if you are not already in edit mode
 3. Click the advanced editor button
