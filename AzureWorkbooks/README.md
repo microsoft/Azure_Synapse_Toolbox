@@ -1,5 +1,10 @@
 # This template is a work in progress and should not be used in production. 
 
+## Pre-Requisites
+1. Log Analytics workspace created
+2. Diagnostic settings enabled to send all diagnostics except DMS Workers and SQL Requests to log analytics
+3. Auditing enabled for the database or server and sent to Log Analytics (without this there should just be 1 tab that will be broken)
+
 ## To use the template:
 1. Create a new workbook in Azure Monitor
 2. Click edit if you are not already in edit mode
