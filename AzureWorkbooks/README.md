@@ -1,4 +1,5 @@
-# This template is a work in progress and should not be used in production. 
+# This template is a work in progress
+Realize that there may still be some inaccurate data in some of the queries. If this is used in a production environment it should be done so with this understanding. Especially when it comes to the "Query Activity" tab, which uses SQL Audit data. Results could be inconsistent. 
 
 ## Pre-Requisites
 1. Log Analytics workspace created
