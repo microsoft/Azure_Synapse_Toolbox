@@ -1,0 +1,1639 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{LogAnalyticsWorkspace}"
+        ],
+        "parameters": [
+          {
+            "id": "28da10ec-a308-47f5-9819-92ebf810b292",
+            "version": "KqlParameterItem/1.0",
+            "name": "LogAnalyticsSubscription",
+            "type": 6,
+            "value": null,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "includeAll": false,
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          },
+          {
+            "id": "e383ed24-52ae-447b-9b80-51fd3ab6b919",
+            "version": "KqlParameterItem/1.0",
+            "name": "LogAnalyticsWorkspace",
+            "type": 5,
+            "query": "Resources\r\n| where type == 'microsoft.operationalinsights/workspaces'\r\n| project id\r\n",
+            "crossComponentResources": [
+              "{LogAnalyticsSubscription}"
+            ],
+            "value": null,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "9b9fe566-0f52-4a75-a35b-a79c50c6a6f0",
+            "version": "KqlParameterItem/1.0",
+            "name": "DatabaseResourceName",
+            "type": 5,
+            "query": "AzureDiagnostics\r\n| where Category == 'ExecRequests'\r\n| distinct ResourceId",
+            "crossComponentResources": [
+              "{LogAnalyticsWorkspace}"
+            ],
+            "value": null,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "f5852627-70ca-4959-8d60-53b48864603f",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isGlobal": true,
+            "value": {
+              "durationMs": 14400000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          },
+          {
+            "id": "6da2f63f-45a3-4b37-9108-5e8b7e358d85",
+            "version": "KqlParameterItem/1.0",
+            "name": "DatabaseName",
+            "type": 1,
+            "query": "AzureDiagnostics\r\n| where Category == 'ExecRequests'\r\n| where ResourceId == '{DatabaseResourceName}'\r\n| distinct Resource ",
+            "crossComponentResources": [
+              "{LogAnalyticsWorkspace}"
+            ],
+            "isHiddenWhenLocked": true,
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "8bba835b-f319-43b3-8ec6-4e051fc6d446",
+            "version": "KqlParameterItem/1.0",
+            "name": "LogicalServerName",
+            "type": 1,
+            "query": "AzureDiagnostics\r\n| where Category == 'ExecRequests'\r\n| where ResourceId == '{DatabaseResourceName}'\r\n| distinct LogicalServerName_s",
+            "crossComponentResources": [
+              "{LogAnalyticsWorkspace}"
+            ],
+            "isHiddenWhenLocked": true,
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "202cbbc0-8d63-416d-89ed-451d6fe7c4b3",
+            "cellValue": "GroupSelection",
+            "linkTarget": "parameter",
+            "linkLabel": "Workload",
+            "subTarget": "Workload",
+            "preText": "Workload",
+            "style": "link"
+          },
+          {
+            "id": "a7901bd0-a1f4-4491-b953-57555d764e00",
+            "cellValue": "GroupSelection",
+            "linkTarget": "parameter",
+            "linkLabel": "Workload Management",
+            "subTarget": "WorkloadManagement",
+            "style": "link"
+          },
+          {
+            "id": "45e12a14-8548-4477-aae3-c142b906dc9f",
+            "cellValue": "GroupSelection",
+            "linkTarget": "parameter",
+            "linkLabel": "TempDB",
+            "subTarget": "TempDB",
+            "style": "link"
+          },
+          {
+            "id": "9ef8f730-d73d-432b-9b75-55095d1155f2",
+            "cellValue": "GroupSelection",
+            "linkTarget": "parameter",
+            "linkLabel": "Replicated Tables",
+            "subTarget": "ReplicatedTables",
+            "style": "link"
+          },
+          {
+            "id": "79d10d16-0696-4214-b306-c7a0e46cd64f",
+            "cellValue": "GroupSelection",
+            "linkTarget": "parameter",
+            "linkLabel": "Query Investigation",
+            "subTarget": "QueryInvestigation",
+            "style": "link"
+          },
+          {
+            "id": "31c1cf1c-74b5-44e2-ba9a-9497834ca3dc",
+            "cellValue": "GroupSelection",
+            "linkTarget": "parameter",
+            "linkLabel": "Query Comparison",
+            "subTarget": "QueryComparison",
+            "style": "link"
+          },
+          {
+            "id": "482ccc46-8a10-4ace-bfd6-63ac73b380af",
+            "cellValue": "GroupSelection",
+            "linkTarget": "parameter",
+            "linkLabel": "Query Activity",
+            "subTarget": "QueryActivity",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "links - 0"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Workload",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook90867bfc-5c33-464f-ac31-2c2e006b97f4",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.sql/servers/databases",
+              "metricScope": 0,
+              "resourceParameter": "DatabaseResourceName",
+              "resourceIds": [
+                "{DatabaseResourceName}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent",
+                  "aggregation": 3,
+                  "columnName": "DWU Percentage"
+                },
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-Basic-cpu_percent",
+                  "aggregation": 3
+                },
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+                  "aggregation": 3
+                }
+              ],
+              "title": "DWU Resource Utilization",
+              "timeBrushParameterName": "TimeRange",
+              "timeBrushExportOnlyWhenBrushed": true,
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "50",
+            "name": "metric - 1"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookb954d4a0-82ef-4409-88fb-837aaff80c8d",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 1,
+              "resourceType": "microsoft.sql/servers/databases",
+              "metricScope": 0,
+              "resourceParameter": "DatabaseResourceName",
+              "resourceIds": [
+                "{DatabaseResourceName}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-Basic-active_queries",
+                  "aggregation": 1,
+                  "splitBy": null
+                },
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-Basic-queued_queries",
+                  "aggregation": 1
+                }
+              ],
+              "title": "Active and Queued Queries",
+              "timeBrushParameterName": "TimeRange",
+              "timeBrushExportOnlyWhenBrushed": true,
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "50",
+            "name": "metric - 1"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookb954d4a0-82ef-4409-88fb-837aaff80c8d",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 3,
+              "resourceType": "microsoft.sql/servers/databases",
+              "metricScope": 0,
+              "resourceParameter": "DatabaseResourceName",
+              "resourceIds": [
+                "{DatabaseResourceName}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-Basic-local_tempdb_usage_percent",
+                  "aggregation": 3,
+                  "splitBy": null,
+                  "columnName": "TempDB Utilization Percentage"
+                }
+              ],
+              "title": "TempDB Utilization",
+              "timeBrushParameterName": "TimeRange",
+              "timeBrushExportOnlyWhenBrushed": true,
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "50",
+            "name": "metric - 1 - Copy"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookb954d4a0-82ef-4409-88fb-837aaff80c8d",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 1,
+              "resourceType": "microsoft.sql/servers/databases",
+              "metricScope": 0,
+              "resourceParameter": "DatabaseResourceName",
+              "resourceIds": [
+                "{DatabaseResourceName}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-WorkloadManagement-wlg_allocation_relative_to_system_percent",
+                  "aggregation": 3,
+                  "splitBy": "WorkloadGroupName"
+                }
+              ],
+              "title": "Workload Group Utilization",
+              "timeBrushParameterName": "TimeRange",
+              "timeBrushExportOnlyWhenBrushed": true,
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "50",
+            "name": "Workload Group Utilization"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let databaseName = '{DatabaseName}';\r\n//Long-Running Queries - Just Actual Queries\r\n//If 'Command' is empty - you need to set a bigger time window, the older record with the command is outside of your window\r\nAzureDiagnostics\r\n| where Category  == 'ExecRequests'\r\n| where Resource  == databaseName\r\n| where StatementType_s !in ('Batch','Execute')\r\n| summarize Session_ID=any(SessionId_s),\r\n    Request_ID=any(RequestId_s),\r\n    Submit_Time=max(SubmitTime_t),\r\n    Start_Time=max(StartTime_t),\r\n    End_Time=max(EndTime_t),\r\n    Command=any(Command_s),\r\n    Status=min(Status_s), //This works because Completed/Failed/Cancelled are all below running, below suspended. This happens to work out where the min is the current status\r\n    Statement_Type=any(StatementType_s),\r\n    Resource_class=any(ResourceClass_s)\r\n    by RequestId_s\r\n| summarize ElapsedTime_min=bin(anyif(((End_Time - Start_Time)/1m),Start_Time > ago(30d)),1),\r\n    Session_ID=any(Session_ID), \r\n    Submit_Time=any(Submit_Time) ,\r\n    Start_Time=any(Start_Time), \r\n    End_Time=any(End_Time),\r\n    Command=any(Command),\r\n    Status=any(Status),\r\n    Statement_Type=any(Statement_Type)\r\n    ,Resource_class=any(Resource_class) \r\n    by Request_ID\r\n| where End_Time > ago(365d)\r\n| summarize count() by Status, bin(End_Time,5m)\r\n| render timechart   \r\n",
+              "size": 0,
+              "title": "Query Completion Count by End Time - 5m buckets",
+              "color": "redBright",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "chartSettings": {
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "Completed",
+                    "color": "green"
+                  },
+                  {
+                    "seriesName": "Failed",
+                    "color": "red"
+                  },
+                  {
+                    "seriesName": "Cancelled",
+                    "color": "yellow"
+                  }
+                ]
+              }
+            },
+            "name": "query - 4"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": " AzureDiagnostics\r\n    | where Category == 'SQLSecurityAuditEvents' and  LogicalServerName_s == '{LogicalServerName}'\r\n    //| where duration_milliseconds_d > 0\r\n    | extend duration_seconds = duration_milliseconds_d /1000.0\r\n    | where statement_s != 'select @@version'\r\n    | where statement_s != 'SELECT @@SPID;'\r\n    | summarize sum(affected_rows_d) by bin(TimeGenerated,1h)",
+              "size": 0,
+              "timeContext": {
+                "durationMs": 259200000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "categoricalbar"
+            },
+            "name": "query - 7"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook1afc57e6-0b32-4968-b299-db319bd21635",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.sql/servers/databases",
+              "metricScope": 0,
+              "resourceParameter": "DatabaseResourceName",
+              "resourceIds": [
+                "{DatabaseResourceName}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-Basic-connection_successful",
+                  "aggregation": 1,
+                  "splitBy": null
+                },
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-Basic-connection_failed",
+                  "aggregation": 1
+                }
+              ],
+              "title": "Successful and Failed Connections",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "metric - 5"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook993837ad-66d6-4cbc-ae1a-7c3f6623236b",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.sql/servers/databases",
+              "metricScope": 0,
+              "resourceParameter": "DatabaseResourceName",
+              "resourceIds": [
+                "{DatabaseResourceName}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-Basic-cache_used_percent",
+                  "aggregation": 3,
+                  "splitBy": null
+                },
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-Basic-cache_hit_percent",
+                  "aggregation": 3
+                }
+              ],
+              "title": "Adaptive Cache Used vs Hit Percentage",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "metric - 6"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "GroupSelection",
+        "comparison": "isEqualTo",
+        "value": "Workload"
+      },
+      "name": "group - 1"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "TempDB ",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook4a9cf761-cce2-45b2-8947-8a9428ec7e1c",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 3,
+              "resourceType": "microsoft.sql/servers/databases",
+              "metricScope": 0,
+              "resourceParameter": "DatabaseResourceName",
+              "resourceIds": [
+                "{DatabaseResourceName}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-Basic-local_tempdb_usage_percent",
+                  "aggregation": 3,
+                  "splitBy": null,
+                  "columnName": "TempDB Util"
+                },
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-Basic-local_tempdb_usage_percent",
+                  "aggregation": 4,
+                  "columnName": "TempDB Util"
+                }
+              ],
+              "title": "TempDB Max and Avg Utilization",
+              "timeBrushParameterName": "TimeRange",
+              "timeBrushExportOnlyWhenBrushed": true,
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "metric - 0"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "19ee48f5-8f4e-4939-a0ef-c6bf656a93f9",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "WeightParameter",
+                  "type": 1,
+                  "isHiddenWhenLocked": true,
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "00553ec8-1a41-4dd9-a024-d607639c9bbb",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "RequestID",
+                  "type": 1,
+                  "isHiddenWhenLocked": true,
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - 3"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let databaseName = '{DatabaseName}';\r\n//Weighted query steps\r\nAzureDiagnostics\r\n| where Category == 'RequestSteps'\r\n| where Resource == databaseName\r\n| where RowCount_d > 0\r\n| summarize sum(RowCount_d) by RequestId_s, OperationType_s\r\n| order by sum_RowCount_d desc\r\n| limit 20\r\n| render columnchart ",
+              "size": 0,
+              "title": "20 Largest Query Steps by Most Rows Moved",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "exportFieldName": "Request_ID",
+              "exportParameterName": "RequestID",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "chartSettings": {
+                "xAxis": "RequestId_s",
+                "group": "OperationType_s",
+                "createOtherGroup": 20,
+                "showLegend": true
+              }
+            },
+            "name": "query - 1 - Copy"
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "nav",
+              "links": [
+                {
+                  "id": "c98d3722-9907-43ab-9306-1957d6f7f858",
+                  "cellValue": "WeightParameter",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Weighted Rowcounts",
+                  "subTarget": "Weighted",
+                  "preText": "",
+                  "postText": "",
+                  "style": "secondary"
+                },
+                {
+                  "id": "a06ae99a-ad62-45e9-8c25-c219b81f59c0",
+                  "cellValue": "WeightParameter",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Unweighted Rowcounts",
+                  "subTarget": "Unweighted",
+                  "preText": "",
+                  "postText": "",
+                  "style": "secondary"
+                }
+              ]
+            },
+            "name": "links - 3"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "Current Setting: {WeightParameter}",
+              "style": "info"
+            },
+            "name": "text - 4"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let databaseName = '{DatabaseName}';\r\n//Weighted query steps\r\nlet RequestSteps = AzureDiagnostics\r\n| where Category == 'RequestSteps'\r\n| where Resource == databaseName\r\n| where RowCount_d > 100000000\r\n| extend Step_Elapsed_Min = round((EndTime_t - StartTime_t)/1m, 2)\r\n| extend Weighted_cnt = iff('{WeightParameter}'=='Weighted',(case(OperationType_s == 'BroadcastMoveOperation', (RowCount_d*20), RowCount_d)),RowCount_d)\r\n| project-rename StepStatus = Status_s, StepStart = StartTime_t, StepEnd = EndTime_t//, StepResource = Resource\r\n| top 100 by Weighted_cnt desc\r\n| order by Weighted_cnt desc\r\n| project Request_ID=RequestId_s,OperationType_s, RowCount_d,Weighted_cnt,Step_Elapsed_Min, StepStart, StepEnd, StepStatus, StepIndex_d,Resource;\r\nRequestSteps | join (AzureDiagnostics\r\n| where Category  == 'ExecRequests'\r\n| where Resource  == databaseName\r\n| where StatementType_s !in ('Batch','Execute')\r\n| summarize Session_ID=any(SessionId_s),\r\n    Request_ID=any(RequestId_s),\r\n    Submit_Time=max(SubmitTime_t),\r\n    Start_Time=max(StartTime_t),\r\n    End_Time=max(EndTime_t),\r\n    Command=any(Command_s),\r\n    Status=min(Status_s), //This works because Completed/Failed/Cancelled are all below running, below suspended. This happens to work out where the min is the current status\r\n    Statement_Type=any(StatementType_s),\r\n    Resource_class=any(ResourceClass_s)\r\n    by RequestId_s\r\n| summarize Session_ID=any(Session_ID), Submit_Time=any(Submit_Time) ,Start_Time=any(Start_Time), End_Time=any(End_Time),Command=any(Command),Status=any(Status),Statement_Type=any(Statement_Type),Resource_class=any(Resource_class) by Request_ID\r\n//| order by Step_Elapsed_Min desc\r\n| extend Request_Elapsed_Min = round((End_Time - Start_Time)/1m, 2)\r\n| project-rename ReqStatus = Status, ReqStart = Start_Time, ReqEnd = End_Time\r\n) on Request_ID\r\n| project-reorder Session_ID, Request_ID, Request_Elapsed_Min, ReqStart, ReqEnd, ReqStatus,StepIndex_d, OperationType_s, RowCount_d,Weighted_cnt,Step_Elapsed_Min, StepStart, StepEnd, StepStatus, Statement_Type, Command, Resource_class\r\n| order by Weighted_cnt desc\r\n| limit 20",
+              "size": 3,
+              "title": "20 Largest Query Steps by Most Rows Moved",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "exportFieldName": "Request_ID1",
+              "exportParameterName": "RequestID",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "gridSettings": {
+                "sortBy": [
+                  {
+                    "itemKey": "Weighted_cnt",
+                    "sortOrder": 2
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "Weighted_cnt",
+                  "sortOrder": 2
+                }
+              ]
+            },
+            "name": "query - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let databaseName = '{DatabaseName}';\r\n//Long-Running Queries - Just Actual Queries\r\n//If 'Command' is empty - you need to set a bigger time window, the older record with the command is outside of your window\r\nAzureDiagnostics\r\n| where Category  == 'ExecRequests'\r\n| where Resource  == databaseName\r\n| where StatementType_s !in ('Batch','Execute')\r\n| summarize Session_ID=any(SessionId_s),\r\n    Request_ID=any(RequestId_s),\r\n    Submit_Time=max(SubmitTime_t),\r\n    Start_Time=max(StartTime_t),\r\n    End_Time=max(EndTime_t),\r\n    Command=any(Command_s),\r\n    Status=min(Status_s), //This works because Completed/Failed/Cancelled are all below running, below suspended. This happens to work out where the min is the current status\r\n    Statement_Type=any(StatementType_s),\r\n    Resource_class=any(ResourceClass_s)\r\n    by RequestId_s\r\n| summarize ElapsedTime_min=bin(anyif(((End_Time - Start_Time)/1m),Start_Time > ago(30d)),1),\r\n    Session_ID=any(Session_ID), \r\n    Submit_Time=any(Submit_Time) ,\r\n    Start_Time=any(Start_Time), \r\n    End_Time=any(End_Time),\r\n    Command=any(Command),\r\n    Status=any(Status),\r\n    Statement_Type=any(Statement_Type)\r\n    ,Resource_class=any(Resource_class) \r\n    by Request_ID\r\n| where Request_ID == '{RequestID}'\r\n\r\n",
+              "size": 4,
+              "title": "Selected Query",
+              "noDataMessage": "Select a query above to view details",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Command",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "35%"
+                    }
+                  }
+                ]
+              }
+            },
+            "name": "query - 6"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category  == 'RequestSteps'\r\n| where Resource  == '{DatabaseName}'\r\n| where RequestId_s == '{RequestID}' //Put your QueryID here\r\n| where Status_s != 'Running'\r\n| summarize max(StartTime_t),max(EndTime_t),max(RequestId_s),max(OperationType_s),max(RowCount_d),max(Command_s),max(Status_s) by StepIndex_d\r\n| order by StepIndex_d asc",
+              "size": 3,
+              "title": "Query Plan",
+              "noDataMessage": "Select a query above to view the plan",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ]
+            },
+            "name": "query - 7"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "GroupSelection",
+        "comparison": "isEqualTo",
+        "value": "TempDB"
+      },
+      "name": "group - 3"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Query Investigation",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "## Search Criteria\r\nUse the following fields to search either using a query text snippet or using a Request ID. If using a query text snippet, try to keep it as simple as possible becuase minor changes in formatting may cause your queries not to show up in the results. It's best to pick something like a table name, then choose the proper query from the list that will populate. "
+            },
+            "customWidth": "50",
+            "name": "text - 4"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "0c2128d0-d979-4562-a28c-e7ceb955f126",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "RequestIdSearch",
+                  "type": 1,
+                  "value": ""
+                },
+                {
+                  "id": "29880874-2d41-4bd5-bf22-3e47ae8b1145",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "QueryTextSnippet",
+                  "type": 1,
+                  "value": "",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "formVertical",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "customWidth": "60",
+            "name": "parameters - 3"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s !in ('Batch','Execute')\r\n| summarize \r\n    Session_ID=max(SessionId_s), \r\n    Request_ID=max(RequestId_s),  \r\n    Submit_Time=max(SubmitTime_t), \r\n    Start_Time=max(StartTime_t),\r\n    End_Compile_Time=max(EndCompileTime_t), \r\n    End_Time=max(EndTime_t), \r\n    Command=max(Command_s), \r\n    Last_Status=min(Status_s),\r\n    Statement_Type=max(StatementType_s),\r\n    Resource_class=max(ResourceClass_s) \r\n    by RequestId_s\r\n| where Command has '{QueryTextSnippet}'\r\nand RequestId_s has '{RequestIdSearch}'\r\n| extend elapsedTime_sec = iif(End_Time > ago(365d),(End_Time - Submit_Time)/1s,real(null)) \r\n| extend CompileTime_sec = (End_Compile_Time - Submit_Time)/1s\r\n| order by elapsedTime_sec\r\n| summarize \r\n    Executions = count(),\r\n    Max_Elapsed_Time_sec = bin(max(elapsedTime_sec),1),\r\n    Min_Elapsed_Time_sec = bin(min(elapsedTime_sec),1),\r\n    Variability_sec=bin((max(elapsedTime_sec)-min(elapsedTime_sec)),1),\r\n    SampleQID = any(RequestId_s)\r\n    by Command\r\n| order by Max_Elapsed_Time_sec\r\n\r\n\r\n",
+              "size": 0,
+              "title": "Matching Queries",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "exportFieldName": "SampleQID",
+              "exportParameterName": "SampleQID",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Command",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "50%"
+                    }
+                  }
+                ]
+              }
+            },
+            "name": "query - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s !in ('Batch','Execute')\r\n| where RequestId_s == '{SampleQID}'\r\n| summarize \r\n    Session_ID=max(SessionId_s), \r\n    Request_ID=max(RequestId_s),  \r\n    Submit_Time=max(SubmitTime_t), \r\n    Start_Time=max(StartTime_t),\r\n    End_Compile_Time=max(EndCompileTime_t), \r\n    End_Time=max(EndTime_t), \r\n    Command=max(Command_s), \r\n    Last_Status=min(Status_s),\r\n    Statement_Type=max(StatementType_s),\r\n    Resource_class=max(ResourceClass_s) \r\n    by RequestId_s\r\n| extend elapsedTime_sec = iif(End_Time > ago(365d),(End_Time - Submit_Time)/1s,real(null)) \r\n| extend CompileTime_sec = (End_Compile_Time - Submit_Time)/1s\r\n| join kind=inner\r\n    (AzureDiagnostics \r\n    | where Category  == 'ExecRequests'\r\n    | where Resource  == '{DatabaseName}'\r\n    | where StatementType_s !in ('Batch','Execute')\r\n    | summarize \r\n        Session_ID=max(SessionId_s), \r\n        Request_ID=max(RequestId_s),  \r\n        Submit_Time=max(SubmitTime_t), \r\n        Start_Time=max(StartTime_t),\r\n        End_Compile_Time=max(EndCompileTime_t), \r\n        End_Time=max(EndTime_t), \r\n        Command=max(Command_s), \r\n        Last_Status=min(Status_s),\r\n        Statement_Type=max(StatementType_s),\r\n        Resource_class=max(ResourceClass_s) \r\n        by RequestId_s\r\n    | extend elapsedTime_sec = (End_Time - Submit_Time)/1s\r\n    | extend elapsedTime_sec = iif(End_Time > ago(365d),(End_Time - Submit_Time)/1s,real(null)) \r\n    | extend CompileTime_sec = (End_Compile_Time - Submit_Time)/1s\r\n    )\r\non Command \r\n| project Request_ID1,Session_ID1,Submit_Time1,Start_Time1,End_Compile_Time1,End_Time1,Last_Status1,Statement_Type1,Resource_class1,elapsedTime_sec1,CompileTime_sec1\r\n",
+              "size": 0,
+              "title": "All Executions of Selected Query",
+              "noDataMessage": "Select a query above to see individual executions",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "exportFieldName": "Request_ID1",
+              "exportParameterName": "RequestId",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "sortBy": []
+            },
+            "name": "query - 0 - Copy"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category  == 'RequestSteps'\r\n| where Resource  == '{DatabaseName}'\r\n| where RequestId_s == '{RequestId}'\r\n//| where Status_s != 'Running'\r\n| summarize max(StartTime_t),max(EndTime_t),max(RequestId_s),max(OperationType_s),max(RowCount_d),max(Command_s),max(Status_s) by StepIndex_d\r\n| order by StepIndex_d asc",
+              "size": 3,
+              "title": "Query Plan for Selected Query",
+              "noDataMessage": "Select a Query Above to See the Query Plan",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ]
+            },
+            "name": "query - 0 - Copy - Copy"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "GroupSelection",
+        "comparison": "isEqualTo",
+        "value": "QueryInvestigation"
+      },
+      "name": "group - 4",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Replicated Tables",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "All Charts on this page are based on the last 7 days of data",
+              "style": "info"
+            },
+            "name": "text - 5"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//Build cache count by day\r\nAzureDiagnostics\r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s == 'BuildReplicatedTableCache'\r\n| where Command_s != \"\"\r\n| where ResourceClass_s != \"\"\r\n| project Command_s,TimeGenerated,RequestId_s\r\n| summarize LastRebuild=max(TimeGenerated),RebuildCount=count(RequestId_s) by Command_s\r\n| order by RebuildCount desc\r\n| limit 15\r\n",
+              "size": 3,
+              "title": "Top 15 Most Rebuilds by Table",
+              "timeContext": {
+                "durationMs": 604800000
+              },
+              "exportFieldName": "Command_s",
+              "exportParameterName": "QueryText",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Command_s",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "40%"
+                    }
+                  }
+                ]
+              }
+            },
+            "name": "query - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//Build cache count by day\r\nAzureDiagnostics\r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s == 'BuildReplicatedTableCache'\r\n| where Command_s == \"{QueryText}\"\r\n| where ResourceClass_s != \"\"\r\n| project Command_s,TimeGenerated,RequestId_s\r\n| summarize count() by Command_s,bin(TimeGenerated,24h)\r\n| limit 20\r\n| render timechart",
+              "size": 0,
+              "title": "Rebuilds per Day for Selected Table",
+              "noDataMessage": "Select a query above to see runs by day",
+              "timeContext": {
+                "durationMs": 604800000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "chartSettings": {
+                "group": "Command_s",
+                "createOtherGroup": 20,
+                "ySettings": {
+                  "min": 0
+                }
+              }
+            },
+            "name": "query - 0 - Copy"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//Build cache count by day\r\nAzureDiagnostics\r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s == 'BuildReplicatedTableCache'\r\n| where Command_s != \"\"\r\n| where ResourceClass_s != \"\"\r\n| project Command_s,TimeGenerated,RequestId_s\r\n| summarize count() by Command_s, bin(TimeGenerated,24h)\r\n| where count_ > 7\r\n| order by count_ desc\r\n\r\n",
+              "size": 2,
+              "title": "Rebuild Count by Table by Day",
+              "timeContext": {
+                "durationMs": 604800000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "categoricalbar",
+              "gridSettings": {
+                "sortBy": [
+                  {
+                    "itemKey": "count_",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "count_",
+                  "sortOrder": 1
+                }
+              ],
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Command_s",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "count_",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "Command_s",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "count_",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "chartSettings": {
+                "group": "Command_s",
+                "createOtherGroup": 99,
+                "showDataPoints": true
+              }
+            },
+            "name": "query - 0 - Copy - Copy"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//Long-Running Queries - Just Actual Queries\r\nAzureDiagnostics\r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s !in ('Batch','Execute')\r\n| summarize Session_ID=max(SessionId_s),      Request_ID=max(RequestId_s),      Submit_Time=max(SubmitTime_t),      Start_Time=max(StartTime_t),      End_Time=max(EndTime_t),      Command=max(Command_s),       Statement_Type=max(StatementType_s),     Resource_class=max(ResourceClass_s)      by RequestId_s\r\n| join kind= inner\r\n(\r\n    AzureDiagnostics\r\n    | where Category  == 'ExecRequests'\r\n    | where Resource  == '{DatabaseName}'\r\n    //| where StatementType_s !in ('Batch','Execute')\r\n    | where StatementType_s == 'BuildReplicatedTableCache'\r\n    | where EndTime_t > ago(7d)\r\n    | where StartTime_t > ago(7d)\r\n    | extend elapsedTime_min = (EndTime_t - StartTime_t)/1m\r\n    //| extend elapsedTime_min = elapsedTime/1m\r\n    | order by elapsedTime_min desc\r\n    | project Request_ID=RequestId_s,elapsedTime_min \r\n)\r\non Request_ID\r\n| order by elapsedTime_min desc\r\n| project Request_ID,Submit_Time,Start_Time,End_Time,Elapsed_Time=round(elapsedTime_min,1) ,Command\r\n| limit 15\r\n",
+              "size": 3,
+              "title": "Top 15 Elapsed Time per Rebuild",
+              "timeContext": {
+                "durationMs": 604800000
+              },
+              "exportFieldName": "Request_ID",
+              "exportParameterName": "RequestId",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Command",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "40%"
+                    }
+                  }
+                ]
+              }
+            },
+            "name": "query - 3"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category  == 'RequestSteps'\r\n| where Resource  == '{DatabaseName}'\r\n| where RequestId_s == '{RequestId}'\r\n| where Status_s != 'Running'\r\n| summarize max(StartTime_t),max(EndTime_t),max(RequestId_s),max(OperationType_s),max(RowCount_d),max(Command_s),max(Status_s) by StepIndex_d\r\n| order by StepIndex_d asc",
+              "size": 3,
+              "title": "Query Plan for Selected Query",
+              "noDataMessage": "Select a query above to view plan",
+              "timeContext": {
+                "durationMs": 604800000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ]
+            },
+            "name": "query - 4"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "GroupSelection",
+        "comparison": "isEqualTo",
+        "value": "ReplicatedTables"
+      },
+      "name": "ReplicatedTablesGroup"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Workload Management",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook72446028-6edb-4cb0-8952-e0c13bda488f",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 1,
+              "resourceType": "microsoft.sql/servers/databases",
+              "metricScope": 0,
+              "resourceParameter": "DatabaseResourceName",
+              "resourceIds": [
+                "{DatabaseResourceName}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-WorkloadManagement-wlg_allocation_relative_to_system_percent",
+                  "aggregation": 3,
+                  "splitBy": null
+                }
+              ],
+              "title": "Workload Group Allocation By System Percent",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "50",
+            "name": "metric - 0"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookc898119a-7381-469d-b51a-d505b4f80e73",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 1,
+              "resourceType": "microsoft.sql/servers/databases",
+              "metricScope": 0,
+              "resourceParameter": "DatabaseResourceName",
+              "resourceIds": [
+                "{DatabaseResourceName}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-WorkloadManagement-wlg_active_queries",
+                  "aggregation": 1,
+                  "splitBy": null
+                }
+              ],
+              "title": "Query Count by Workload Group",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "50",
+            "name": "metric - 1"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "parameters": [
+                {
+                  "id": "6f50577d-7b00-4e4a-acf9-d45c7a5ee813",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "WorkloadGroupName",
+                  "type": 2,
+                  "query": "AzureDiagnostics\r\n| where Category == 'ExecRequests'\r\n and ResourceClass_s != \"\"\r\n| distinct ResourceClass_s",
+                  "crossComponentResources": [
+                    "{LogAnalyticsWorkspace}"
+                  ],
+                  "value": null,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 0
+                  },
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - 2"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook3da1d18a-1bf5-46c5-b3b7-211f71d329cc",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.sql/servers/databases",
+              "metricScope": 0,
+              "resourceParameter": "DatabaseResourceName",
+              "resourceIds": [
+                "{DatabaseResourceName}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-WorkloadManagement-wlg_active_queries",
+                  "aggregation": 1,
+                  "splitBy": null
+                },
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-WorkloadManagement-wlg_queued_queries",
+                  "aggregation": 1
+                },
+                {
+                  "namespace": "microsoft.sql/servers/databases",
+                  "metric": "microsoft.sql/servers/databases-WorkloadManagement-wlg_allocation_relative_to_system_percent",
+                  "aggregation": 3
+                }
+              ],
+              "filters": [
+                {
+                  "id": "3",
+                  "key": "WorkloadGroupName",
+                  "operator": 0,
+                  "valueParam": "WorkloadGroupName"
+                }
+              ],
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "metric - 3"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "GroupSelection",
+        "comparison": "isEqualTo",
+        "value": "WorkloadManagement"
+      },
+      "name": "group - 6"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Query Activity",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "## Select a Principal or Application name to filter results - leave to 'unset' to view all results\r\nSQL Auditing must be enabled and sending to the same Log Analytics Workspace for this page to work. "
+            },
+            "name": "text - 5"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "parameters": [
+                {
+                  "id": "8d25c043-d1ff-4546-a1fa-f4bcbfdab8af",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "User",
+                  "type": 2,
+                  "description": "User to filter subsequent queries - leave to 'unset' for all users",
+                  "query": "AzureDiagnostics\r\n| where Category == 'SQLSecurityAuditEvents' and LogicalServerName_s == '{LogicalServerName}'\r\n| summarize by server_principal_name_s",
+                  "crossComponentResources": [
+                    "{LogAnalyticsWorkspace}"
+                  ],
+                  "value": null,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                },
+                {
+                  "id": "aa766d64-693f-4024-b4a4-b5b56b28376b",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Application",
+                  "type": 2,
+                  "query": "AzureDiagnostics\r\n| where Category == 'SQLSecurityAuditEvents' and LogicalServerName_s == '{LogicalServerName}'\r\n| summarize by application_name_s",
+                  "crossComponentResources": [
+                    "{LogAnalyticsWorkspace}"
+                  ],
+                  "value": null,
+                  "typeSettings": {
+                    "additionalResourceOptions": []
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "customWidth": "30",
+            "name": "parameters - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category == 'SQLSecurityAuditEvents' and  LogicalServerName_s == \"{LogicalServerName}\"\r\n| where duration_milliseconds_d > 0\r\n| extend duration_seconds = duration_milliseconds_d /1000.0\r\n| where statement_s != 'select @@version'\r\n| where statement_s != 'SELECT @@SPID;'\r\n| where server_principal_name_s has '{User}'\r\n| where application_name_s has '{Application}'\r\n| project server_principal_name_s, succeeded_s, event_time_t, LogicalServerName_s, duration_milliseconds_d, duration_seconds, affected_rows_d, statement_s, application_name_s\r\n| summarize duration_seconds = round(sum(duration_seconds)) , query_count = count(statement_s) by EventDay = bin(event_time_t,1d), UserName = server_principal_name_s, Application = application_name_s \r\n| order by EventDay, duration_seconds desc",
+              "size": 0,
+              "title": "Query Summary for Selected User {User} {Application}",
+              "noDataMessage": "Select a user to see query activity",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ]
+            },
+            "name": "query - 0 - Copy"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category == 'SQLSecurityAuditEvents' and  LogicalServerName_s == \"{LogicalServerName}\"\r\n| where duration_milliseconds_d > 0\r\n| extend duration_seconds = duration_milliseconds_d /1000.0\r\n| where statement_s != 'select @@version'\r\n| where statement_s != 'SELECT @@SPID;'\r\n| where server_principal_name_s has '{User}'\r\n| where application_name_s has '{Application}'\r\n| project server_principal_name_s, succeeded_s, event_time_t, LogicalServerName_s, duration_milliseconds_d, duration_seconds, affected_rows_d, statement_s, application_name_s\r\n| summarize duration_seconds = round(sum(duration_seconds)) , query_count = count(statement_s) by EventDay = bin(event_time_t,1d), UserName = server_principal_name_s, Application = application_name_s \r\n| order by EventDay, duration_seconds desc",
+              "size": 0,
+              "title": "Query Summary for Selected User {User} {Application}",
+              "noDataMessage": "Select a user to see query activity",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "unstackedbar",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "UserName",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "duration_seconds",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "UserName",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "duration_seconds",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "chartSettings": {
+                "xAxis": "UserName"
+              },
+              "mapSettings": {
+                "locInfo": "LatLong",
+                "sizeSettings": "duration_seconds",
+                "sizeAggregation": "Sum",
+                "legendMetric": "duration_seconds",
+                "legendAggregation": "Sum",
+                "itemColorSettings": {
+                  "type": "heatmap",
+                  "colorAggregation": "Sum",
+                  "nodeColorField": "duration_seconds",
+                  "heatmapPalette": "greenRed"
+                }
+              }
+            },
+            "name": "query - 0 - Copy - Copy"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let databasename='{DatabaseName}';\r\nAzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == databasename\r\n| where StatementType_s !in ('Batch','Execute')\r\n| summarize Session_ID=max(SessionId_s),  \r\n    Query_Submit_Time=max(SubmitTime_t), \r\n    Query_Start_Time=max(StartTime_t), \r\n    Query_End_Time=max(EndTime_t), \r\n    Query_Text=max(Command_s), \r\n    Status=min(Status_s),\r\n    Resource_class=max(ResourceClass_s) \r\n    by RequestId_s\r\n//| where Last_Status == \"Completed\"\r\n//| where Query_Text contains \"\" //Uncomment to search by query text\r\n| join kind = inner \r\n(\r\n    AzureDiagnostics\r\n    | where Category  == 'RequestSteps'\r\n    | where Resource  == databasename\r\n    | summarize num_steps=max(StepIndex_d), \r\n    max_step_rows=max(RowCount_d), \r\n    max_step_sec=max(EndTime_t-StartTime_t)/1s,\r\n    Query_ElapsedTime=(max(EndTime_t) - min(StartTime_t))/1s\r\n    by RequestId_s\r\n    ) on RequestId_s\r\n| order by Query_Submit_Time\r\n| project Session_ID,RequestId_s,Query_Submit_Time,Query_Start_Time,EventTime = Query_End_Time,num_steps,max_step_rows,max_step_sec,Query_ElapsedTime,Status,Query = Query_Text,Resource_class\r\n| join kind = leftouter \r\n(\r\n    AzureDiagnostics\r\n    | where Category == 'SQLSecurityAuditEvents' and  LogicalServerName_s == \"{LogicalServerName}\"\r\n    | where duration_milliseconds_d > 0\r\n    | extend duration_seconds = duration_milliseconds_d /1000.0\r\n    | where statement_s != 'select @@version'\r\n    | where statement_s != 'SELECT @@SPID;'\r\n    | where server_principal_name_s has '{User}'\r\n    | where application_name_s has '{Application}'\r\n    | project DatabaseName= database_name_s, UserName= server_principal_name_s, EventTime= event_time_t, Host= host_name_s, duration_seconds = round(duration_seconds), Query = statement_s, QuerySource = application_name_s , affected_rows_d\r\n    | project-reorder DatabaseName, UserName, Host, EventTime, duration_seconds, Query, QuerySource\r\n) on Query,EventTime\r\n    | order by affected_rows_d desc\r\n\r\n\r\n",
+              "size": 0,
+              "title": "All Queries {User} {Application}",
+              "noDataMessage": "Select a user to see query activity",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ]
+            },
+            "name": "query - 0 - Copy - Copy"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "    AzureDiagnostics\r\n    | where Category == 'SQLSecurityAuditEvents' and  LogicalServerName_s == \"{LogicalServerName}\"\r\n    | where duration_milliseconds_d > 0\r\n| extend Duration = round(duration_milliseconds_d /1000.0)\r\n| extend TimeBin = case (datetime_part(\"Hour\",TimeGenerated) in (6,7,8,9,10,11,12), \"Morning_6-12\", datetime_part(\"Hour\",TimeGenerated) in (13,14,15,16,17,18), \"Afternoon_12-18\", \"Overnight_18-6\")\r\n| where server_principal_name_s has '{User}'\r\n| where application_name_s has '{Application}'\r\n| summarize QueryDuration = sum(Duration) by EventTime = bin(event_time_t, 1d), TimeBin",
+              "size": 0,
+              "title": "Query Activity by time - sum(Duration) {User} {Application}",
+              "noDataMessage": "Select a user to see query activity",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "barchart"
+            },
+            "name": "query - 0 - Copy"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "GroupSelection",
+        "comparison": "isEqualTo",
+        "value": "QueryActivity"
+      },
+      "name": "QueryActivityGroup",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Query Comparison",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "7fa3187e-9225-4faa-8f80-dc1bc40c5aab",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "RequestId1",
+                  "type": 1,
+                  "value": ""
+                }
+              ],
+              "style": "above",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "customWidth": "50",
+            "name": "parameters - 3 - Copy"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "315fc476-469a-4d8d-b421-028d1113ab06",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "RequestId2",
+                  "type": 1,
+                  "value": "",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "above",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "customWidth": "50",
+            "name": "parameters - 2"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s !in ('Batch','Execute')\r\nand RequestId_s == '{RequestId1}'\r\n| summarize Session_ID=any(SessionId_s),\r\n    Request_ID=any(RequestId_s),\r\n    Submit_Time=max(SubmitTime_t),\r\n    Start_Time=max(StartTime_t),\r\n    End_Time=max(EndTime_t),\r\n    Command=any(Command_s),\r\n    Status=min(Status_s), //This works because Completed/Failed/Cancelled are all below running, below suspended. This happens to work out where the min is the current status\r\n    Statement_Type=any(StatementType_s),\r\n    Resource_class=any(ResourceClass_s)\r\n    by RequestId_s\r\n| summarize Session_ID=any(Session_ID), Submit_Time=any(Submit_Time) ,Start_Time=any(Start_Time), End_Time=any(End_Time),ElapsedTime_min=anyif((End_Time - Start_Time)/1m,Start_Time > ago(30d)),Command=any(Command),Status=any(Status),Statement_Type=any(Statement_Type),Resource_class=any(Resource_class) by Request_ID\r\n| project Session_ID,Request_ID,ElapsedTime_min,Command,Resource_class,Submit_Time,Start_Time,End_Time,Statement_Type,Status\r\n",
+              "size": 4,
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ]
+            },
+            "customWidth": "50",
+            "name": "query - 2"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s !in ('Batch','Execute')\r\nand RequestId_s == '{RequestId2}'\r\n| summarize Session_ID=any(SessionId_s),\r\n    Request_ID=any(RequestId_s),\r\n    Submit_Time=max(SubmitTime_t),\r\n    Start_Time=max(StartTime_t),\r\n    End_Time=max(EndTime_t),\r\n    Command=any(Command_s),\r\n    Status=min(Status_s), //This works because Completed/Failed/Cancelled are all below running, below suspended. This happens to work out where the min is the current status\r\n    Statement_Type=any(StatementType_s),\r\n    Resource_class=any(ResourceClass_s)\r\n    by RequestId_s\r\n| summarize Session_ID=any(Session_ID), Submit_Time=any(Submit_Time) ,Start_Time=any(Start_Time), End_Time=any(End_Time),ElapsedTime_min=anyif((End_Time - Start_Time)/1m,Start_Time > ago(30d)),Command=any(Command),Status=any(Status),Statement_Type=any(Statement_Type),Resource_class=any(Resource_class) by Request_ID\r\n| project Session_ID,Request_ID,ElapsedTime_min,Command,Resource_class,Submit_Time,Start_Time,End_Time,Statement_Type,Status\r\n",
+              "size": 4,
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ]
+            },
+            "customWidth": "50",
+            "name": "query - 2 - Copy"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category  == 'RequestSteps'\r\n| where Resource  == '{DatabaseName}'\r\n| where RequestId_s == '{RequestId1}'\r\n| summarize StartTime=max(StartTime_t)\r\n    ,EndTime=max(EndTime_t)\r\n    ,RequestID=max(RequestId_s)\r\n    ,Operation=max(OperationType_s)\r\n    ,RowCount=max(RowCount_d)\r\n    ,Command=max(Command_s)\r\n    ,Status=max(Status_s)\r\n     by StepIndex_d\r\n| order by StepIndex_d asc\r\n| project StartTime,EndTime,RequestID,Operation,RowCount,Command,Status,StepIndex_d",
+              "size": 3,
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ]
+            },
+            "customWidth": "50",
+            "name": "query - 4",
+            "styleSettings": {
+              "margin": "0",
+              "padding": "10px"
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics\r\n| where Category  == 'RequestSteps'\r\n| where Resource  == '{DatabaseName}'\r\n| where RequestId_s == '{RequestId2}'\r\n| summarize StartTime=max(StartTime_t)\r\n    ,EndTime=max(EndTime_t)\r\n    ,RequestID=max(RequestId_s)\r\n    ,Operation=max(OperationType_s)\r\n    ,RowCount=max(RowCount_d)\r\n    ,Command=max(Command_s)\r\n    ,Status=max(Status_s)\r\n     by StepIndex_d\r\n| order by StepIndex_d asc\r\n| project StartTime,EndTime,RequestID,Operation,RowCount,Command,Status,StepIndex_d",
+              "size": 3,
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ]
+            },
+            "customWidth": "50",
+            "name": "query - 4 - Copy",
+            "styleSettings": {
+              "padding": "10px"
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "GroupSelection",
+        "comparison": "isEqualTo",
+        "value": "QueryComparison"
+      },
+      "name": "QueryComparison"
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
