@@ -1128,7 +1128,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "metrics": [
                 {
@@ -1161,7 +1161,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "metrics": [
                 {
