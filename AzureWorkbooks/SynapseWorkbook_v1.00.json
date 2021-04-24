@@ -156,7 +156,7 @@
         ],
         "style": "pills",
         "queryType": 0,
-        "resourceType": "microsoft.resourcegraph/resources"
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "parameters - 2"
     },
@@ -249,13 +249,14 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "metrics": [
                 {
                   "namespace": "microsoft.sql/servers/databases",
                   "metric": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent",
                   "aggregation": 3,
+                  "splitBy": null,
                   "columnName": "DWU Percentage"
                 },
                 {
@@ -294,7 +295,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "metrics": [
                 {
@@ -370,14 +371,14 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "metrics": [
                 {
                   "namespace": "microsoft.sql/servers/databases",
                   "metric": "microsoft.sql/servers/databases-WorkloadManagement-wlg_allocation_relative_to_system_percent",
                   "aggregation": 3,
-                  "splitBy": "WorkloadGroupName"
+                  "splitBy": null
                 }
               ],
               "title": "Workload Group Utilization",
@@ -399,7 +400,7 @@
               "title": "Query Completion Count by End Time - 5m buckets",
               "color": "redBright",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -820,7 +821,7 @@
               "size": 0,
               "title": "Matching Queries",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 14400000
               },
               "timeContextFromParameter": "TimeRange",
               "exportFieldName": "SampleQID",
@@ -853,7 +854,7 @@
               "title": "All Executions of Selected Query",
               "noDataMessage": "Select a query above to see individual executions",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 14400000
               },
               "timeContextFromParameter": "TimeRange",
               "exportFieldName": "Request_ID1",
@@ -876,7 +877,7 @@
               "title": "Query Plan for Selected Query",
               "noDataMessage": "Select a Query Above to See the Query Plan",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 14400000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1129,7 +1130,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 14400000
               },
               "metrics": [
                 {
@@ -1162,7 +1163,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 14400000
               },
               "metrics": [
                 {
@@ -1231,7 +1232,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 14400000
               },
               "metrics": [
                 {
@@ -1353,7 +1354,7 @@
               "title": "Query Summary for Selected User {User} {Application}",
               "noDataMessage": "Select a user to see query activity",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1373,7 +1374,7 @@
               "title": "Query Summary for Selected User {User} {Application}",
               "noDataMessage": "Select a user to see query activity",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1444,12 +1445,12 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let databasename='{DatabaseName}';\r\nAzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == databasename\r\n| where StatementType_s !in ('Batch','Execute')\r\n| summarize Session_ID=max(SessionId_s),  \r\n    Query_Submit_Time=max(SubmitTime_t), \r\n    Query_Start_Time=max(StartTime_t), \r\n    Query_End_Time=max(EndTime_t), \r\n    Query_Text=max(Command_s), \r\n    Status=min(Status_s),\r\n    Resource_class=max(ResourceClass_s) \r\n    by RequestId_s\r\n//| where Last_Status == \"Completed\"\r\n//| where Query_Text contains \"\" //Uncomment to search by query text\r\n| join kind = inner \r\n(\r\n    AzureDiagnostics\r\n    | where Category  == 'RequestSteps'\r\n    | where Resource  == databasename\r\n    | summarize num_steps=max(StepIndex_d), \r\n    max_step_rows=max(RowCount_d), \r\n    max_step_sec=max(EndTime_t-StartTime_t)/1s,\r\n    Query_ElapsedTime=(max(EndTime_t) - min(StartTime_t))/1s\r\n    by RequestId_s\r\n    ) on RequestId_s\r\n| order by Query_Submit_Time\r\n| project Session_ID,RequestId_s,Query_Submit_Time,Query_Start_Time,EventTime = Query_End_Time,num_steps,max_step_rows,max_step_sec,Query_ElapsedTime,Status,Query = Query_Text,Resource_class\r\n| join kind = leftouter \r\n(\r\n    AzureDiagnostics\r\n    | where Category == 'SQLSecurityAuditEvents' and  LogicalServerName_s == \"{LogicalServerName}\"\r\n    | where duration_milliseconds_d > 0\r\n    | extend duration_seconds = duration_milliseconds_d /1000.0\r\n    | where statement_s != 'select @@version'\r\n    | where statement_s != 'SELECT @@SPID;'\r\n    | where server_principal_name_s has '{User}'\r\n    | where application_name_s has '{Application}'\r\n    | project DatabaseName= database_name_s, UserName= server_principal_name_s, EventTime= event_time_t, Host= host_name_s, duration_seconds = round(duration_seconds), Query = statement_s, QuerySource = application_name_s , affected_rows_d\r\n    | project-reorder DatabaseName, UserName, Host, EventTime, duration_seconds, Query, QuerySource\r\n) on Query,EventTime\r\n    | order by affected_rows_d desc\r\n\r\n\r\n",
+              "query": "let databasename='{DatabaseName}';\r\nAzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == databasename\r\n| where StatementType_s !in ('Batch','Execute')\r\n| summarize Session_ID=max(SessionId_s),  \r\n    Query_Submit_Time=max(SubmitTime_t), \r\n    Query_Start_Time=max(StartTime_t), \r\n    Query_End_Time=max(EndTime_t), \r\n    Query_Text=max(Command_s), \r\n    Status=min(Status_s),\r\n    Resource_class=max(ResourceClass_s) ,\r\n    Query_ElapsedTime_s=round((max(EndTime_t) - max(StartTime_t))/1s)\r\n    by RequestId_s\r\n| join kind = leftouter \r\n(\r\n    AzureDiagnostics\r\n    | where Category  == 'RequestSteps'\r\n    | where Resource  == databasename\r\n    | summarize num_steps=max(StepIndex_d), \r\n    max_step_rows=max(RowCount_d), \r\n    max_step_sec=max(EndTime_t-StartTime_t)/1s\r\n    by RequestId_s\r\n    ) on RequestId_s\r\n| order by Query_Submit_Time\r\n| project Session_ID,RequestId_s,Query_Submit_Time,Query_Start_Time,EventTime = Query_End_Time,num_steps,max_step_rows,max_step_sec,Query_ElapsedTime_s,Status,Query = Query_Text,Resource_class\r\n| join kind = rightouter \r\n(\r\n    AzureDiagnostics\r\n    | where Category == 'SQLSecurityAuditEvents' and  LogicalServerName_s == \"{LogicalServerName}\"\r\n    | where duration_milliseconds_d > 0\r\n    | extend duration_seconds = duration_milliseconds_d /1000.0\r\n    | where statement_s != 'select @@version'\r\n    | where statement_s != 'SELECT @@SPID;'\r\n    | where server_principal_name_s has 'nicksalc'\r\n   // | where application_name_s has '{Application}'\r\n    | project DatabaseName= database_name_s, UserName= server_principal_name_s, EventTime= event_time_t, Host= host_name_s, duration_seconds = round(duration_seconds), statement_s, QuerySource = application_name_s , affected_rows_d\r\n    | project-reorder DatabaseName, UserName, Host, EventTime, duration_seconds, statement_s, QuerySource\r\n) on EventTime\r\n    | order by affected_rows_d desc\r\n| project Session_ID,RequestID=RequestId_s,Submit_time=Query_Submit_Time,Start_Time=Query_Start_Time,End_Time=EventTime,Status,Resource_class,UserName,Query_text=statement_s,Host,QuerySource,Affected_rows=affected_rows_d,num_steps,max_step_rows,max_step_sec,Total_Duration_s=duration_seconds\r\n\r\n\r\n\r\n\r\n",
               "size": 0,
-              "title": "All Queries {User} {Application}",
+              "title": "Queries {User} {Application}",
               "noDataMessage": "Select a user to see query activity",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1469,7 +1470,7 @@
               "title": "Query Activity by time - sum(Duration) {User} {Application}",
               "noDataMessage": "Select a user to see query activity",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1480,6 +1481,31 @@
               "visualization": "barchart"
             },
             "name": "query - 0 - Copy"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let databasename='{DatabaseName}';\r\nAzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == databasename\r\n| where StatementType_s !in ('Batch','Execute')\r\n| summarize Session_ID=max(SessionId_s),  \r\n    Query_Submit_Time=max(SubmitTime_t), \r\n    Query_Start_Time=max(StartTime_t), \r\n    Query_End_Time=max(EndTime_t), \r\n    Query_Text=max(Command_s), \r\n    Status=min(Status_s),\r\n    Resource_class=max(ResourceClass_s) ,\r\n    Query_ElapsedTime_s=round((max(EndTime_t) - max(StartTime_t))/1s)\r\n    by RequestId_s\r\n| join kind = leftouter \r\n(\r\n    AzureDiagnostics\r\n    | where Category  == 'RequestSteps'\r\n    | where Resource  == databasename\r\n    | summarize num_steps=max(StepIndex_d), \r\n    max_step_rows=max(RowCount_d), \r\n    max_step_sec=max(EndTime_t-StartTime_t)/1s\r\n    by RequestId_s\r\n    ) on RequestId_s\r\n| order by Query_Submit_Time\r\n| project Session_ID,RequestId_s,Query_Submit_Time,Query_Start_Time,EventTime = Query_End_Time,num_steps,max_step_rows,max_step_sec,Query_ElapsedTime_s,Status,Query = Query_Text,Resource_class\r\n| join kind = rightouter \r\n(\r\n    AzureDiagnostics\r\n    | where Category == 'SQLSecurityAuditEvents' and  LogicalServerName_s == \"{LogicalServerName}\"\r\n    | where duration_milliseconds_d > 0\r\n    | extend duration_seconds = duration_milliseconds_d /1000.0\r\n    | where statement_s != 'select @@version'\r\n    | where statement_s != 'SELECT @@SPID;'\r\n    | where server_principal_name_s has 'nicksalc'\r\n   // | where application_name_s has '{Application}'\r\n    | project DatabaseName= database_name_s, UserName= server_principal_name_s, EventTime= event_time_t, Host= host_name_s, duration_seconds = round(duration_seconds), statement_s, QuerySource = application_name_s , affected_rows_d\r\n    | project-reorder DatabaseName, UserName, Host, EventTime, duration_seconds, statement_s, QuerySource\r\n) on EventTime\r\n    | order by affected_rows_d desc\r\n| project Session_ID,RequestID=RequestId_s,Submit_time=Query_Submit_Time,Start_Time=Query_Start_Time,End_Time=EventTime,Status,Resource_class,UserName,Query_text=statement_s,Host,QuerySource,Affected_rows=affected_rows_d,num_steps,max_step_rows,max_step_sec,Total_Duration_s=duration_seconds\r\n\r\n\r\n\r\n\r\n",
+              "size": 0,
+              "title": "Affected Rows By Request ID",
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "unstackedbar",
+              "chartSettings": {
+                "xAxis": "RequestID",
+                "yAxis": [
+                  "Affected_rows"
+                ]
+              }
+            },
+            "name": "query - 6"
           }
         ]
       },
