@@ -68,7 +68,7 @@
             "type": 4,
             "isGlobal": true,
             "value": {
-              "durationMs": 86400000
+              "durationMs": 43200000
             },
             "typeSettings": {
               "selectableValues": [
@@ -548,7 +548,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "metrics": [
                 {
@@ -556,12 +556,6 @@
                   "metric": "microsoft.sql/servers/databases-Basic-local_tempdb_usage_percent",
                   "aggregation": 3,
                   "splitBy": null,
-                  "columnName": "TempDB Util"
-                },
-                {
-                  "namespace": "microsoft.sql/servers/databases",
-                  "metric": "microsoft.sql/servers/databases-Basic-local_tempdb_usage_percent",
-                  "aggregation": 4,
                   "columnName": "TempDB Util"
                 }
               ],
