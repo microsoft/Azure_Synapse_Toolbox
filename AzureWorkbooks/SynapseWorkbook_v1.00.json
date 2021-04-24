@@ -71,7 +71,7 @@
             "type": 4,
             "isGlobal": true,
             "value": {
-              "durationMs": 14400000
+              "durationMs": 86400000
             },
             "typeSettings": {
               "selectableValues": [
@@ -249,7 +249,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 14400000
               },
               "metrics": [
                 {
@@ -295,7 +295,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 14400000
               },
               "metrics": [
                 {
@@ -371,14 +371,14 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 14400000
               },
               "metrics": [
                 {
                   "namespace": "microsoft.sql/servers/databases",
                   "metric": "microsoft.sql/servers/databases-WorkloadManagement-wlg_allocation_relative_to_system_percent",
                   "aggregation": 3,
-                  "splitBy": null
+                  "splitBy": "WorkloadGroupName"
                 }
               ],
               "title": "Workload Group Utilization",
@@ -400,7 +400,7 @@
               "title": "Query Completion Count by End Time - 5m buckets",
               "color": "redBright",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 14400000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -433,6 +433,7 @@
               "version": "KqlItem/1.0",
               "query": " AzureDiagnostics\r\n    | where Category == 'SQLSecurityAuditEvents' and  LogicalServerName_s == '{LogicalServerName}'\r\n    //| where duration_milliseconds_d > 0\r\n    | extend duration_seconds = duration_milliseconds_d /1000.0\r\n    | where statement_s != 'select @@version'\r\n    | where statement_s != 'SELECT @@SPID;'\r\n    | summarize sum(affected_rows_d) by bin(TimeGenerated,1h)",
               "size": 0,
+              "title": "Rows Processed by End Time - 1h buckets",
               "timeContext": {
                 "durationMs": 259200000
               },
@@ -681,7 +682,7 @@
               "size": 3,
               "title": "20 Largest Query Steps by Most Rows Moved",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "exportFieldName": "Request_ID1",
@@ -821,7 +822,7 @@
               "size": 0,
               "title": "Matching Queries",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "exportFieldName": "SampleQID",
@@ -854,7 +855,7 @@
               "title": "All Executions of Selected Query",
               "noDataMessage": "Select a query above to see individual executions",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "exportFieldName": "Request_ID1",
@@ -877,7 +878,7 @@
               "title": "Query Plan for Selected Query",
               "noDataMessage": "Select a Query Above to See the Query Plan",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1307,7 +1308,7 @@
                   "crossComponentResources": [
                     "{LogAnalyticsWorkspace}"
                   ],
-                  "value": null,
+                  "value": "nicksalc",
                   "typeSettings": {
                     "additionalResourceOptions": [],
                     "showDefault": false
