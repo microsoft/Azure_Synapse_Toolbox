@@ -216,19 +216,19 @@
             "style": "link"
           },
           {
-            "id": "482ccc46-8a10-4ace-bfd6-63ac73b380af",
-            "cellValue": "GroupSelection",
-            "linkTarget": "parameter",
-            "linkLabel": "Query Activity",
-            "subTarget": "QueryActivity",
-            "style": "link"
-          },
-          {
             "id": "5ff681ee-e005-481f-b743-b66ab1b9d71d",
             "cellValue": "GroupSelection",
             "linkTarget": "parameter",
             "linkLabel": "Session Investigation",
             "subTarget": "SessionInvestigation",
+            "style": "link"
+          },
+          {
+            "id": "482ccc46-8a10-4ace-bfd6-63ac73b380af",
+            "cellValue": "GroupSelection",
+            "linkTarget": "parameter",
+            "linkLabel": "Query Audit",
+            "subTarget": "QueryAudit",
             "style": "link"
           }
         ]
@@ -1292,7 +1292,7 @@
       "content": {
         "version": "NotebookGroup/1.0",
         "groupType": "editable",
-        "title": "Query Activity",
+        "title": "Query Audit",
         "items": [
           {
             "type": 1,
@@ -1369,7 +1369,7 @@
               "title": "Query Summary for Selected User {User} {Application}",
               "noDataMessage": "Select a user to see query activity",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1389,7 +1389,7 @@
               "title": "Query Summary for Selected User {User} {Application}",
               "noDataMessage": "Select a user to see query activity",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1465,7 +1465,7 @@
               "title": "Queries {User} {Application}",
               "noDataMessage": "Select a user to see query activity",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1485,7 +1485,7 @@
               "title": "Query Activity by time - sum(Duration) {User} {Application}",
               "noDataMessage": "Select a user to see query activity",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1505,7 +1505,7 @@
               "size": 0,
               "title": "Affected Rows By Session ID",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1528,9 +1528,9 @@
       "conditionalVisibility": {
         "parameterName": "GroupSelection",
         "comparison": "isEqualTo",
-        "value": "QueryActivity"
+        "value": "QueryAudit"
       },
-      "name": "QueryActivityGroup",
+      "name": "QueryAuditGroup",
       "styleSettings": {
         "showBorder": true
       }
