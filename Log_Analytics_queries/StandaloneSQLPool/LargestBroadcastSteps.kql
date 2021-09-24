@@ -1,0 +1,7 @@
+let databaseName="<databaseNameAllCaps>";
+AzureDiagnostics
+| where Resource == databaseName
+| where Category == 'RequestSteps'
+| where OperationType_s == 'BroadcastMoveOperation'
+| summarize rowcount=max(RowCount_d),max(TimeGenerated) by RequestId_s,StepIndex_d
+| order by rowcount

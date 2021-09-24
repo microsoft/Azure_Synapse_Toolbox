@@ -1,0 +1,21 @@
+//Queries by Execution Time
+let databaseName = '<databaseName_ALL_CAPS>';
+AzureDiagnostics 
+| where Category  == 'ExecRequests'
+| where Resource  == databaseName
+| where StatementType_s !in ('Batch','Execute')
+| summarize Session_ID=max(SessionId_s), 
+    Request_ID=max(RequestId_s), 
+    Submit_Time=max(SubmitTime_t), 
+    Start_Time=max(StartTime_t), 
+    End_Time=max(EndTime_t), 
+    Command=max(Command_s), 
+    Last_Status=min(Status_s),
+    Statement_Type=max(StatementType_s),
+    Resource_class=max(ResourceClass_s) 
+    by RequestId_s
+| extend elapsedTime_min = (End_Time - Submit_Time)/1m
+//| where Command contains "<query text snippet" //Uncomment to search by query text
+| order by elapsedTime_min
+//| limit 50
+

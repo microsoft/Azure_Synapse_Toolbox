@@ -1,0 +1,21 @@
+//This query identifies Sessions with large numbers of insert statements, including the max rows inserted. It is mainly used to identify singleton or small inserts. 
+let databaseName="<databaseNameAllCaps>";
+AzureDiagnostics
+| where Resource == databaseName
+| where Category == 'ExecRequests'
+| where StatementType_s in ('InsertIntoValues')
+| summarize SessionId_s=max(SessionId_s),max(StatementType_s),max(SessionId_s),min(Status_s),max(Command_s) by RequestId_s
+| join (AzureDiagnostics
+    | where Resource == databaseName
+    | where Category == 'RequestSteps' 
+    | summarize max(RowCount_d) by RequestId_s
+) on RequestId_s
+| join (AzureDiagnostics
+    | where Resource == databaseName
+    | where Category == 'ExecRequests'
+    | where StatementType_s in ('InsertIntoValues')
+    | summarize count() by SessionId_s
+) on SessionId_s
+| order by count_
+| project SessionId=SessionId_s,RequestId=RequestId_s,StatementType=max_StatementType_s,StatementsFound=count_,MaxRowcount=max_RowCount_d,Status=min_Status_s,Command=max_Command_s
+| limit 100

@@ -1,0 +1,11 @@
+//Most Rows Moved by step
+// These are the largest data movement steps. Use this to identify a request ID to investigate
+let databaseName = '<databaseName_ALL_CAPS>';
+AzureDiagnostics
+| where Category  == 'RequestSteps'
+| where Resource  == databaseName
+| extend elapsedTime = EndTime_t - StartTime_t
+| extend elapsedTime_min = elapsedTime/1m
+| order by RowCount_d desc
+| project RequestId_s,OperationType_s, RowCount_d,elapsedTime_min , StartTime_t, EndTime_t, Status_s
+//| limit 20
