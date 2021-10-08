@@ -166,7 +166,7 @@
     {
       "type": 1,
       "content": {
-        "json": "Workbook version: v0.61"
+        "json": "Workbook version: v0.62"
       },
       "customWidth": "10",
       "name": "version",
@@ -1451,7 +1451,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 2592000000
               },
               "metrics": [
                 {
@@ -1480,17 +1480,18 @@
               "chartType": 1,
               "resourceType": "microsoft.synapse/workspaces/sqlpools",
               "metricScope": 0,
+              "resourceParameter": "DatabaseResourceName",
               "resourceIds": [
-                "/subscriptions/9cd45dfd-d1ac-4c16-9363-150d2afcb462/resourceGroups/SynapseWorkspaceRG1_nicksalc/providers/Microsoft.Synapse/workspaces/synapseworkspace1nicksalc/sqlPools/GetStartedSQL"
+                "{DatabaseResourceName}"
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 0
               },
               "metrics": [
                 {
                   "namespace": "microsoft.synapse/workspaces/sqlpools",
-                  "metric": "microsoft.synapse/workspaces/sqlpools-SQL dedicated pool-WLGActiveQueries",
+                  "metric": "microsoft.synapse/workspaces/sqlpools-SQL dedicated pool  Workload management-WLGActiveQueries",
                   "aggregation": 1,
                   "splitBy": "WorkloadGroup"
                 }
@@ -1520,7 +1521,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 2592000000
               },
               "metrics": [
                 {
@@ -1590,7 +1591,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 2592000000
               },
               "metrics": [
                 {
@@ -2636,7 +2637,7 @@
     }
   ],
   "fallbackResourceIds": [
-    "azure monitor"
+    "Azure Monitor"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }
