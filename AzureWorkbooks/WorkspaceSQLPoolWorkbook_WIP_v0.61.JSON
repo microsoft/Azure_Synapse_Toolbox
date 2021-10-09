@@ -16,7 +16,7 @@
             "type": 4,
             "isGlobal": true,
             "value": {
-              "durationMs": 2592000000
+              "durationMs": 86400000
             },
             "typeSettings": {
               "selectableValues": [
@@ -71,7 +71,7 @@
             "version": "KqlParameterItem/1.0",
             "name": "LogAnalyticsSubscription",
             "type": 6,
-            "value": null,
+            "value": "/subscriptions/9cd45dfd-d1ac-4c16-9363-150d2afcb462",
             "typeSettings": {
               "additionalResourceOptions": [],
               "includeAll": true,
@@ -90,7 +90,7 @@
             "crossComponentResources": [
               "{LogAnalyticsSubscription}"
             ],
-            "value": null,
+            "value": "/subscriptions/9cd45dfd-d1ac-4c16-9363-150d2afcb462/resourceGroups/SynapseWorkspaceRG1_nicksalc/providers/Microsoft.OperationalInsights/workspaces/SynapseLogAnalytics-nicksalc",
             "typeSettings": {
               "additionalResourceOptions": [],
               "showDefault": false
@@ -154,6 +154,38 @@
             "timeContextFromParameter": "TimeRange",
             "queryType": 0,
             "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "b86cd4a2-2303-4288-b48c-1c119cb420ba",
+            "version": "KqlParameterItem/1.0",
+            "name": "AuditingState",
+            "type": 1,
+            "query": "let hasNonEmptyTable = (T:string) \r\n{ \r\n   toscalar( \r\n   union isfuzzy=true \r\n   ( table(T) \r\n   | where DatabaseName has '{DatabaseName}'\r\n   | where TimeGenerated > ago(30d)| take 1 | count as Count ),\r\n   (print Count=0) \r\n   | summarize sum(Count) \r\n   ) > 0\r\n};\r\nlet TableName = 'SQLSecurityAuditEvents';\r\nprint  IsPresent=iif(hasNonEmptyTable(TableName ), \"enabled\", \"disabled\")",
+            "crossComponentResources": [
+              "{LogAnalyticsWorkspace}"
+            ],
+            "isHiddenWhenLocked": true,
+            "timeContext": {
+              "durationMs": 604800000
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "4025bcb8-f6d7-4e81-b805-84253835f8fb",
+            "version": "KqlParameterItem/1.0",
+            "name": "DiagnosticsState",
+            "type": 1,
+            "query": "let hasNonEmptyTable = (T:string, T2:string) \r\n{ \r\n   toscalar( \r\n   union isfuzzy=true \r\n   ( table(T) | where TimeGenerated > ago(30d) | where _ResourceId endswith '/sqlpools/{DatabaseName}'| take 1 | count as Count ),\r\n   ( table(T2) | where TimeGenerated > ago(30d) | where _ResourceId endswith '/sqlpools/{DatabaseName}'| take 1 | count as Count),\r\n   (print Count=0) \r\n   | summarize sum(Count) \r\n   ) > 1\r\n};\r\nlet TableName = 'SynapseSqlPoolExecRequests';\r\nlet TableName2 = 'SynapseSqlPoolRequestSteps';\r\nprint  IsPresent=iif(hasNonEmptyTable(TableName,TableName2 ), \"enabled\", \"disabled\")",
+            "crossComponentResources": [
+              "{LogAnalyticsWorkspace}"
+            ],
+            "isHiddenWhenLocked": true,
+            "timeContext": {
+              "durationMs": 2592000000
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
           }
         ],
         "style": "pills",
@@ -166,13 +198,27 @@
     {
       "type": 1,
       "content": {
-        "json": "Workbook version: v0.62"
+        "json": "Workbook version: v0.75",
+        "style": "info"
       },
       "customWidth": "10",
       "name": "version",
       "styleSettings": {
         "showBorder": true
       }
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "Select your Log Analytics Workspace by setting the parameters above from left to right. ",
+        "style": "warning"
+      },
+      "conditionalVisibility": {
+        "parameterName": "DatabaseResourceName",
+        "comparison": "isEqualTo"
+      },
+      "customWidth": "30",
+      "name": "text - 14"
     },
     {
       "type": 11,
@@ -279,7 +325,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "metrics": [
                 {
@@ -297,6 +343,8 @@
                 }
               ],
               "title": "DWU Resource Utilization",
+              "showOpenInMe": true,
+              "showCreateAlertRule": true,
               "timeBrushParameterName": "TimeRange",
               "timeBrushExportOnlyWhenBrushed": true,
               "gridSettings": {
@@ -304,6 +352,7 @@
               }
             },
             "customWidth": "50",
+            "showPin": true,
             "name": "metric - 1"
           },
           {
@@ -321,7 +370,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "metrics": [
                 {
@@ -337,6 +386,8 @@
                 }
               ],
               "title": "Active and Queued Queries",
+              "showOpenInMe": true,
+              "showCreateAlertRule": true,
               "timeBrushParameterName": "TimeRange",
               "timeBrushExportOnlyWhenBrushed": true,
               "gridSettings": {
@@ -344,6 +395,7 @@
               }
             },
             "customWidth": "50",
+            "showPin": true,
             "name": "metric - 1"
           },
           {
@@ -361,7 +413,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "metrics": [
                 {
@@ -373,6 +425,8 @@
                 }
               ],
               "title": "TempDB Utilization",
+              "showOpenInMe": true,
+              "showCreateAlertRule": true,
               "timeBrushParameterName": "TimeRange",
               "timeBrushExportOnlyWhenBrushed": true,
               "gridSettings": {
@@ -380,6 +434,7 @@
               }
             },
             "customWidth": "50",
+            "showPin": true,
             "name": "metric - 1 - Copy"
           },
           {
@@ -397,18 +452,20 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "metrics": [
                 {
                   "namespace": "microsoft.synapse/workspaces/sqlpools",
                   "metric": "microsoft.synapse/workspaces/sqlpools-SQL dedicated pool  Workload management-WLGAllocationBySystemPercent",
                   "aggregation": 3,
-                  "splitBy": "WorkloadGroup",
+                  "splitBy": null,
                   "columnName": "Workload Group Allocation by System %"
                 }
               ],
               "title": "Workload Group Utilization",
+              "showOpenInMe": true,
+              "showCreateAlertRule": true,
               "timeBrushParameterName": "TimeRange",
               "timeBrushExportOnlyWhenBrushed": true,
               "gridSettings": {
@@ -416,6 +473,7 @@
               }
             },
             "customWidth": "50",
+            "showPin": true,
             "name": "Workload Group Utilization"
           },
           {
@@ -468,7 +526,30 @@
                     "json": "Use the buttons below to filter the next chart for Success or Failed queries. In many cases a failed query may not have a 'Command' column populated depending on what stage the query failed in. ",
                     "style": "info"
                   },
+                  "customWidth": "25",
                   "name": "text - 3"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "e2a833ac-48b4-4ccd-bbcd-33fccf1dbd75",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "QueryCompletionType",
+                        "type": 1,
+                        "isHiddenWhenLocked": true,
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - 4"
                 },
                 {
                   "type": 11,
@@ -510,12 +591,12 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "//Long-Running Queries - Just Actual Queries\r\n//If 'Command' is empty - you need to set a bigger time window, the older record with the command is outside of your window\r\nSynapseSqlPoolExecRequests \r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where StatementType !in ('Batch','Execute')\r\n| summarize //Session_ID=any(SessionId),\r\n    Request_ID=any(RequestId),\r\n    //Submit_Time=max(SubmitTime),\r\n    Start_Time=max(StartTime),\r\n    End_Time=max(EndTime),\r\n    Command=any(Command),\r\n    Status=min(Status), //This works because Completed/Failed/Cancelled are all below running, below suspended. This happens to work out where the min is the current status\r\n    Statement_Type=any(StatementType),\r\n    Resource_class=any(ResourceClass)\r\n    by RequestId\r\n| summarize ElapsedTime_min=bin(anyif(((End_Time - Start_Time)/1m),Start_Time > ago(30d)),1),\r\n    //Session_ID=any(Session_ID), \r\n   // Submit_Time=any(Submit_Time) ,\r\n    Start_Time=any(Start_Time), \r\n    End_Time=any(End_Time),\r\n    Command=any(Command),\r\n    Status=any(Status),\r\n    Statement_Type=any(Statement_Type)\r\n    ,Resource_class=any(Resource_class) \r\n    by Request_ID\r\n| where Status has '{QueryCompletionType}'\r\n| order by Start_Time\r\n\r\n",
+                    "query": "//Long-Running Queries - Just Actual Queries\r\n//If 'Command' is empty - you need to set a bigger time window, the older record with the command is outside of your window\r\nSynapseSqlPoolExecRequests \r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where StatementType !in ('Batch','Execute')\r\n| summarize //Session_ID=any(SessionId),\r\n    Request_ID=any(RequestId),\r\n    Start_Time=max(StartTime),\r\n    End_Time=max(EndTime),\r\n    Command=any(Command),\r\n    Status=min(Status), //This works because Completed/Failed/Cancelled are all below running, below suspended. This happens to work out where the min is the current status\r\n    Statement_Type=any(StatementType),\r\n    Resource_class=any(ResourceClass)\r\n    by RequestId\r\n| summarize ElapsedTime_min=bin(anyif(((End_Time - Start_Time)/1m),Start_Time > ago(30d)),1),\r\n    Start_Time=any(Start_Time), \r\n    End_Time=any(End_Time),\r\n    Command=any(Command),\r\n    Status=any(Status),\r\n    Statement_Type=any(Statement_Type)\r\n    ,Resource_class=any(Resource_class) \r\n    by Request_ID\r\n| where Status has '{QueryCompletionType}'\r\n| order by Start_Time\r\n\r\n",
                     "size": 0,
                     "title": "Query Completions - use above buttons to filter",
                     "color": "redBright",
                     "timeContext": {
-                      "durationMs": 2592000000
+                      "durationMs": 0
                     },
                     "timeContextFromParameter": "TimeRange",
                     "timeBrushParameterName": "TimeRange",
@@ -544,6 +625,10 @@
                         }
                       ]
                     }
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "QueryCompletionType",
+                    "comparison": "isEqualTo"
                   },
                   "name": "query - 4 - Copy"
                 }
@@ -603,7 +688,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": " AzureDiagnostics\r\n    | where Category == 'SQLSecurityAuditEvents'  and  LogicalServerName_s == 'lasr-sqldwdb-eastus2-prd'\r\n    | where action_name_s in ('DATABASE AUTHENTICATION SUCCEEDED','DATABASE AUTHENTICATION FAILED')\r\n    | project SourceSystem,client_tls_version_d,succeeded_s,session_id_d,client_ip_s,session_server_principal_name_s,server_principal_name_s,database_principal_name_s,application_name_s,host_name_s,TimeGenerated\r\n    | summarize count() by succeeded_s,bin(TimeGenerated,1m)\r\n    | render barchart\r\n\r\n\r\n\r\n",
+                    "query": " SQLSecurityAuditEvents\r\n    | where LogicalServerName == '{LogicalServerName}'\r\n    | where ActionName in ('DATABASE AUTHENTICATION SUCCEEDED','DATABASE AUTHENTICATION FAILED')\r\n    | project SourceSystem,ClientTlsVersion ,Succeeded,SessionId,ClientIp,SessionServerPrincipalName,ServerPrincipalName,DatabasePrincipalName,ApplicationName,HostName,TimeGenerated\r\n    | summarize count() by Succeeded,bin(TimeGenerated,1m)\r\n    | render barchart\r\n\r\n\r\n\r\n",
                     "size": 0,
                     "title": "Database Authentication success/failure rate",
                     "timeContext": {
@@ -624,6 +709,28 @@
                     }
                   },
                   "name": "query - 8"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "f7485a11-48df-4b61-a70e-9f56d6a00ec6",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "AuthResult",
+                        "type": 1,
+                        "isHiddenWhenLocked": true,
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - 3"
                 },
                 {
                   "type": 11,
@@ -663,12 +770,12 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": " AzureDiagnostics\r\n    | where Category == 'SQLSecurityAuditEvents'  and  LogicalServerName_s == 'lasr-sqldwdb-eastus2-prd'\r\n    | where action_name_s in ('DATABASE AUTHENTICATION SUCCEEDED','DATABASE AUTHENTICATION FAILED')\r\n    | where succeeded_s has '{AuthResult}'\r\n    | project SourceSystem,client_tls_version_d,succeeded_s,session_id_d,client_ip_s,session_server_principal_name_s,server_principal_name_s,database_principal_name_s,application_name_s,host_name_s,TimeGenerated\r\n    | order by TimeGenerated\r\n\r\n\r\n\r\n\r\n",
+                    "query": " SQLSecurityAuditEvents\r\n    | where LogicalServerName == '{LogicalServerName}'\r\n    | where ActionName in ('DATABASE AUTHENTICATION SUCCEEDED','DATABASE AUTHENTICATION FAILED')\r\n    | where Succeeded == '{AuthResult}'\r\n    | project SourceSystem,ClientTlsVersion ,Succeeded,SessionId,ClientIp,SessionServerPrincipalName,ServerPrincipalName,DatabasePrincipalName,ApplicationName,HostName,TimeGenerated\r\n    | summarize count() by Succeeded,bin(TimeGenerated,1m)\r\n\r\n\r\n\r\n\r\n\r\n",
                     "size": 0,
                     "title": "Database Authentication success/failure rate",
                     "noDataMessage": "Please select a button above",
                     "timeContext": {
-                      "durationMs": 2592000000
+                      "durationMs": 0
                     },
                     "timeContextFromParameter": "TimeRange",
                     "queryType": 0,
@@ -690,6 +797,11 @@
                 }
               ]
             },
+            "conditionalVisibility": {
+              "parameterName": "AuditingState",
+              "comparison": "isEqualTo",
+              "value": "enabled"
+            },
             "name": "Database Authentication Group",
             "styleSettings": {
               "showBorder": true
@@ -710,7 +822,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "metrics": [
                 {
@@ -726,6 +838,7 @@
                 }
               ],
               "title": "Adaptive Cache Used vs Hit Percentage",
+              "showCreateAlertRule": true,
               "gridSettings": {
                 "rowLimit": 10000
               }
@@ -734,11 +847,18 @@
           }
         ]
       },
-      "conditionalVisibility": {
-        "parameterName": "GroupSelection",
-        "comparison": "isEqualTo",
-        "value": "Workload"
-      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "GroupSelection",
+          "comparison": "isEqualTo",
+          "value": "Workload"
+        },
+        {
+          "parameterName": "DiagnosticsState",
+          "comparison": "isEqualTo",
+          "value": "enabled"
+        }
+      ],
       "name": "group - 1"
     },
     {
@@ -763,7 +883,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 2592000000
               },
               "metrics": [
                 {
@@ -806,7 +926,8 @@
                   "isHiddenWhenLocked": true,
                   "timeContext": {
                     "durationMs": 86400000
-                  }
+                  },
+                  "value": ""
                 }
               ],
               "style": "pills",
@@ -823,7 +944,7 @@
               "size": 0,
               "title": "20 Largest Query Steps by Most Rows Moved",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "TimeRange",
               "exportFieldName": "Request_ID",
@@ -841,6 +962,29 @@
               }
             },
             "name": "query - 1 - Copy"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "8afacdd5-2690-48d0-b125-fb118378e90c",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "WeightParameter",
+                  "type": 1,
+                  "value": "Unweighted",
+                  "isHiddenWhenLocked": true,
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - 8"
           },
           {
             "type": 11,
@@ -878,6 +1022,7 @@
               "json": "Current Setting: {WeightParameter}",
               "style": "info"
             },
+            "customWidth": "25",
             "name": "text - 4"
           },
           {
@@ -888,7 +1033,7 @@
               "size": 3,
               "title": "20 Largest Query Steps by Most Rows Moved",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "TimeRange",
               "exportFieldName": "Request_ID1",
@@ -919,12 +1064,13 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let databaseResourceName = '{DatabaseResourceName}';\r\n//Long-Running Queries - Just Actual Queries\r\n//If 'Command' is empty - you need to set a bigger time window, the older record with the command is outside of your window\r\nSynapseSqlPoolExecRequests\r\n| where _ResourceId  == databaseResourceName\r\n| where StatementType !in ('Batch','Execute')\r\n| summarize //Session_ID=any(SessionId),\r\n    Request_ID=any(RequestId),\r\n   // Submit_Time=max(SubmitTime),\r\n    Start_Time=max(StartTime),\r\n    End_Time=max(EndTime),\r\n    Command=any(Command),\r\n    Status=min(Status), //This works because Completed/Failed/Cancelled are all below running, below suspended. This happens to work out where the min is the current status\r\n    Statement_Type=any(StatementType),\r\n    Resource_class=any(ResourceClass)\r\n    by RequestId\r\n| summarize ElapsedTime_min=bin(anyif(((End_Time - Start_Time)/1m),Start_Time > ago(30d)),1),\r\n    //Session_ID=any(Session_ID), \r\n   // Submit_Time=any(Submit_Time) ,\r\n    Start_Time=any(Start_Time), \r\n    End_Time=any(End_Time),\r\n    Command=any(Command),\r\n    Status=any(Status),\r\n    Statement_Type=any(Statement_Type)\r\n    ,Resource_class=any(Resource_class) \r\n    by Request_ID\r\n| where Request_ID == '{RequestID}'\r\n\r\n",
+              "query": "let databaseResourceName = '{DatabaseResourceName}';\r\n//Long-Running Queries - Just Actual Queries\r\n//If 'Command' is empty - you need to set a bigger time window, the older record with the command is outside of your window\r\nSynapseSqlPoolExecRequests\r\n| where _ResourceId  == databaseResourceName\r\n| where StatementType !in ('Batch','Execute')\r\n| summarize //Session_ID=any(SessionId),\r\n    Request_ID=any(RequestId),\r\n    Start_Time=max(StartTime),\r\n    End_Time=max(EndTime),\r\n    Command=any(Command),\r\n    Status=min(Status), //This works because Completed/Failed/Cancelled are all below running, below suspended. This happens to work out where the min is the current status\r\n    Statement_Type=any(StatementType),\r\n    Resource_class=any(ResourceClass)\r\n    by RequestId\r\n| summarize ElapsedTime_min=bin(anyif(((End_Time - Start_Time)/1m),Start_Time > ago(30d)),1),\r\n    Start_Time=any(Start_Time), \r\n    End_Time=any(End_Time),\r\n    Command=any(Command),\r\n    Status=any(Status),\r\n    Statement_Type=any(Statement_Type)\r\n    ,Resource_class=any(Resource_class) \r\n    by Request_ID\r\n| where Request_ID == '{RequestID}' and Request_ID != ''\r\n\r\n",
               "size": 4,
               "title": "Selected Query",
               "noDataMessage": "Select a query above to view details",
+              "noDataMessageStyle": 4,
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -950,12 +1096,13 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "SynapseSqlPoolRequestSteps \r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where RequestId == '{RequestID}' //Put your QueryID here\r\n| where Status != 'Running'\r\n| summarize max(StartTime),max(EndTime),max(RequestId),max(OperationType),max(RowCount),max(Command),max(Status) by StepIndex\r\n| order by StepIndex asc",
+              "query": "SynapseSqlPoolRequestSteps \r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where RequestId == '{RequestID}' and RequestId != '' //Put your QueryID here\r\n| where Status != 'Running'\r\n| summarize max(StartTime),max(EndTime),max(RequestId),max(OperationType),max(RowCount),max(Command),max(Status) by StepIndex\r\n| order by StepIndex asc",
               "size": 3,
               "title": "Query Plan",
               "noDataMessage": "Select a query above to view the plan",
+              "noDataMessageStyle": 4,
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -968,11 +1115,18 @@
           }
         ]
       },
-      "conditionalVisibility": {
-        "parameterName": "GroupSelection",
-        "comparison": "isEqualTo",
-        "value": "TempDB"
-      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "GroupSelection",
+          "comparison": "isEqualTo",
+          "value": "TempDB"
+        },
+        {
+          "parameterName": "DiagnosticsState",
+          "comparison": "isEqualTo",
+          "value": "enabled"
+        }
+      ],
       "name": "group - 3"
     },
     {
@@ -996,11 +1150,46 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
+                  "id": "4b98dd26-4ccf-420e-a990-8d015f27fb76",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "SampleQID",
+                  "type": 1,
+                  "value": "999",
+                  "isHiddenWhenLocked": true,
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "d5524dd5-cf7e-41cf-beb3-474b3290289e",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "RequestId",
+                  "type": 1,
+                  "value": "",
+                  "isHiddenWhenLocked": true,
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "initializeQueryInvestigationParameters"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
                   "id": "0c2128d0-d979-4562-a28c-e7ceb955f126",
                   "version": "KqlParameterItem/1.0",
-                  "name": "RequestIdSearch",
+                  "name": "RequestId",
                   "type": 1,
-                  "value": ""
+                  "value": "QID72414",
+                  "label": "Request Id Search"
                 },
                 {
                   "id": "29880874-2d41-4bd5-bf22-3e47ae8b1145",
@@ -1024,11 +1213,11 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "SynapseSqlPoolExecRequests\r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where StatementType !in ('Batch','Execute')\r\n| summarize \r\n    Request_ID=max(RequestId),  \r\n    Start_Time=max(StartTime),\r\n    End_Compile_Time=max(EndCompileTime), \r\n    End_Time=max(EndTime), \r\n    QueryText = any(Command), \r\n    Last_Status=min(Status),\r\n    Statement_Type=max(StatementType),\r\n    Resource_class=max(ResourceClass) \r\n    by RequestId\r\n| extend Elapsed_Time_s=(End_Time - Start_Time)/1s\r\n| where QueryText has '{QueryTextSnippet}'\r\nand RequestId has '{RequestIdSearch}'\r\n| summarize \r\n    Executions = count(),\r\n    SampleQID = any(RequestId),\r\n    Elapsed_Time_s=max(Elapsed_Time_s)\r\n    by QueryText\r\n| order by Elapsed_Time_s\r\n\r\n\r\n\r\n",
+              "query": "SynapseSqlPoolExecRequests\r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where StatementType !in ('Batch','Execute')\r\n| summarize \r\n    Request_ID=max(RequestId),  \r\n    Start_Time=max(StartTime),\r\n    End_Compile_Time=max(EndCompileTime), \r\n    End_Time=max(EndTime), \r\n    QueryText = any(Command), \r\n    Last_Status=min(Status),\r\n    Statement_Type=max(StatementType),\r\n    Resource_class=max(ResourceClass) \r\n    by RequestId\r\n| extend Elapsed_Time_s=(End_Time - Start_Time)/1s\r\n| where QueryText has '{QueryTextSnippet}'\r\nand RequestId has '{RequestId}'\r\n| summarize \r\n    Executions = count(),\r\n    SampleQID = any(RequestId),\r\n    Elapsed_Time_s=max(Elapsed_Time_s)\r\n    by QueryText\r\n| order by Elapsed_Time_s\r\n\r\n\r\n\r\n",
               "size": 0,
               "title": "Matching Queries",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "exportedParameters": [
@@ -1039,6 +1228,11 @@
                 {
                   "fieldName": "SampleSessionID",
                   "parameterName": "Samp",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "SampleQID",
+                  "parameterName": "RequestId",
                   "parameterType": 1
                 }
               ],
@@ -1079,10 +1273,11 @@
               "version": "KqlItem/1.0",
               "query": "SynapseSqlPoolExecRequests\r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where StatementType !in ('Batch','Execute')\r\n| where RequestId == '{SampleQID}'\r\n| summarize  \r\n    Request_ID=max(RequestId),   \r\n    Start_Time=max(StartTime),\r\n    End_Compile_Time=max(EndCompileTime), \r\n    End_Time=max(EndTime), \r\n    Command=max(Command), \r\n    Last_Status=min(Status),\r\n    Statement_Type=max(StatementType),\r\n    Resource_class=max(ResourceClass) \r\n    by RequestId\r\n| extend elapsedTime_sec = iif(End_Time > ago(365d),(End_Time - Start_Time)/1s,real(null)) \r\n| join kind=inner\r\n    (SynapseSqlPoolExecRequests\r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where StatementType !in ('Batch','Execute')\r\n    | summarize \r\n        Request_ID=max(RequestId),   \r\n        Start_Time=max(StartTime),\r\n        End_Compile_Time=max(EndCompileTime), \r\n        End_Time=max(EndTime), \r\n        Command=max(Command), \r\n        Last_Status=min(Status),\r\n        Statement_Type=max(StatementType),\r\n        Resource_class=max(ResourceClass) \r\n        by RequestId\r\n    //| extend elapsedTime_sec = (End_Time - Start_Time)/1s\r\n    | extend elapsedTime_sec = iif(End_Time > ago(365d),(End_Time - Start_Time)/1s,real(null)) \r\n    )\r\non Command \r\n| project Request_ID1,Start_Time1,End_Compile_Time1,End_Time1,Last_Status1,Statement_Type1,Resource_class1,elapsedTime_sec1\r\n",
               "size": 0,
-              "title": "All Executions of Selected Query",
+              "title": "All Executions of Selected Query Text",
               "noDataMessage": "Select a query above to see individual executions",
+              "noDataMessageStyle": 4,
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "exportFieldName": "Request_ID1",
@@ -1100,12 +1295,13 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "SynapseSqlPoolRequestSteps \r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where RequestId == '{RequestId}' //Put your QueryID here\r\n| where Status != 'Running'\r\n| summarize max(StartTime),max(EndTime),max(RequestId),max(OperationType),max(RowCount),max(Command),max(Status) by StepIndex\r\n| order by StepIndex asc",
+              "query": "SynapseSqlPoolRequestSteps \r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where RequestId == '{RequestId}' and RequestId != ''\r\n| where Status != 'Running'\r\n| summarize max(StartTime),max(EndTime),max(RequestId),max(OperationType),max(RowCount),max(Command),max(Status) by StepIndex\r\n| order by StepIndex asc",
               "size": 3,
               "title": "Query Plan for Selected Query",
               "noDataMessage": "Select a Query Above to See the Query Plan",
+              "noDataMessageStyle": 4,
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1117,66 +1313,15 @@
             "name": "query - 0 - Copy - Copy"
           },
           {
-            "type": 9,
-            "content": {
-              "version": "KqlParameterItem/1.0",
-              "crossComponentResources": [
-                "{LogAnalyticsWorkspace}"
-              ],
-              "parameters": [
-                {
-                  "id": "1191e58a-c1f9-4853-b36b-4be8eecbb48f",
-                  "version": "KqlParameterItem/1.0",
-                  "name": "Query_Submit_Time",
-                  "type": 1,
-                  "query": " AzureDiagnostics \r\n    | where Category  == 'ExecRequests'\r\n    | where Resource  == '{DatabaseName}'\r\n    | where StatementType_s !in ('Batch','Execute')\r\n    | where RequestId_s =='{RequestId}'\r\n    | summarize \r\n        Submit_Time=min(SubmitTime_t)\r\n        by RequestId_s\r\n        | project Submit_Time",
-                  "crossComponentResources": [
-                    "{LogAnalyticsWorkspace}"
-                  ],
-                  "isHiddenWhenLocked": true,
-                  "timeContext": {
-                    "durationMs": 0
-                  },
-                  "timeContextFromParameter": "TimeRange",
-                  "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces",
-                  "value": null
-                },
-                {
-                  "id": "f6bcb2a4-3356-4110-ba13-99c7d13a26f0",
-                  "version": "KqlParameterItem/1.0",
-                  "name": "Query_End_Compile_Time",
-                  "type": 1,
-                  "query": " AzureDiagnostics \r\n    | where Category  == 'ExecRequests'\r\n    | where Resource  == '{DatabaseName}'\r\n    | where StatementType_s !in ('Batch','Execute')\r\n    | where RequestId_s =='{RequestId}'\r\n    | summarize \r\n        End_Compile_Time=max(EndCompileTime_t) \r\n        by RequestId_s\r\n        | project End_Compile_Time",
-                  "crossComponentResources": [
-                    "{LogAnalyticsWorkspace}"
-                  ],
-                  "isHiddenWhenLocked": true,
-                  "timeContext": {
-                    "durationMs": 0
-                  },
-                  "timeContextFromParameter": "TimeRange",
-                  "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces",
-                  "value": null
-                }
-              ],
-              "style": "pills",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces"
-            },
-            "name": "parameters - 6"
-          },
-          {
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "        AzureDiagnostics \r\n        | where Category  == 'ExecRequests'\r\n        | where Resource  == 'LASR-SQLDWDB-PRD'\r\n        | where StatementType_s =='CreateStatistics'\r\n    | summarize \r\n        Session_ID=max(SessionId_s), \r\n        Request_ID=max(RequestId_s),  \r\n        Submit_Time=min(SubmitTime_t), \r\n        Start_Time=max(StartTime_t),\r\n        End_Compile_Time=max(EndCompileTime_t), \r\n        End_Time=max(EndTime_t), \r\n        Command=max(Command_s), \r\n        Last_Status=min(Status_s),\r\n        Statement_Type=max(StatementType_s),\r\n        Resource_class=max(ResourceClass_s) \r\n        by RequestId_s\r\n        | where Submit_Time > datetime('{Query_Submit_Time}') and End_Time < datetime('{Query_End_Compile_Time}')// or RequestId_s == '{RequestId}'\r\n",
+              "query": "SynapseSqlPoolExecRequests\r\n    | where StatementType =='CreateStatistics'\r\n    | where _ResourceId has '{DatabaseName}'\r\n    | summarize  \r\n        Root_Query_Id=max(RootQueryId),   \r\n        Start_Time=max(StartTime),\r\n        End_Compile_Time=max(EndCompileTime), \r\n        End_Time=max(EndTime), \r\n        Command=max(Command), \r\n        Last_Status=min(Status),\r\n        Statement_Type=max(StatementType),\r\n        Resource_class=max(ResourceClass) \r\n    by RequestId\r\n    | where Root_Query_Id == '{RequestId}'",
               "size": 0,
-              "title": "All possibly related auto-stats statements based on time",
-              "noDataMessage": "no auto stats statements found that could be related",
+              "title": "Triggered Auto-Stats Statements",
+              "noDataMessage": "No triggered autostats statements found",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1206,15 +1351,22 @@
                 ]
               }
             },
-            "name": "All possibly related auto-stats statements"
+            "name": "All triggered auto-stats statements"
           }
         ]
       },
-      "conditionalVisibility": {
-        "parameterName": "GroupSelection",
-        "comparison": "isEqualTo",
-        "value": "QueryInvestigation"
-      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "GroupSelection",
+          "comparison": "isEqualTo",
+          "value": "QueryInvestigation"
+        },
+        {
+          "parameterName": "DiagnosticsState",
+          "comparison": "isEqualTo",
+          "value": "enabled"
+        }
+      ],
       "name": "group - 4",
       "styleSettings": {
         "showBorder": true
@@ -1233,7 +1385,41 @@
               "json": "All Charts on this page are based on the last 7 days of data",
               "style": "info"
             },
+            "customWidth": "25",
             "name": "text - 5"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "533ff6bb-97cd-4aaa-9372-171cad378bcd",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "QueryText",
+                  "type": 1,
+                  "isHiddenWhenLocked": true,
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "99de0056-d4f3-465e-a27e-599d69b23c77",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "RequestId",
+                  "type": 1,
+                  "value": "999",
+                  "isHiddenWhenLocked": true,
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "initializeTempDBVariables"
           },
           {
             "type": 3,
@@ -1242,6 +1428,8 @@
               "query": "//Build cache count by day\r\nlet databaseResourceName = '{DatabaseResourceName}';\r\n//Long-Running Queries - Just Actual Queries\r\n//If 'Command' is empty - you need to set a bigger time window, the older record with the command is outside of your window\r\nSynapseSqlPoolExecRequests\r\n| where _ResourceId  == databaseResourceName\r\n| where StatementType == 'BuildReplicatedTableCache'\r\n| where Command != \"\"\r\n| where ResourceClass != \"\"\r\n| project Command,TimeGenerated,RequestId\r\n| summarize LastRebuild=max(TimeGenerated),RebuildCount=count(RequestId) by Command\r\n| order by RebuildCount desc\r\n| limit 15\r\n",
               "size": 3,
               "title": "Top 15 Most Rebuilds by Table",
+              "noDataMessage": "No replicated table rebuilds found in the last 7 days",
+              "noDataMessageStyle": 4,
               "timeContext": {
                 "durationMs": 604800000
               },
@@ -1274,6 +1462,7 @@
               "size": 0,
               "title": "Rebuilds per Day for Selected Table",
               "noDataMessage": "Select a query above to see runs by day",
+              "noDataMessageStyle": 4,
               "timeContext": {
                 "durationMs": 604800000
               },
@@ -1300,6 +1489,7 @@
               "size": 2,
               "title": "Rebuild Count by Table by Day",
               "noDataMessage": " Only tables with more than 7 total rebuilds will show up. If no talbes with that many rebuilds are found this chart will be empty",
+              "noDataMessageStyle": 4,
               "timeContext": {
                 "durationMs": 604800000
               },
@@ -1377,6 +1567,7 @@
               "query": "let databaseResourceName = '{DatabaseResourceName}';\r\n//Long-Running Queries - Just Actual Queries\r\n//If 'Command' is empty - you need to set a bigger time window, the older record with the command is outside of your window\r\nSynapseSqlPoolExecRequests\r\n| where _ResourceId  == databaseResourceName\r\n| where StatementType == 'BuildReplicatedTableCache'\r\n| summarize          Start_Time=max(StartTime),      End_Time=max(EndTime),      Command=max(Command),       Statement_Type=max(StatementType),     Resource_class=max(ResourceClass)      by RequestId\r\n| join kind= inner\r\n(\r\n    SynapseSqlPoolExecRequests\r\n    | where _ResourceId  == databaseResourceName\r\n    | where StatementType == 'BuildReplicatedTableCache'\r\n    | where StatementType == 'BuildReplicatedTableCache'\r\n    | where EndTime > ago(7d)\r\n    | where StartTime > ago(7d)\r\n    | extend elapsedTime_min = (EndTime - StartTime)/1m\r\n    | order by elapsedTime_min desc\r\n    | project RequestId,elapsedTime_min \r\n)\r\non RequestId\r\n| order by elapsedTime_min desc\r\n| project RequestId,Start_Time,End_Time,Elapsed_Time=round(elapsedTime_min,1) ,Command\r\n| limit 15\r\n",
               "size": 3,
               "title": "Top 15 Elapsed Time per Rebuild",
+              "noDataMessageStyle": 4,
               "timeContext": {
                 "durationMs": 604800000
               },
@@ -1409,6 +1600,7 @@
               "size": 3,
               "title": "Query Plan for Selected Query",
               "noDataMessage": "Select a query above to view plan",
+              "noDataMessageStyle": 4,
               "timeContext": {
                 "durationMs": 604800000
               },
@@ -1422,11 +1614,18 @@
           }
         ]
       },
-      "conditionalVisibility": {
-        "parameterName": "GroupSelection",
-        "comparison": "isEqualTo",
-        "value": "ReplicatedTables"
-      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "GroupSelection",
+          "comparison": "isEqualTo",
+          "value": "ReplicatedTables"
+        },
+        {
+          "parameterName": "DiagnosticsState",
+          "comparison": "isEqualTo",
+          "value": "enabled"
+        }
+      ],
       "name": "ReplicatedTablesGroup"
     },
     {
@@ -1486,7 +1685,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 2592000000
               },
               "metrics": [
                 {
@@ -1634,11 +1833,18 @@
           }
         ]
       },
-      "conditionalVisibility": {
-        "parameterName": "GroupSelection",
-        "comparison": "isEqualTo",
-        "value": "WorkloadManagement"
-      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "GroupSelection",
+          "comparison": "isEqualTo",
+          "value": "WorkloadManagement"
+        },
+        {
+          "parameterName": "DiagnosticsState",
+          "comparison": "isEqualTo",
+          "value": "enabled"
+        }
+      ],
       "name": "group - 6"
     },
     {
@@ -1723,7 +1929,7 @@
               "title": "Query Summary for Selected User {User} {Application}",
               "noDataMessage": "Select a user to see query activity",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1743,7 +1949,7 @@
               "title": "Query Summary for Selected User {User} {Application}",
               "noDataMessage": "Select a user to see query activity",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1819,7 +2025,7 @@
               "title": "Queries {User} {Application}",
               "noDataMessage": "Select a user to see query activity",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1837,7 +2043,7 @@
               "query": "SQLSecurityAuditEvents \r\n    | where  LogicalServerName == \"{LogicalServerName}\"\r\n    | where DurationMs > 0\r\n    | extend duration_seconds = DurationMs /1000.0\r\n    | where Statement != 'select @@version'\r\n    | where Statement != 'SELECT @@SPID;'\r\n    | where ServerPrincipalName has '{User}'\r\n    | where ApplicationName has '{Application}'\r\n    | project DatabaseName= DatabaseName, UserName= ServerPrincipalName, EventTime= EventTime, Host= HostName, duration_seconds = round(duration_seconds), Statement, QuerySource = ApplicationName , AffectedRows\r\n    | project-reorder AffectedRows,DatabaseName, UserName, Host, EventTime, duration_seconds, Statement, QuerySource\r\n\r\n\r\n\r\n\r\n\r\n",
               "size": 0,
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1864,7 +2070,7 @@
               "title": "Query Activity by time - sum(Duration) {User} {Application}",
               "noDataMessage": "Select a user to see query activity",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1878,11 +2084,18 @@
           }
         ]
       },
-      "conditionalVisibility": {
-        "parameterName": "GroupSelection",
-        "comparison": "isEqualTo",
-        "value": "QueryAudit"
-      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "GroupSelection",
+          "comparison": "isEqualTo",
+          "value": "QueryAudit"
+        },
+        {
+          "parameterName": "AuditingState",
+          "comparison": "isEqualTo",
+          "value": "enabled"
+        }
+      ],
       "name": "QueryAuditGroup",
       "styleSettings": {
         "showBorder": true
@@ -1905,7 +2118,7 @@
                   "version": "KqlParameterItem/1.0",
                   "name": "RequestId1",
                   "type": 1,
-                  "value": "QID57684"
+                  "value": ""
                 }
               ],
               "style": "above",
@@ -1925,7 +2138,7 @@
                   "version": "KqlParameterItem/1.0",
                   "name": "RequestId2",
                   "type": 1,
-                  "value": "QID57621",
+                  "value": "",
                   "timeContext": {
                     "durationMs": 86400000
                   }
@@ -1945,7 +2158,7 @@
               "query": "SynapseSqlPoolExecRequests\r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where StatementType !in ('Batch','Execute') and RequestId == '{RequestId1}'\r\n| summarize \r\n    Request_ID=any(RequestId),\r\n    Start_Time=max(StartTime),\r\n    End_Time=max(EndTime),\r\n    Command=any(Command),\r\n    Status=min(Status), //This works because Completed/Failed/Cancelled are all below running, below suspended. This happens to work out where the min is the current status\r\n    Statement_Type=any(StatementType),\r\n    Resource_class=any(ResourceClass)\r\n    by RequestId\r\n| summarize Start_Time=any(Start_Time), End_Time=any(End_Time),ElapsedTime_min=anyif((End_Time - Start_Time)/1m,Start_Time > ago(30d)),Command=any(Command),Status=any(Status),Statement_Type=any(Statement_Type),Resource_class=any(Resource_class) by Request_ID\r\n| project Request_ID,ElapsedTime_min,Command,Resource_class,Start_Time,End_Time,Statement_Type,Status\r\n",
               "size": 4,
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1964,7 +2177,7 @@
               "query": "SynapseSqlPoolExecRequests\r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where StatementType !in ('Batch','Execute') and RequestId == '{RequestId2}'\r\n| summarize \r\n    Request_ID=any(RequestId),\r\n    Start_Time=max(StartTime),\r\n    End_Time=max(EndTime),\r\n    Command=any(Command),\r\n    Status=min(Status), //This works because Completed/Failed/Cancelled are all below running, below suspended. This happens to work out where the min is the current status\r\n    Statement_Type=any(StatementType),\r\n    Resource_class=any(ResourceClass)\r\n    by RequestId\r\n| summarize Start_Time=any(Start_Time), End_Time=any(End_Time),ElapsedTime_min=anyif((End_Time - Start_Time)/1m,Start_Time > ago(30d)),Command=any(Command),Status=any(Status),Statement_Type=any(Statement_Type),Resource_class=any(Resource_class) by Request_ID\r\n| project Request_ID,ElapsedTime_min,Command,Resource_class,Start_Time,End_Time,Statement_Type,Status\r\n",
               "size": 4,
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -1980,10 +2193,10 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "SynapseSqlPoolRequestSteps \r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where RequestId == '{RequestId1}'\r\n| summarize StartTime=max(StartTime)\r\n    ,EndTime=max(EndTime)\r\n    ,RequestID=max(RequestId)\r\n    ,Operation=max(OperationType)\r\n    ,RowCount=max(RowCount)\r\n    ,Command=max(Command)\r\n    ,Status=max(Status)\r\n     by StepIndex\r\n| order by StepIndex asc\r\n| project StartTime,EndTime,RequestID,Operation,RowCount,Command,Status,StepIndex",
+              "query": "SynapseSqlPoolRequestSteps \r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where RequestId == '{RequestId1}' and RequestId != ''\r\n| summarize StartTime=max(StartTime)\r\n    ,EndTime=max(EndTime)\r\n    ,RequestID=max(RequestId)\r\n    ,Operation=max(OperationType)\r\n    ,RowCount=max(RowCount)\r\n    ,Command=max(Command)\r\n    ,Status=max(Status)\r\n     by StepIndex\r\n| order by StepIndex asc\r\n| project StartTime,EndTime,RequestID,Operation,RowCount,Command,Status,StepIndex",
               "size": 3,
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -2003,10 +2216,10 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "SynapseSqlPoolRequestSteps \r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where RequestId == '{RequestId2}'\r\n| summarize StartTime=max(StartTime)\r\n    ,EndTime=max(EndTime)\r\n    ,RequestID=max(RequestId)\r\n    ,Operation=max(OperationType)\r\n    ,RowCount=max(RowCount)\r\n    ,Command=max(Command)\r\n    ,Status=max(Status)\r\n     by StepIndex\r\n| order by StepIndex asc\r\n| project StartTime,EndTime,RequestID,Operation,RowCount,Command,Status,StepIndex",
+              "query": "SynapseSqlPoolRequestSteps \r\n| where _ResourceId  == '{DatabaseResourceName}'\r\n| where RequestId == '{RequestId2}' and RequestId != ''\r\n| summarize StartTime=max(StartTime)\r\n    ,EndTime=max(EndTime)\r\n    ,RequestID=max(RequestId)\r\n    ,Operation=max(OperationType)\r\n    ,RowCount=max(RowCount)\r\n    ,Command=max(Command)\r\n    ,Status=max(Status)\r\n     by StepIndex\r\n| order by StepIndex asc\r\n| project StartTime,EndTime,RequestID,Operation,RowCount,Command,Status,StepIndex",
               "size": 3,
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -2022,102 +2235,15 @@
             }
           },
           {
-            "type": 9,
-            "content": {
-              "version": "KqlParameterItem/1.0",
-              "crossComponentResources": [
-                "{LogAnalyticsWorkspace}"
-              ],
-              "parameters": [
-                {
-                  "id": "03d1c3ba-0d28-4584-bb63-388f8477034a",
-                  "version": "KqlParameterItem/1.0",
-                  "name": "Query_Submit_Time1",
-                  "type": 1,
-                  "query": " AzureDiagnostics \r\n    | where Category  == 'ExecRequests'\r\n    | where Resource  == '{DatabaseName}'\r\n    | where StatementType_s !in ('Batch','Execute')\r\n    | where RequestId_s =='{RequestId1}'\r\n    | summarize \r\n        Submit_Time=min(SubmitTime_t)\r\n        by RequestId_s\r\n        | project Submit_Time",
-                  "crossComponentResources": [
-                    "{LogAnalyticsWorkspace}"
-                  ],
-                  "isHiddenWhenLocked": true,
-                  "timeContext": {
-                    "durationMs": 0
-                  },
-                  "timeContextFromParameter": "TimeRange",
-                  "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces",
-                  "value": null
-                },
-                {
-                  "id": "af36efd7-c5a0-429e-8908-a24e22ee6087",
-                  "version": "KqlParameterItem/1.0",
-                  "name": "Query_End_Compile_Time1",
-                  "type": 1,
-                  "query": " AzureDiagnostics \r\n    | where Category  == 'ExecRequests'\r\n    | where Resource  == '{DatabaseName}'\r\n    | where StatementType_s !in ('Batch','Execute')\r\n    | where RequestId_s =='{RequestId1}'\r\n    | summarize \r\n        End_Compile_Time=max(EndCompileTime_t) \r\n        by RequestId_s\r\n        | project End_Compile_Time",
-                  "crossComponentResources": [
-                    "{LogAnalyticsWorkspace}"
-                  ],
-                  "isHiddenWhenLocked": true,
-                  "timeContext": {
-                    "durationMs": 0
-                  },
-                  "timeContextFromParameter": "TimeRange",
-                  "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces",
-                  "value": null
-                },
-                {
-                  "version": "KqlParameterItem/1.0",
-                  "name": "Query_Submit_Time2",
-                  "type": 1,
-                  "query": " AzureDiagnostics \r\n    | where Category  == 'ExecRequests'\r\n    | where Resource  == '{DatabaseName}'\r\n    | where StatementType_s !in ('Batch','Execute')\r\n    | where RequestId_s =='{RequestId2}'\r\n    | summarize \r\n        Submit_Time=min(SubmitTime_t)\r\n        by RequestId_s\r\n        | project Submit_Time",
-                  "crossComponentResources": [
-                    "{LogAnalyticsWorkspace}"
-                  ],
-                  "isHiddenWhenLocked": true,
-                  "timeContext": {
-                    "durationMs": 0
-                  },
-                  "timeContextFromParameter": "TimeRange",
-                  "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces",
-                  "id": "1931da01-18dc-449d-950a-b9483057c12d",
-                  "value": null
-                },
-                {
-                  "version": "KqlParameterItem/1.0",
-                  "name": "Query_End_Compile_Time2",
-                  "type": 1,
-                  "query": " AzureDiagnostics \r\n    | where Category  == 'ExecRequests'\r\n    | where Resource  == '{DatabaseName}'\r\n    | where StatementType_s !in ('Batch','Execute')\r\n    | where RequestId_s =='{RequestId2}'\r\n    | summarize \r\n        End_Compile_Time=max(EndCompileTime_t) \r\n        by RequestId_s\r\n        | project End_Compile_Time",
-                  "crossComponentResources": [
-                    "{LogAnalyticsWorkspace}"
-                  ],
-                  "isHiddenWhenLocked": true,
-                  "timeContext": {
-                    "durationMs": 0
-                  },
-                  "timeContextFromParameter": "TimeRange",
-                  "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces",
-                  "id": "6f447a8d-e815-4d00-87ff-7bb26b315132",
-                  "value": null
-                }
-              ],
-              "style": "pills",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces"
-            },
-            "name": "parameters - 6 - Copy"
-          },
-          {
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "        AzureDiagnostics \r\n        | where Category  == 'ExecRequests'\r\n        | where Resource  == '{DatabaseName}'\r\n        | where StatementType_s =='CreateStatistics'\r\n    | summarize \r\n        Session_ID=max(SessionId_s), \r\n        //Request_ID=max(RequestId_s),  \r\n        Submit_Time=min(SubmitTime_t), \r\n        //Start_Time=max(StartTime_t),\r\n        //End_Compile_Time=max(EndCompileTime_t), \r\n        End_Time=max(EndTime_t), \r\n        Command=max(Command_s), \r\n        Last_Status=min(Status_s),\r\n        Statement_Type=max(StatementType_s),\r\n        Resource_class=max(ResourceClass_s) \r\n        by RequestId_s\r\n        | where Submit_Time > datetime('{Query_Submit_Time1}') and End_Time < datetime('{Query_End_Compile_Time1}') and End_Time > ago(30d)\r\n| project Command, Status=Last_Status ,Submit_Time,End_Time,Session_ID,Request_ID=RequestId_s,Statement_Type\r\n",
+              "query": "SynapseSqlPoolExecRequests\r\n    | where StatementType =='CreateStatistics'\r\n    | where _ResourceId has '{DatabaseName}'\r\n    | summarize  \r\n        Root_Query_Id=max(RootQueryId),   \r\n        Start_Time=max(StartTime),\r\n        End_Compile_Time=max(EndCompileTime), \r\n        End_Time=max(EndTime), \r\n        Command=max(Command), \r\n        Last_Status=min(Status),\r\n        Statement_Type=max(StatementType),\r\n        Resource_class=max(ResourceClass) \r\n    by RequestId\r\n    | where Root_Query_Id == '{RequestId1}'",
               "size": 0,
-              "title": "All possibly related auto-stats statements based on time",
-              "noDataMessage": "no auto stats statements found that could be related",
+              "title": "Triggered Auto-Stats Statements",
+              "noDataMessage": "No triggered autostats statements found",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -2160,18 +2286,18 @@
               ]
             },
             "customWidth": "50",
-            "name": "All possibly related auto-stats statements - Copy"
+            "name": "All triggered auto-stats statements"
           },
           {
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "        AzureDiagnostics \r\n        | where Category  == 'ExecRequests'\r\n        | where Resource  == '{DatabaseName}'\r\n        | where StatementType_s =='CreateStatistics'\r\n    | summarize \r\n        Session_ID=max(SessionId_s), \r\n        //Request_ID=max(RequestId_s),  \r\n        Submit_Time=min(SubmitTime_t), \r\n        //Start_Time=max(StartTime_t),\r\n        //End_Compile_Time=max(EndCompileTime_t), \r\n        End_Time=max(EndTime_t), \r\n        Command=max(Command_s), \r\n        Last_Status=min(Status_s),\r\n        Statement_Type=max(StatementType_s),\r\n        Resource_class=max(ResourceClass_s) \r\n        by RequestId_s\r\n        | where Submit_Time > datetime('{Query_Submit_Time2}') and End_Time < datetime('{Query_End_Compile_Time2}') and End_Time > ago(30d)\r\n| project Command, Status=Last_Status ,Submit_Time,End_Time,Session_ID,Request_ID=RequestId_s,Statement_Type\r\n",
+              "query": "SynapseSqlPoolExecRequests\r\n    | where StatementType =='CreateStatistics'\r\n    | where _ResourceId has '{DatabaseName}'\r\n    | summarize  \r\n        Root_Query_Id=max(RootQueryId),   \r\n        Start_Time=max(StartTime),\r\n        End_Compile_Time=max(EndCompileTime), \r\n        End_Time=max(EndTime), \r\n        Command=max(Command), \r\n        Last_Status=min(Status),\r\n        Statement_Type=max(StatementType),\r\n        Resource_class=max(ResourceClass) \r\n    by RequestId\r\n    | where Root_Query_Id == '{RequestId2}'",
               "size": 0,
-              "title": "All possibly related auto-stats statements based on time",
-              "noDataMessage": "no auto stats statements found that could be related",
+              "title": "Triggered Auto-Stats Statements",
+              "noDataMessage": "No triggered autostats statements found",
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -2202,15 +2328,22 @@
               }
             },
             "customWidth": "50",
-            "name": "All possibly related auto-stats statements - Copy - Copy"
+            "name": "All triggered auto-stats statements"
           }
         ]
       },
-      "conditionalVisibility": {
-        "parameterName": "GroupSelection",
-        "comparison": "isEqualTo",
-        "value": "QueryComparison"
-      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "GroupSelection",
+          "comparison": "isEqualTo",
+          "value": "QueryComparison"
+        },
+        {
+          "parameterName": "DiagnosticsState",
+          "comparison": "isEqualTo",
+          "value": "enabled"
+        }
+      ],
       "name": "QueryComparison"
     },
     {
@@ -2243,62 +2376,13 @@
             "name": "parameters - 0"
           },
           {
-            "type": 1,
-            "content": {
-              "json": "The matching of the user information in the next chart is approximate. This information is a work in progress",
-              "style": "warning"
-            },
-            "name": "text - 4"
-          },
-          {
-            "type": 3,
-            "content": {
-              "version": "KqlItem/1.0",
-              "query": "let databasename='{DatabaseName}';\r\nAzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == databasename\r\n| where StatementType_s !in ('Batch','Execute')\r\n| summarize Query_End_Time = max(EndTime_t ) by SessionId_s\r\n| where SessionId_s == '{SessionID}'\r\n| join kind = rightouter \r\n(  \r\n    AzureDiagnostics\r\n    | where Category == 'SQLSecurityAuditEvents' \r\n    | where duration_milliseconds_d > 0\r\n    | extend duration_seconds = duration_milliseconds_d /1000.0\r\n    | where statement_s != 'select @@version' and statement_s != 'SELECT @@SPID;' and server_principal_name_s != '##MS_InstanceCertificate##'\r\n) on $left.Query_End_Time==$right.event_time_t \r\n| summarize DatabaseName= max(database_name_s)\r\n    , UserName= any(server_principal_name_s)\r\n    , Host= max(host_name_s)\r\n    , Application=max(application_name_s)\r\n     by SessionId_s\r\n\r\n\r\n\r\n",
-              "size": 4,
-              "timeContext": {
-                "durationMs": 172800000
-              },
-              "timeContextFromParameter": "TimeRange",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "{LogAnalyticsWorkspace}"
-              ],
-              "visualization": "table",
-              "tileSettings": {
-                "titleContent": {
-                  "columnMatch": "UserName"
-                },
-                "subtitleContent": {
-                  "columnMatch": "SessionId_s"
-                },
-                "leftContent": {
-                  "columnMatch": "Application"
-                },
-                "rightContent": {
-                  "columnMatch": "Host"
-                },
-                "secondaryContent": {
-                  "columnMatch": "DatabaseName"
-                },
-                "showBorder": false,
-                "size": "full"
-              },
-              "graphSettings": {
-                "type": 0
-              }
-            },
-            "name": "query - 3"
-          },
-          {
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
               "query": "AzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s !in ('Batch','Execute')\r\n| summarize \r\n    Session_ID=max(SessionId_s),   \r\n    Submit_Time=max(SubmitTime_t), \r\n    Start_Time=max(StartTime_t),\r\n    End_Compile_Time=max(EndCompileTime_t), \r\n    End_Time=max(EndTime_t), \r\n    Command=max(Command_s), \r\n    Last_Status=min(Status_s),\r\n    Statement_Type=max(StatementType_s),\r\n    Resource_class=max(ResourceClass_s) \r\n    by RequestId_s\r\n| where Session_ID has '{SessionID}'\r\n| extend elapsedTime_sec = iif(End_Time > ago(365d),(End_Time - Submit_Time)/1s,real(null)) \r\n| order by Submit_Time asc\r\n\r\n\r\n\r\n\r\n",
               "size": 0,
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "TimeRange",
               "exportFieldName": "RequestId_s",
@@ -2318,7 +2402,7 @@
               "query": "AzureDiagnostics\r\n| where Category  == 'RequestSteps'\r\n| where Resource  == '{DatabaseName}'\r\n| where RequestId_s == '{RequestID}'\r\n//| where Status_s != 'Running'\r\n| summarize Start_Time=max(StartTime_t),End_Time=max(EndTime_t),Request_ID=max(RequestId_s),Operation_Type=max(OperationType_s),Row_Count=max(RowCount_d),Statement=max(Command_s),Status=min(Status_s) by StepIndex_d\r\n| order by StepIndex_d asc",
               "size": 3,
               "timeContext": {
-                "durationMs": 172800000
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -2331,11 +2415,18 @@
           }
         ]
       },
-      "conditionalVisibility": {
-        "parameterName": "GroupSelection",
-        "comparison": "isEqualTo",
-        "value": "SessionInvestigation"
-      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "GroupSelection",
+          "comparison": "isEqualTo",
+          "value": "SessionInvestigation"
+        },
+        {
+          "parameterName": "DiagnosticsState",
+          "comparison": "isEqualTo",
+          "value": "enabled"
+        }
+      ],
       "name": "group - 9"
     },
     {
@@ -2347,9 +2438,41 @@
           {
             "type": 1,
             "content": {
-              "json": "## This tab is used to determine what statements triggerred autostats creation jobs. \r\nThe flow of autostats creation is as follows\r\n1. Query Submit Time\r\n2. \tCreate Statistics submit Time\r\n3. \tCreate Statistics end Time\r\n4. Query end_compile_time\r\n5. Query Start_Time\r\n6. Query End_Time\r\n\r\nFurther, if multiple stats are created, then the creation of all stats for this query will fall between query submit_time and end_compile_time. \r\n\r\nThe charts on this page allow you to search for an autostats job by requestID or my snippet of the autostats statement text, which can just be the schema, table, or column name. Then it will show you all commands that include that request ID or text. It will then show you all statements in the create stat statement because the query we are trying to identify will wait for all of those stats creations to complete before proceeding. \r\n\r\nThe last chart will list out all statements that could possibly have triggerred the stats creation job based on their submite/end_compile_time. "
+              "json": "## This tab is used to determine what statements triggerred autostats creation jobs. \r\nThe flow of autostats creation is as follows\r\n1. Query Submit Time\r\n2. \tCreate Statistics submit Time\r\n3. \tCreate Statistics end Time\r\n4. Query end_compile_time\r\n5. Query Start_Time\r\n6. Query End_Time\r\n\r\nFurther, if multiple stats are created, then the creation of all stats for this query will fall between query submit_time and end_compile_time. \r\n\r\nThe charts on this page allow you to search for an autostats job by requestID or my snippet of the autostats statement text, which can just be the schema, table, or column name. Then it will show you all commands that include that request ID or text. It will then show you all statements in the create stat statement because the query we are trying to identify will wait for all of those stats creations to complete before proceeding. \r\n\r\nThe last chart will list the statement that triggered the stats creation. "
             },
             "name": "text - 6"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "df5b9b85-4188-4f2c-88cb-1369e09f6742",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "RootQueryId",
+                  "type": 1,
+                  "isHiddenWhenLocked": true,
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "560c9ec5-6341-4fa1-9ce6-35ff010151b1",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "RequestId",
+                  "type": 1,
+                  "isHiddenWhenLocked": true,
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - 5"
           },
           {
             "type": 9,
@@ -2387,21 +2510,23 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "AzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s !in ('Batch','Execute')\r\n| summarize \r\n    Session_ID=max(SessionId_s), \r\n    Request_ID=max(RequestId_s),  \r\n    Submit_Time=max(SubmitTime_t), \r\n    Start_Time=max(StartTime_t),\r\n    End_Compile_Time=max(EndCompileTime_t), \r\n    End_Time=max(EndTime_t), \r\n    Command=max(Command_s), \r\n    Last_Status=min(Status_s),\r\n    Statement_Type=max(StatementType_s),\r\n    Resource_class=max(ResourceClass_s) \r\n    by RequestId_s\r\n| where Command has 'CREATE STATISTICS _wa_sys'\r\n| where Command has '{QueryTextSnippet}'\r\nand RequestId_s has '{RequestIdSearch}'\r\n| extend elapsedTime_sec = iif(End_Time > ago(365d),(End_Time - Submit_Time)/1s,real(null)) \r\n| extend CompileTime_sec = (End_Compile_Time - Submit_Time)/1s\r\n| order by elapsedTime_sec\r\n| summarize \r\n    Executions = count(),\r\n    Max_Elapsed_Time_sec = bin(max(elapsedTime_sec),1),\r\n    Min_Elapsed_Time_sec = bin(min(elapsedTime_sec),1),\r\n    Variability_sec=bin((max(elapsedTime_sec)-min(elapsedTime_sec)),1),\r\n    SampleQID = any(RequestId_s),\r\n    SampleSessionID = any(Session_ID)\r\n    by Command\r\n| order by Max_Elapsed_Time_sec\r\n\r\n\r\n",
+              "query": "SynapseSqlPoolExecRequests\r\n    | where StatementType =='CreateStatistics'\r\n    | where _ResourceId has '{DatabaseName}'\r\n| summarize  \r\n        Root_Query_Id=max(RootQueryId),   \r\n        Start_Time=max(StartTime),\r\n        End_Time=max(EndTime), \r\n        Command=max(Command), \r\n        Last_Status=min(Status),\r\n        Statement_Type=max(StatementType)\r\n    by RequestId\r\n| where Command has 'CREATE STATISTICS _wa_sys'\r\n| where Command has '{QueryTextSnippet}' and RequestId has '{RequestIdSearch}'\r\n//| extend elapsedTime_sec = iif(End_Time > ago(365d),(End_Time - Submit_Time)/1s,real(null)) \r\n//| extend CompileTime_sec = (End_Compile_Time - Submit_Time)/1s\r\n//| order by elapsedTime_sec\r\n//| summarize \r\n //   Executions = count(),\r\n //   Max_Elapsed_Time_sec = bin(max(elapsedTime_sec),1),\r\n //   Min_Elapsed_Time_sec = bin(min(elapsedTime_sec),1),\r\n //   Variability_sec=bin((max(elapsedTime_sec)-min(elapsedTime_sec)),1),\r\n //   SampleQID = any(RequestId),\r\n   // SampleSessionID = any(Session_ID)\r\n  //  by Command\r\n//| order by Max_Elapsed_Time_sec\r\n\r\n\r\n",
               "size": 0,
-              "title": "Matching Queries",
+              "title": "Matching Autostats Queries",
+              "noDataMessageStyle": 4,
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "exportedParameters": [
                 {
-                  "fieldName": "SampleQID",
-                  "parameterName": "SampleQID"
+                  "fieldName": "RequestId",
+                  "parameterName": "RequestId",
+                  "parameterType": 1
                 },
                 {
-                  "fieldName": "SampleSessionID",
-                  "parameterName": "Samp",
+                  "fieldName": "Root_Query_Id",
+                  "parameterName": "RootQueryId",
                   "parameterType": 1
                 }
               ],
@@ -2440,157 +2565,11 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "AzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s !in ('Batch','Execute')\r\n| where RequestId_s == '{SampleQID}'\r\n| summarize \r\n    Session_ID=max(SessionId_s), \r\n    Request_ID=max(RequestId_s),  \r\n    Submit_Time=min(SubmitTime_t), \r\n    Start_Time=max(StartTime_t),\r\n    End_Compile_Time=max(EndCompileTime_t), \r\n    End_Time=max(EndTime_t), \r\n    Command=max(Command_s), \r\n    Last_Status=min(Status_s),\r\n    Statement_Type=max(StatementType_s),\r\n    Resource_class=max(ResourceClass_s) \r\n    by RequestId_s\r\n| extend elapsedTime_sec = iif(End_Time > ago(365d),(End_Time - Submit_Time)/1s,real(null)) \r\n| extend CompileTime_sec = (End_Compile_Time - Submit_Time)/1s\r\n| join kind=inner\r\n    (AzureDiagnostics \r\n    | where Category  == 'ExecRequests'\r\n    | where Resource  == '{DatabaseName}'\r\n    | where StatementType_s !in ('Batch','Execute')\r\n    | summarize \r\n        Session_ID=max(SessionId_s), \r\n        Request_ID=max(RequestId_s),  \r\n        Submit_Time=min(SubmitTime_t), \r\n        Start_Time=max(StartTime_t),\r\n        End_Compile_Time=max(EndCompileTime_t), \r\n        End_Time=max(EndTime_t), \r\n        Command=max(Command_s), \r\n        Last_Status=min(Status_s),\r\n        Statement_Type=max(StatementType_s),\r\n        Resource_class=max(ResourceClass_s) \r\n        by RequestId_s\r\n    | extend elapsedTime_sec = (End_Time - Submit_Time)/1s\r\n    | extend elapsedTime_sec = iif(End_Time > ago(365d),(End_Time - Submit_Time)/1s,real(null)) \r\n    | extend CompileTime_sec = (End_Compile_Time - Submit_Time)/1s\r\n    )\r\non Command \r\n| project Request_ID1,Session_ID1,Submit_Time1,Start_Time1,End_Compile_Time1,End_Time1,Last_Status1,Statement_Type1,elapsedTime_sec1,CompileTime_sec1\r\n",
-              "size": 0,
-              "title": "All Executions of Selected Query",
-              "noDataMessage": "Select a query above to see individual executions",
-              "timeContext": {
-                "durationMs": 14400000
-              },
-              "timeContextFromParameter": "TimeRange",
-              "exportedParameters": [
-                {
-                  "fieldName": "Request_ID1",
-                  "parameterName": "RequestId"
-                },
-                {
-                  "fieldName": "End_Time1",
-                  "parameterName": "StatEndTime",
-                  "parameterType": 1
-                },
-                {
-                  "fieldName": "Submit_Time1",
-                  "parameterName": "StatSubmitTime",
-                  "parameterType": 1
-                },
-                {
-                  "fieldName": "Session_ID1",
-                  "parameterName": "SessionId",
-                  "parameterType": 1
-                }
-              ],
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "{LogAnalyticsWorkspace}"
-              ],
-              "gridSettings": {
-                "sortBy": [
-                  {
-                    "itemKey": "End_Time1",
-                    "sortOrder": 1
-                  }
-                ]
-              },
-              "sortBy": [
-                {
-                  "itemKey": "End_Time1",
-                  "sortOrder": 1
-                }
-              ]
-            },
-            "name": "query - 0 - Copy - Copy"
-          },
-          {
-            "type": 3,
-            "content": {
-              "version": "KqlItem/1.0",
-              "query": "        AzureDiagnostics \r\n        | where Category  == 'ExecRequests'\r\n        | where Resource  == '{DatabaseName}'\r\n        | where StatementType_s !in ('Batch','Execute')\r\n        | where SessionId_s == '{SessionId}'\r\n        | summarize \r\n            Session_ID=max(SessionId_s), \r\n            Request_ID=max(RequestId_s),  \r\n            Submit_Time=min(SubmitTime_t), \r\n            Start_Time=max(StartTime_t),\r\n            End_Compile_Time=max(EndCompileTime_t), \r\n            End_Time=max(EndTime_t), \r\n            Command=max(Command_s), \r\n            Last_Status=min(Status_s),\r\n            Statement_Type=max(StatementType_s),\r\n            Resource_class=max(ResourceClass_s) \r\n            by RequestId_s\r\n| project Session_ID,Request_ID,Submit_Time,End_Compile_Time,Start_Time,End_Time,Last_Status,Statement_Type,Command\r\n\r\n\r\n",
-              "size": 0,
-              "title": "All Statements in Stats Statement Session",
-              "noDataMessage": "Select a query above to see individual executions",
-              "timeContext": {
-                "durationMs": 14400000
-              },
-              "timeContextFromParameter": "TimeRange",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "{LogAnalyticsWorkspace}"
-              ],
-              "gridSettings": {
-                "formatters": [
-                  {
-                    "columnMatch": "Command",
-                    "formatter": 0,
-                    "formatOptions": {
-                      "customColumnWidthSetting": "150ch"
-                    }
-                  }
-                ],
-                "sortBy": [
-                  {
-                    "itemKey": "Command",
-                    "sortOrder": 1
-                  }
-                ]
-              },
-              "sortBy": [
-                {
-                  "itemKey": "Command",
-                  "sortOrder": 1
-                }
-              ]
-            },
-            "name": "query - 0 - Copy - Copy - Copy - Copy"
-          },
-          {
-            "type": 9,
-            "content": {
-              "version": "KqlParameterItem/1.0",
-              "crossComponentResources": [
-                "{LogAnalyticsWorkspace}"
-              ],
-              "parameters": [
-                {
-                  "id": "4e005821-785a-4246-aae8-de00987cba18",
-                  "version": "KqlParameterItem/1.0",
-                  "name": "Session_Submit_Time",
-                  "type": 1,
-                  "query": "AzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s !in ('Batch','Execute')\r\n| where SessionId_s == '{SessionId}'\r\n| summarize \r\n    Session_Submit_Time=min(SubmitTime_t) \r\n    by SessionId_s\r\n| project Session_Submit_Time\r\n\r\n\r\n",
-                  "crossComponentResources": [
-                    "{LogAnalyticsWorkspace}"
-                  ],
-                  "isHiddenWhenLocked": true,
-                  "timeContext": {
-                    "durationMs": 259200000
-                  },
-                  "timeContextFromParameter": "TimeRange",
-                  "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces"
-                },
-                {
-                  "id": "b046db56-e6b3-4f3d-afb3-9687240c21f1",
-                  "version": "KqlParameterItem/1.0",
-                  "name": "Session_End_Time",
-                  "type": 1,
-                  "query": "AzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s !in ('Batch','Execute')\r\n| where SessionId_s == '{SessionId}'\r\n| summarize \r\n    Session_End_Time=max(EndTime_t) \r\n    by SessionId_s\r\n| project Session_End_Time",
-                  "crossComponentResources": [
-                    "{LogAnalyticsWorkspace}"
-                  ],
-                  "isHiddenWhenLocked": true,
-                  "timeContext": {
-                    "durationMs": 259200000
-                  },
-                  "timeContextFromParameter": "TimeRange",
-                  "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces"
-                }
-              ],
-              "style": "pills",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces"
-            },
-            "name": "parameters - 7"
-          },
-          {
-            "type": 3,
-            "content": {
-              "version": "KqlItem/1.0",
-              "query": "AzureDiagnostics \r\n| where Category  == 'ExecRequests'\r\n| where Resource  == '{DatabaseName}'\r\n| where StatementType_s !in ('Batch','Execute')\r\n| where SubmitTime_t < datetime('{Session_Submit_Time}') and EndCompileTime_t > datetime('{Session_End_Time}') or RequestId_s == '{RequestId}'\r\n| summarize by RequestId_s\r\n| join kind=inner\r\n    (\r\n        AzureDiagnostics \r\n        | where Category  == 'ExecRequests'\r\n        | where Resource  == '{DatabaseName}'\r\n        | where StatementType_s !in ('Batch','Execute')\r\n        | summarize \r\n            Session_ID=max(SessionId_s), \r\n            Request_ID=max(RequestId_s),  \r\n            Submit_Time=min(SubmitTime_t), \r\n            Start_Time=max(StartTime_t),\r\n            End_Compile_Time=max(EndCompileTime_t), \r\n            End_Time=max(EndTime_t), \r\n            Command=max(Command_s), \r\n            Last_Status=min(Status_s),\r\n            Statement_Type=max(StatementType_s),\r\n            Resource_class=max(ResourceClass_s) \r\n            by RequestId_s\r\n    ) on RequestId_s\r\n| order by End_Compile_Time\r\n| project Session_ID,Request_ID,Submit_Time,End_Compile_Time,Start_Time,End_Time,Last_Status,Statement_Type,Command\r\n\r\n",
-              "size": 0,
-              "title": "Query Executions that could have triggered Stats Statement based on Time of total session",
-              "noDataMessage": "Select a query above to see individual executions",
+              "query": "SynapseSqlPoolExecRequests\r\n    | where StatementType !='CreateStatistics'\r\n    | where _ResourceId has '{DatabaseName}'\r\n    | where RequestId == '{RootQueryId}'\r\n    | summarize   \r\n        Start_Time=max(StartTime),\r\n        End_Compile_Time=max(EndCompileTime), \r\n        End_Time=max(EndTime), \r\n        Command=max(Command), \r\n        Last_Status=min(Status),\r\n        Statement_Type=max(StatementType),\r\n        Resource_class=max(ResourceClass) \r\n    by RequestId",
+              "size": 3,
+              "title": "Statement that Triggered Selected Autostat",
+              "noDataMessage": "Select an autostats query above to see what query triggered it",
+              "noDataMessageStyle": 4,
               "timeContext": {
                 "durationMs": 0
               },
@@ -2625,15 +2604,184 @@
               ]
             },
             "name": "query - 0 - Copy - Copy - Copy - Copy"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "SynapseSqlPoolExecRequests\r\n    | where StatementType =='CreateStatistics'\r\n    | where _ResourceId has '{DatabaseName}'\r\n| summarize  \r\n        Root_Query_Id=max(RootQueryId),   \r\n        Start_Time=max(StartTime),\r\n        End_Time=max(EndTime), \r\n        Command=max(Command), \r\n        Last_Status=min(Status),\r\n        Statement_Type=max(StatementType)\r\n    by RequestId\r\n| where Command has 'CREATE STATISTICS _wa_sys'\r\n| where Root_Query_Id == '{RootQueryId}'",
+              "size": 3,
+              "title": "All Stats Statements Triggered by selected Query",
+              "noDataMessageStyle": 4,
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ]
+            },
+            "name": "query - 13"
           }
         ]
       },
-      "conditionalVisibility": {
-        "parameterName": "GroupSelection",
-        "comparison": "isEqualTo",
-        "value": "Statistics"
-      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "GroupSelection",
+          "comparison": "isEqualTo",
+          "value": "Statistics"
+        },
+        {
+          "parameterName": "DiagnosticsState",
+          "comparison": "isEqualTo",
+          "value": "enabled"
+        }
+      ],
       "name": "statistics"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<svg width=\"400\" viewBox=\"0 0 482 271\" class=\"ext-vm-onboarding-sample-image-svg\" role=\"presentation\" focusable=\"false\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\"><g><path fill=\"#ABABAB\" d=\"M399 249H93a1 1 0 1 1 0-2h306a1 1 0 1 1 0 2z\"></path><path d=\"M301.333 220.333h-47.526c-2.649 0-6.171-.622-6.171-6V88.5a1 1 0 1 1 2 0v125.833c0 2.953 1.091 4 4.171 4h47.526a1 1 0 1 1 0 2zm-73.17 0h-47.526a1 1 0 1 1 0-2h47.526c3.08 0 4.171-1.047 4.171-4V88.5a1 1 0 1 1 2 0v125.833c-.001 5.378-3.522 6-6.171 6z\" class=\"msportalfx-svg-c04\"></path><path d=\"M276.777 186.134H350v62.023h-73.223z\" class=\"msportalfx-svg-c01\"></path><path d=\"M350 249.156h-73.224a1 1 0 0 1-1-1v-62.022a1 1 0 0 1 1-1H350a1 1 0 0 1 1 1v62.022a1 1 0 0 1-1 1zm-72.224-2H349v-60.022h-71.224v60.022z\" class=\"msportalfx-svg-c04\"></path><path d=\"M128.777 186.134H202v62.023h-73.223z\" class=\"msportalfx-svg-c01\"></path><path d=\"M202 249.156h-73.224a1 1 0 0 1-1-1v-62.022a1 1 0 0 1 1-1H202a1 1 0 0 1 1 1v62.022a1 1 0 0 1-1 1zm-72.224-2H201v-60.022h-71.224v60.022z\" class=\"msportalfx-svg-c04\"></path><path d=\"M180.941 214.203l-10.817 12.98-17.547-28.124L142 216.366V238h47.594z\" class=\"msportalfx-svg-c15\"></path><path d=\"M188.685 238.513l-7.762-21.345-10.474 12.567-17.359-27.821-9.31 15.234-2.56-1.564 11.843-19.379 17.736 28.425 11.16-13.392 9.545 26.249z\" class=\"msportalfx-svg-c19\"></path><path fill=\"#ABABAB\" d=\"M409 249h-3a1 1 0 1 1 0-2h3a1 1 0 1 1 0 2z\"></path><path d=\"M322.667 113l4 4-4 4-4-4zm0 10a6 6 0 0 0-6-6m12 0a6 6 0 0 0-6 6m-6-6a6 6 0 0 0 6-6m0 0a6 6 0 0 0 6 6m.333 0h3m-18 0h3m6 6v3m0-15v-3\" fill=\"none\" stroke=\"#A0A1A2\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path><g stroke=\"#59B4D9\"><path stroke-miterlimit=\"10\" d=\"M159.667 98l2 2-2 2-2-2z\" class=\"msportalfx-svg-c01\"></path><path fill=\"none\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M159.667 103a3 3 0 0 0-3-3m6 0a3 3 0 0 0-3 3m-3-3a3 3 0 0 0 3-3M155 100h2m6 0h2m-5 3v2m0-10v2m-.333 0a3 3 0 0 0 3 3\"></path></g><path d=\"M201.667 27l2 2-2 2-2-2zm0 5a3 3 0 0 0-3-3m6 0a3 3 0 0 0-3 3m-3-3a3 3 0 0 0 3-3M197 29h2m6 0h2m-5 3v2m0-10v2m-.333 0a3 3 0 0 0 3 3m129 23l2 2-2 2-2-2zm0 5a3 3 0 0 0-3-3m6 0a3 3 0 0 0-3 3m-3-3a3 3 0 0 0 3-3M329 54h2m6 0h2m-5 3v2m0-10v2m-.333 0a3 3 0 0 0 3 3\" fill=\"none\" stroke=\"#A0A1A2\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path><circle cx=\"150.667\" cy=\"128\" r=\"2\" class=\"msportalfx-svg-c03\"></circle><circle cx=\"264.667\" cy=\"136\" r=\"2\" class=\"msportalfx-svg-c03\"></circle><circle cx=\"257.667\" cy=\"19\" r=\"2\" class=\"msportalfx-svg-c03\"></circle><circle cx=\"153.667\" cy=\"35\" r=\"2\" class=\"msportalfx-svg-c03\"></circle><path d=\"M324.667 73a2 2 0 1 0 .001-3.999 2 2 0 0 0-.001 3.999zm-117 72a2 2 0 1 0 .001-3.999 2 2 0 0 0-.001 3.999z\" class=\"msportalfx-svg-c15\"></path><g stroke=\"#59B4D9\"><path stroke-miterlimit=\"10\" d=\"M152.667 60.429L157.238 65l-4.571 4.571L148.095 65z\" class=\"msportalfx-svg-c01\"></path><path fill=\"none\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M152.667 71.857A6.857 6.857 0 0 0 145.81 65m13.714 0a6.857 6.857 0 0 0-6.857 6.857M145.81 65a6.857 6.857 0 0 0 6.857-6.857m0 0A6.857 6.857 0 0 0 159.524 65m.476 0h1m-16 0h1m7 7v1m0-15v-1\"></path></g><g stroke=\"#59B4D9\"><path stroke-miterlimit=\"10\" d=\"M307.667 29l2 2-2 2-2-2z\" class=\"msportalfx-svg-c01\"></path><path fill=\"none\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M307.667 34a3 3 0 0 0-3-3m6 0a3 3 0 0 0-3 3m-3-3a3 3 0 0 0 3-3M303 31h2m6 0h2m-5 3v2m0-10v2m-.333 0a3 3 0 0 0 3 3\"></path></g><path d=\"M311.597 102.771c0-8.961-7.194-16.222-16.078-16.222-.669 0-1.329.051-1.963.138a43.97 43.97 0 0 0 1.524-11.436C295.077 51.363 275.877 32 252.195 32c-18.921 0-34.965 12.355-40.66 29.509a28.744 28.744 0 0 0-9.573-1.652c-16.203 0-29.314 13.239-29.314 29.567 0 16.338 13.111 29.576 29.311 29.576 0 0 .029-.013.042-.013V119h94.821l-.016-.08c8.272-.653 14.791-7.623 14.791-16.149\" class=\"msportalfx-svg-c01\"></path><path d=\"M228.837 38.985c-.588.386-1.168.783-1.735 1.197v5.429h1.735v-6.626zm15.805-3.021c2.155 0 3.626-1.343 4.26-3.834a42.1 42.1 0 0 0-1.826.178c-.42 1.439-1.19 2.269-2.332 2.269-.844 0-1.53-.532-2.001-1.513-.555.126-1.106.263-1.653.41.765 1.622 2.008 2.49 3.552 2.49zm49.184 33.227c.285 0 .555-.031.816-.077a42.162 42.162 0 0 0-.223-1.387 2.056 2.056 0 0 1-.491.075c-1.633 0-2.695-1.959-2.695-5.41 0-1.556.222-2.777.589-3.687a44.243 44.243 0 0 0-.8-1.822c-.99 1.161-1.585 3.015-1.585 5.49.04 4.389 1.796 6.818 4.389 6.818zm16.618 38.788c-1.633 0-2.695-1.959-2.695-5.41 0-3.613 1.143-5.533 2.715-5.533.03 0 .054.012.084.013a16.386 16.386 0 0 0-.578-1.354c-2.376.341-4.018 2.74-4.018 6.855.04 4.305 1.732 6.719 4.244 6.81.205-.465.389-.94.551-1.426-.101.013-.195.045-.303.045zM249.522 119v-2.246h-1.531l-2.899 1.551.176.695h1.417l1.061-.572h.041V119zm47.408-6.904h-1.531l-2.899 1.553.347 1.367 2.307-1.245h.041V119h1.627l-.016-.08c.042-.003.082-.012.124-.016v-6.808zm-79.597.647c-2.561 0-4.418 2.217-4.597 6.257h1.806c.136-3.171 1.218-4.869 2.688-4.869 1.75 0 2.585 1.917 2.676 4.869h1.804c-.112-3.943-1.684-6.257-4.377-6.257zm-22.241 3.562l.347 1.368 2.307-1.245h.041v2.269a29.97 29.97 0 0 0 1.735.194v-4.137h-1.531l-2.899 1.551zm10.296-49.701h-.041l-2.307 1.245-.347-1.368 2.899-1.551h1.531V78.2h-1.735V66.604zm-24 30h-.041l-2.307 1.245-.347-1.368 2.899-1.551h1.531v13.27h-1.735V96.604zm5.074-30.312h-.041l-2.307 1.245-.347-1.367 2.899-1.553h1.531v13.271h-1.735V66.292zm89.337-15.693h-.041l-2.307 1.245-.347-1.367 2.899-1.552h1.531v13.271h-1.735V50.599zm-18.544-7.286h-.041l-2.307 1.245-.347-1.367 2.899-1.553h1.531V54.91h-1.735V43.313zm-16.276 38.636h-.041l-2.307 1.246-.347-1.368 2.899-1.552h1.531v13.271h-1.735V81.949zm16-12h-.041l-2.307 1.246-.347-1.368 2.899-1.552h1.531v13.271h-1.735V69.949zm-26.192 32.479h-.041l-2.307 1.245-.347-1.368 2.899-1.551h1.531v13.27h-1.735v-11.596zm28.936.032c0 4.513-1.674 7.003-4.614 7.003-2.593 0-4.349-2.43-4.39-6.818 0-4.451 1.919-6.901 4.614-6.901 2.797-.001 4.39 2.49 4.39 6.716zm-7.207.204c0 3.451 1.062 5.41 2.695 5.41 1.837 0 2.715-2.144 2.715-5.532 0-3.267-.837-5.411-2.695-5.411-1.572 0-2.715 1.92-2.715 5.533zm27.74 2.297c0 4.512-1.674 7.003-4.614 7.003-2.593 0-4.349-2.43-4.39-6.819 0-4.451 1.919-6.9 4.614-6.9 2.798-.001 4.39 2.489 4.39 6.716zm-7.207.204c0 3.45 1.062 5.411 2.695 5.411 1.837 0 2.715-2.145 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.572 0-2.715 1.919-2.715 5.532zm-63.864-6.468c0 4.512-1.674 7.003-4.614 7.003-2.593 0-4.349-2.43-4.39-6.819 0-4.451 1.919-6.9 4.614-6.9 2.797-.001 4.39 2.49 4.39 6.716zm-7.207.204c0 3.45 1.062 5.411 2.695 5.411 1.837 0 2.715-2.145 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.572 0-2.715 1.919-2.715 5.532zm78.338-21.172c0 4.512-1.674 7.002-4.614 7.002-2.593 0-4.349-2.43-4.39-6.818 0-4.451 1.919-6.9 4.614-6.9 2.798-.001 4.39 2.489 4.39 6.716zm-7.207.203c0 3.451 1.062 5.411 2.695 5.411 1.837 0 2.715-2.144 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.572-.001-2.715 1.918-2.715 5.532zm23.848 14.432c0 4.513-1.674 7.003-4.614 7.003-2.593 0-4.349-2.43-4.39-6.818 0-4.451 1.919-6.901 4.614-6.901 2.797-.001 4.39 2.491 4.39 6.716zm-7.207.204c0 3.451 1.062 5.41 2.695 5.41 1.837 0 2.715-2.144 2.715-5.532 0-3.267-.837-5.411-2.695-5.411-1.572 0-2.715 1.92-2.715 5.533zm-60.061-7.927c0 4.512-1.674 7.002-4.614 7.002-2.593 0-4.349-2.43-4.39-6.818 0-4.451 1.919-6.9 4.614-6.9 2.798-.001 4.39 2.489 4.39 6.716zm-7.207.203c0 3.451 1.062 5.411 2.695 5.411 1.837 0 2.715-2.144 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.572 0-2.715 1.918-2.715 5.532zm-26.441 5.81c0 4.512-1.674 7.002-4.614 7.002-2.593 0-4.349-2.43-4.39-6.818 0-4.451 1.919-6.9 4.614-6.9 2.797 0 4.39 2.49 4.39 6.716zm-7.208.203c0 3.451 1.062 5.411 2.695 5.411 1.837 0 2.715-2.144 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.571 0-2.715 1.919-2.715 5.532zm39.883-27.255c0 4.512-1.674 7.002-4.614 7.002-2.593 0-4.349-2.43-4.39-6.818 0-4.451 1.919-6.9 4.614-6.9 2.797-.001 4.39 2.489 4.39 6.716zm-7.207.203c0 3.451 1.062 5.411 2.695 5.411 1.837 0 2.715-2.144 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.572-.001-2.715 1.918-2.715 5.532zm23.286-5.696c0 4.512-1.674 7.003-4.614 7.003-2.593 0-4.349-2.43-4.39-6.819 0-4.451 1.919-6.9 4.614-6.9 2.797 0 4.39 2.49 4.39 6.716zm-7.207.204c0 3.45 1.062 5.411 2.695 5.411 1.837 0 2.715-2.145 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.572 0-2.715 1.919-2.715 5.532z\" class=\"msportalfx-svg-c15\"></path><path d=\"M296.821 120H201v-.015c-16.272-.513-29.352-14.024-29.352-30.562 0-16.854 13.599-30.566 30.313-30.566 3.021 0 6.027.467 8.95 1.39C217.17 42.711 233.635 31 252.194 31c24.195 0 43.882 19.851 43.886 44.25 0 3.447-.407 6.91-1.209 10.313.218-.01.434-.015.648-.015 9.417 0 17.078 7.726 17.078 17.223 0 8.54-6.329 15.809-14.602 17.021l-1.174.208zM203 118h93.223l.504-.077c7.777-.614 13.87-7.27 13.87-15.151 0-8.394-6.764-15.223-15.078-15.223-.59 0-1.205.043-1.827.129l-1.493.204.391-1.455a43.047 43.047 0 0 0 1.49-11.177C294.077 51.953 275.287 33 252.194 33c-18.028 0-33.987 11.583-39.711 28.824l-.321.966-.96-.338a27.758 27.758 0 0 0-9.241-1.595c-15.612 0-28.313 12.814-28.313 28.566 0 15.69 12.593 28.468 28.114 28.575l1.238-.012V118z\" class=\"msportalfx-svg-c04\"></path><path d=\"M313.564 239.159c2.37 0 4.339-1.836 4.764-3.971h-9.532c.427 2.135 2.393 3.971 4.768 3.971zm17.121-10.081c-2.022-1.032-3.055-5.128-3.055-12.219 0-9.071-1.075-20.263-14.255-20.263s-14.255 11.191-14.255 20.263c0 7.091-1.018 11.201-3.055 12.219-1.288.644-1.389 4.073 2.036 4.073h30.547c3.565 0 3.294-3.431 2.037-4.073z\" class=\"msportalfx-svg-c19\"></path><path d=\"M312 196.644c-11.876.762-12.88 11.471-12.88 20.216 0 7.091-1.018 11.2-3.055 12.219-1.288.644-1.389 4.073 2.036 4.073H312v-36.508z\" class=\"msportalfx-svg-c15\"></path></g></svg>"
+                  },
+                  "customWidth": "60",
+                  "showPin": false,
+                  "name": "Image"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<span style=\"color: #000000; font-family: Babas; font-size: 2em;\">Enable SQL Auditing to get additional visibility into user activity against your SQL Pool</span>\r\n\r\nThis section provides additional monitoring coverage that is based on SQL Audit logs.</br>\r\nIf you have not activated SQL Auditing for your dedeciated SQL Pool, you must enable them to go to the same Log Analytics workspace as the rest of your diagnostic settings for it to show up here. [Learn more](https://docs.microsoft.com/en-us/azure/azure-sql/database/auditing-overview)</div>\r\n"
+                  },
+                  "customWidth": "60",
+                  "name": "text - 2"
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "paragraph",
+                    "links": [
+                      {
+                        "id": "f4df7a1e-2124-4620-9005-f9b66e47f550",
+                        "cellValue": "{DatabaseResourceName}",
+                        "linkTarget": "Resource",
+                        "linkLabel": "Configure Logs for Auditing >",
+                        "subTarget": "auditing",
+                        "preText": "",
+                        "postText": "",
+                        "style": "primary"
+                      }
+                    ]
+                  },
+                  "customWidth": "70",
+                  "name": "links - 8"
+                }
+              ]
+            },
+            "customWidth": "90",
+            "name": "Onboarding Message - Not onboarded yet"
+          }
+        ]
+      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "GroupSelection",
+          "comparison": "isEqualTo",
+          "value": "QueryAudit"
+        },
+        {
+          "parameterName": "AuditingState",
+          "comparison": "isEqualTo",
+          "value": "disabled"
+        }
+      ],
+      "name": "AuditingDisabledGroup"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<svg width=\"400\" viewBox=\"0 0 482 271\" class=\"ext-vm-onboarding-sample-image-svg\" role=\"presentation\" focusable=\"false\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\"><g><path fill=\"#ABABAB\" d=\"M399 249H93a1 1 0 1 1 0-2h306a1 1 0 1 1 0 2z\"></path><path d=\"M301.333 220.333h-47.526c-2.649 0-6.171-.622-6.171-6V88.5a1 1 0 1 1 2 0v125.833c0 2.953 1.091 4 4.171 4h47.526a1 1 0 1 1 0 2zm-73.17 0h-47.526a1 1 0 1 1 0-2h47.526c3.08 0 4.171-1.047 4.171-4V88.5a1 1 0 1 1 2 0v125.833c-.001 5.378-3.522 6-6.171 6z\" class=\"msportalfx-svg-c04\"></path><path d=\"M276.777 186.134H350v62.023h-73.223z\" class=\"msportalfx-svg-c01\"></path><path d=\"M350 249.156h-73.224a1 1 0 0 1-1-1v-62.022a1 1 0 0 1 1-1H350a1 1 0 0 1 1 1v62.022a1 1 0 0 1-1 1zm-72.224-2H349v-60.022h-71.224v60.022z\" class=\"msportalfx-svg-c04\"></path><path d=\"M128.777 186.134H202v62.023h-73.223z\" class=\"msportalfx-svg-c01\"></path><path d=\"M202 249.156h-73.224a1 1 0 0 1-1-1v-62.022a1 1 0 0 1 1-1H202a1 1 0 0 1 1 1v62.022a1 1 0 0 1-1 1zm-72.224-2H201v-60.022h-71.224v60.022z\" class=\"msportalfx-svg-c04\"></path><path d=\"M180.941 214.203l-10.817 12.98-17.547-28.124L142 216.366V238h47.594z\" class=\"msportalfx-svg-c15\"></path><path d=\"M188.685 238.513l-7.762-21.345-10.474 12.567-17.359-27.821-9.31 15.234-2.56-1.564 11.843-19.379 17.736 28.425 11.16-13.392 9.545 26.249z\" class=\"msportalfx-svg-c19\"></path><path fill=\"#ABABAB\" d=\"M409 249h-3a1 1 0 1 1 0-2h3a1 1 0 1 1 0 2z\"></path><path d=\"M322.667 113l4 4-4 4-4-4zm0 10a6 6 0 0 0-6-6m12 0a6 6 0 0 0-6 6m-6-6a6 6 0 0 0 6-6m0 0a6 6 0 0 0 6 6m.333 0h3m-18 0h3m6 6v3m0-15v-3\" fill=\"none\" stroke=\"#A0A1A2\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path><g stroke=\"#59B4D9\"><path stroke-miterlimit=\"10\" d=\"M159.667 98l2 2-2 2-2-2z\" class=\"msportalfx-svg-c01\"></path><path fill=\"none\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M159.667 103a3 3 0 0 0-3-3m6 0a3 3 0 0 0-3 3m-3-3a3 3 0 0 0 3-3M155 100h2m6 0h2m-5 3v2m0-10v2m-.333 0a3 3 0 0 0 3 3\"></path></g><path d=\"M201.667 27l2 2-2 2-2-2zm0 5a3 3 0 0 0-3-3m6 0a3 3 0 0 0-3 3m-3-3a3 3 0 0 0 3-3M197 29h2m6 0h2m-5 3v2m0-10v2m-.333 0a3 3 0 0 0 3 3m129 23l2 2-2 2-2-2zm0 5a3 3 0 0 0-3-3m6 0a3 3 0 0 0-3 3m-3-3a3 3 0 0 0 3-3M329 54h2m6 0h2m-5 3v2m0-10v2m-.333 0a3 3 0 0 0 3 3\" fill=\"none\" stroke=\"#A0A1A2\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path><circle cx=\"150.667\" cy=\"128\" r=\"2\" class=\"msportalfx-svg-c03\"></circle><circle cx=\"264.667\" cy=\"136\" r=\"2\" class=\"msportalfx-svg-c03\"></circle><circle cx=\"257.667\" cy=\"19\" r=\"2\" class=\"msportalfx-svg-c03\"></circle><circle cx=\"153.667\" cy=\"35\" r=\"2\" class=\"msportalfx-svg-c03\"></circle><path d=\"M324.667 73a2 2 0 1 0 .001-3.999 2 2 0 0 0-.001 3.999zm-117 72a2 2 0 1 0 .001-3.999 2 2 0 0 0-.001 3.999z\" class=\"msportalfx-svg-c15\"></path><g stroke=\"#59B4D9\"><path stroke-miterlimit=\"10\" d=\"M152.667 60.429L157.238 65l-4.571 4.571L148.095 65z\" class=\"msportalfx-svg-c01\"></path><path fill=\"none\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M152.667 71.857A6.857 6.857 0 0 0 145.81 65m13.714 0a6.857 6.857 0 0 0-6.857 6.857M145.81 65a6.857 6.857 0 0 0 6.857-6.857m0 0A6.857 6.857 0 0 0 159.524 65m.476 0h1m-16 0h1m7 7v1m0-15v-1\"></path></g><g stroke=\"#59B4D9\"><path stroke-miterlimit=\"10\" d=\"M307.667 29l2 2-2 2-2-2z\" class=\"msportalfx-svg-c01\"></path><path fill=\"none\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M307.667 34a3 3 0 0 0-3-3m6 0a3 3 0 0 0-3 3m-3-3a3 3 0 0 0 3-3M303 31h2m6 0h2m-5 3v2m0-10v2m-.333 0a3 3 0 0 0 3 3\"></path></g><path d=\"M311.597 102.771c0-8.961-7.194-16.222-16.078-16.222-.669 0-1.329.051-1.963.138a43.97 43.97 0 0 0 1.524-11.436C295.077 51.363 275.877 32 252.195 32c-18.921 0-34.965 12.355-40.66 29.509a28.744 28.744 0 0 0-9.573-1.652c-16.203 0-29.314 13.239-29.314 29.567 0 16.338 13.111 29.576 29.311 29.576 0 0 .029-.013.042-.013V119h94.821l-.016-.08c8.272-.653 14.791-7.623 14.791-16.149\" class=\"msportalfx-svg-c01\"></path><path d=\"M228.837 38.985c-.588.386-1.168.783-1.735 1.197v5.429h1.735v-6.626zm15.805-3.021c2.155 0 3.626-1.343 4.26-3.834a42.1 42.1 0 0 0-1.826.178c-.42 1.439-1.19 2.269-2.332 2.269-.844 0-1.53-.532-2.001-1.513-.555.126-1.106.263-1.653.41.765 1.622 2.008 2.49 3.552 2.49zm49.184 33.227c.285 0 .555-.031.816-.077a42.162 42.162 0 0 0-.223-1.387 2.056 2.056 0 0 1-.491.075c-1.633 0-2.695-1.959-2.695-5.41 0-1.556.222-2.777.589-3.687a44.243 44.243 0 0 0-.8-1.822c-.99 1.161-1.585 3.015-1.585 5.49.04 4.389 1.796 6.818 4.389 6.818zm16.618 38.788c-1.633 0-2.695-1.959-2.695-5.41 0-3.613 1.143-5.533 2.715-5.533.03 0 .054.012.084.013a16.386 16.386 0 0 0-.578-1.354c-2.376.341-4.018 2.74-4.018 6.855.04 4.305 1.732 6.719 4.244 6.81.205-.465.389-.94.551-1.426-.101.013-.195.045-.303.045zM249.522 119v-2.246h-1.531l-2.899 1.551.176.695h1.417l1.061-.572h.041V119zm47.408-6.904h-1.531l-2.899 1.553.347 1.367 2.307-1.245h.041V119h1.627l-.016-.08c.042-.003.082-.012.124-.016v-6.808zm-79.597.647c-2.561 0-4.418 2.217-4.597 6.257h1.806c.136-3.171 1.218-4.869 2.688-4.869 1.75 0 2.585 1.917 2.676 4.869h1.804c-.112-3.943-1.684-6.257-4.377-6.257zm-22.241 3.562l.347 1.368 2.307-1.245h.041v2.269a29.97 29.97 0 0 0 1.735.194v-4.137h-1.531l-2.899 1.551zm10.296-49.701h-.041l-2.307 1.245-.347-1.368 2.899-1.551h1.531V78.2h-1.735V66.604zm-24 30h-.041l-2.307 1.245-.347-1.368 2.899-1.551h1.531v13.27h-1.735V96.604zm5.074-30.312h-.041l-2.307 1.245-.347-1.367 2.899-1.553h1.531v13.271h-1.735V66.292zm89.337-15.693h-.041l-2.307 1.245-.347-1.367 2.899-1.552h1.531v13.271h-1.735V50.599zm-18.544-7.286h-.041l-2.307 1.245-.347-1.367 2.899-1.553h1.531V54.91h-1.735V43.313zm-16.276 38.636h-.041l-2.307 1.246-.347-1.368 2.899-1.552h1.531v13.271h-1.735V81.949zm16-12h-.041l-2.307 1.246-.347-1.368 2.899-1.552h1.531v13.271h-1.735V69.949zm-26.192 32.479h-.041l-2.307 1.245-.347-1.368 2.899-1.551h1.531v13.27h-1.735v-11.596zm28.936.032c0 4.513-1.674 7.003-4.614 7.003-2.593 0-4.349-2.43-4.39-6.818 0-4.451 1.919-6.901 4.614-6.901 2.797-.001 4.39 2.49 4.39 6.716zm-7.207.204c0 3.451 1.062 5.41 2.695 5.41 1.837 0 2.715-2.144 2.715-5.532 0-3.267-.837-5.411-2.695-5.411-1.572 0-2.715 1.92-2.715 5.533zm27.74 2.297c0 4.512-1.674 7.003-4.614 7.003-2.593 0-4.349-2.43-4.39-6.819 0-4.451 1.919-6.9 4.614-6.9 2.798-.001 4.39 2.489 4.39 6.716zm-7.207.204c0 3.45 1.062 5.411 2.695 5.411 1.837 0 2.715-2.145 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.572 0-2.715 1.919-2.715 5.532zm-63.864-6.468c0 4.512-1.674 7.003-4.614 7.003-2.593 0-4.349-2.43-4.39-6.819 0-4.451 1.919-6.9 4.614-6.9 2.797-.001 4.39 2.49 4.39 6.716zm-7.207.204c0 3.45 1.062 5.411 2.695 5.411 1.837 0 2.715-2.145 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.572 0-2.715 1.919-2.715 5.532zm78.338-21.172c0 4.512-1.674 7.002-4.614 7.002-2.593 0-4.349-2.43-4.39-6.818 0-4.451 1.919-6.9 4.614-6.9 2.798-.001 4.39 2.489 4.39 6.716zm-7.207.203c0 3.451 1.062 5.411 2.695 5.411 1.837 0 2.715-2.144 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.572-.001-2.715 1.918-2.715 5.532zm23.848 14.432c0 4.513-1.674 7.003-4.614 7.003-2.593 0-4.349-2.43-4.39-6.818 0-4.451 1.919-6.901 4.614-6.901 2.797-.001 4.39 2.491 4.39 6.716zm-7.207.204c0 3.451 1.062 5.41 2.695 5.41 1.837 0 2.715-2.144 2.715-5.532 0-3.267-.837-5.411-2.695-5.411-1.572 0-2.715 1.92-2.715 5.533zm-60.061-7.927c0 4.512-1.674 7.002-4.614 7.002-2.593 0-4.349-2.43-4.39-6.818 0-4.451 1.919-6.9 4.614-6.9 2.798-.001 4.39 2.489 4.39 6.716zm-7.207.203c0 3.451 1.062 5.411 2.695 5.411 1.837 0 2.715-2.144 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.572 0-2.715 1.918-2.715 5.532zm-26.441 5.81c0 4.512-1.674 7.002-4.614 7.002-2.593 0-4.349-2.43-4.39-6.818 0-4.451 1.919-6.9 4.614-6.9 2.797 0 4.39 2.49 4.39 6.716zm-7.208.203c0 3.451 1.062 5.411 2.695 5.411 1.837 0 2.715-2.144 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.571 0-2.715 1.919-2.715 5.532zm39.883-27.255c0 4.512-1.674 7.002-4.614 7.002-2.593 0-4.349-2.43-4.39-6.818 0-4.451 1.919-6.9 4.614-6.9 2.797-.001 4.39 2.489 4.39 6.716zm-7.207.203c0 3.451 1.062 5.411 2.695 5.411 1.837 0 2.715-2.144 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.572-.001-2.715 1.918-2.715 5.532zm23.286-5.696c0 4.512-1.674 7.003-4.614 7.003-2.593 0-4.349-2.43-4.39-6.819 0-4.451 1.919-6.9 4.614-6.9 2.797 0 4.39 2.49 4.39 6.716zm-7.207.204c0 3.45 1.062 5.411 2.695 5.411 1.837 0 2.715-2.145 2.715-5.533 0-3.267-.837-5.41-2.695-5.41-1.572 0-2.715 1.919-2.715 5.532z\" class=\"msportalfx-svg-c15\"></path><path d=\"M296.821 120H201v-.015c-16.272-.513-29.352-14.024-29.352-30.562 0-16.854 13.599-30.566 30.313-30.566 3.021 0 6.027.467 8.95 1.39C217.17 42.711 233.635 31 252.194 31c24.195 0 43.882 19.851 43.886 44.25 0 3.447-.407 6.91-1.209 10.313.218-.01.434-.015.648-.015 9.417 0 17.078 7.726 17.078 17.223 0 8.54-6.329 15.809-14.602 17.021l-1.174.208zM203 118h93.223l.504-.077c7.777-.614 13.87-7.27 13.87-15.151 0-8.394-6.764-15.223-15.078-15.223-.59 0-1.205.043-1.827.129l-1.493.204.391-1.455a43.047 43.047 0 0 0 1.49-11.177C294.077 51.953 275.287 33 252.194 33c-18.028 0-33.987 11.583-39.711 28.824l-.321.966-.96-.338a27.758 27.758 0 0 0-9.241-1.595c-15.612 0-28.313 12.814-28.313 28.566 0 15.69 12.593 28.468 28.114 28.575l1.238-.012V118z\" class=\"msportalfx-svg-c04\"></path><path d=\"M313.564 239.159c2.37 0 4.339-1.836 4.764-3.971h-9.532c.427 2.135 2.393 3.971 4.768 3.971zm17.121-10.081c-2.022-1.032-3.055-5.128-3.055-12.219 0-9.071-1.075-20.263-14.255-20.263s-14.255 11.191-14.255 20.263c0 7.091-1.018 11.201-3.055 12.219-1.288.644-1.389 4.073 2.036 4.073h30.547c3.565 0 3.294-3.431 2.037-4.073z\" class=\"msportalfx-svg-c19\"></path><path d=\"M312 196.644c-11.876.762-12.88 11.471-12.88 20.216 0 7.091-1.018 11.2-3.055 12.219-1.288.644-1.389 4.073 2.036 4.073H312v-36.508z\" class=\"msportalfx-svg-c15\"></path></g></svg>"
+                  },
+                  "customWidth": "60",
+                  "showPin": false,
+                  "name": "Image"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<span style=\"color: #000000; font-family: Babas; font-size: 2em;\">Get more visibility into the usage and performance of your Azure Synapse Dedicated SQL Pool</span>\r\n\r\nThis section provides additional monitoring coverage that is based on diagnostic logs.</br>\r\n\r\nIf you have not activated monitoring in diagnostic settings, you must enable the **ExecRequests** and **RequestSteps** logs and send them to a Log Analytics workspace. You may choose to enable the **SQLSecurityAuditEvents** table at the same time to take full advantage of this monitoring workbook. [Learn more](https://docs.microsoft.com/en-us/azure/synapse-analytics/monitoring/how-to-monitor-using-azure-monitor#logs)</div>"
+                  },
+                  "customWidth": "60",
+                  "name": "text - 2"
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "paragraph",
+                    "links": [
+                      {
+                        "id": "f4df7a1e-2124-4620-9005-f9b66e47f550",
+                        "cellValue": "{DatabaseResourceName}",
+                        "linkTarget": "Resource",
+                        "linkLabel": "Configure Logs for Monitoring >",
+                        "subTarget": "diagnostics",
+                        "preText": "",
+                        "postText": "",
+                        "style": "primary"
+                      }
+                    ]
+                  },
+                  "customWidth": "70",
+                  "name": "links - 8"
+                }
+              ]
+            },
+            "customWidth": "90",
+            "name": "Onboarding Message - Not onboarded yet"
+          }
+        ]
+      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "GroupSelection",
+          "comparison": "isNotEqualTo",
+          "value": "QueryAudit"
+        },
+        {
+          "parameterName": "DiagnosticsState",
+          "comparison": "isEqualTo",
+          "value": "disabled"
+        }
+      ],
+      "name": "DiagnosticsDisabledGroup"
     }
   ],
   "fallbackResourceIds": [
