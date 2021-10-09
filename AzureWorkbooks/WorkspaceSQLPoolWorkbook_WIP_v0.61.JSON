@@ -16,7 +16,7 @@
             "type": 4,
             "isGlobal": true,
             "value": {
-              "durationMs": 86400000
+              "durationMs": 1209600000
             },
             "typeSettings": {
               "selectableValues": [
@@ -71,7 +71,7 @@
             "version": "KqlParameterItem/1.0",
             "name": "LogAnalyticsSubscription",
             "type": 6,
-            "value": "/subscriptions/9cd45dfd-d1ac-4c16-9363-150d2afcb462",
+            "value": null,
             "typeSettings": {
               "additionalResourceOptions": [],
               "includeAll": true,
@@ -90,7 +90,7 @@
             "crossComponentResources": [
               "{LogAnalyticsSubscription}"
             ],
-            "value": "/subscriptions/9cd45dfd-d1ac-4c16-9363-150d2afcb462/resourceGroups/SynapseWorkspaceRG1_nicksalc/providers/Microsoft.OperationalInsights/workspaces/SynapseLogAnalytics-nicksalc",
+            "value": null,
             "typeSettings": {
               "additionalResourceOptions": [],
               "showDefault": false
