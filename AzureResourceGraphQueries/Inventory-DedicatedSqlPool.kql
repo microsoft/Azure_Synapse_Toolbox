@@ -1,0 +1,20 @@
+Resources
+| where type == 'microsoft.sql/servers'
+| project name, id, resourceGroup, location, subscriptionId, tags
+| join kind=inner (Resources
+	| where type == 'microsoft.sql/servers/databases'
+	| where sku.tier == 'DataWarehouse'
+	| extend CurrentServiceObjective = properties.currentServiceObjectiveName
+	| extend RequestedServiceObjective = properties.requestedServiceObjectiveName
+	| extend IsSynapseWorkspaceAssociated = iff(kind contains 'analytics', true, false)
+	| parse CurrentServiceObjective with "DW" CurrentDWU "c"
+	| extend status = tostring(properties.status)
+	| parse id with ParentSqlServerId "/databases/" Discard) on $left.id == $right.ParentSqlServerId
+	| project-rename DatabaseName = name1, ServerName = name, ServerResourceId = id, DatabaseResourceId = id1, ServerTags = tags, DatabaseTags = tags1
+	| project-away managedBy, plan, resourceGroup1, subscriptionId1, type, tenantId, sku, identity, zones, Discard, ParentSqlServerId, kind, apiVersion, properties, extendedLocation
+| join kind=leftouter (ResourceContainers 
+	| where type == 'microsoft.resources/subscriptions' 
+	| project SubscriptionName = name, subscriptionId) on subscriptionId
+| project-away subscriptionId1
+| project-rename SubscriptionId = subscriptionId, ResourceGroup = resourceGroup, Location = location
+| project SubscriptionName, SubscriptionId, ResourceGroup, ServerName, ServerResourceId, ServerTags, DatabaseName, DatabaseResourceId, DatabaseTags, Location, CurrentDWU, CurrentServiceObjective, RequestedServiceObjective, IsSynapseWorkspaceAssociated
