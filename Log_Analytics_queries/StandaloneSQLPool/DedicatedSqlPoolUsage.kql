@@ -1,0 +1,21 @@
+// Intended to aid cost management of dedicated SQL pools
+// Set the UsageBucket to the level of granularity desired e.g. 1 hour, 4 hours, 1 day
+// Set the Lookback window to the duration of history to look back
+// Essentially this is a simple % of total usage bucketed by UsageBucket. If the values
+// are consistently low for PercentOfMaxDTU_Used the dedicated SQL pool may be a candidate
+// for scale down and/or for dynamic scaling by ETL/ELT orchestration.
+let UsageBucket = 1d;
+let Lookback = 14d;
+AzureMetrics
+| where TimeGenerated > ago(Lookback)
+| where MetricName == 'dwu_used'
+| summarize Max_DWU_Used = max(Maximum) by bin(TimeGenerated, UsageBucket), MetricName, Resource
+| join kind=inner (
+    AzureMetrics
+    | where TimeGenerated > ago(Lookback)
+    | where MetricName == 'dwu_limit'
+    | summarize DWU_Limit = max(Maximum) by bin(TimeGenerated, UsageBucket), MetricName, Resource)
+        on (($left.TimeGenerated == $right.TimeGenerated) and ($left.Resource == $right.Resource))
+| project-away MetricName, MetricName1, Resource1
+| extend PercentOfMaxDTU_Used = ((1.0 * Max_DWU_Used) / (1.0 * DWU_Limit)) * 100.0
+| project TimeGenerated, Resource, Max_DWU_Used, DWU_Limit, PercentOfMaxDTU_Used
