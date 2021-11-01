@@ -1,0 +1,15 @@
+Resources
+| where type == "microsoft.synapse/workspaces/bigdatapools"
+| project name, id, resourceGroup, location, subscriptionId, tags, NodeSizeFamily = properties.nodeSizeFamily, NodeSize = properties.nodeSize, SparkVersion = properties.sparkVersion, AutoPause = properties.autoPause.enabled, AutoScale = properties.autoScale.enabled, MinNodeCount = properties.autoScale.minNodeCount, MaxNodeCount = properties.autoScale.maxNodeCount
+| parse id with * "/workspaces/" AssociatedSynapseWorkspaceName "/bigDataPools/" Discard
+| join kind=leftouter (Resources 
+    | where type == "microsoft.synapse/workspaces"
+    | extend WorkspaceResourceId = id
+    | extend WorkspaceName = name
+    | project WorkspaceName, WorkspaceResourceId) on $left.AssociatedSynapseWorkspaceName == $right.WorkspaceName
+| join kind=leftouter (ResourceContainers 
+    | where type == 'microsoft.resources/subscriptions' 
+    | project SubscriptionName = name, subscriptionId) on subscriptionId
+| project-away subscriptionId1, Discard, AssociatedSynapseWorkspaceName
+| project-rename SparkPoolName = name, SparkPoolResourceId = id, ResourceGroup = resourceGroup, Location = location, SubscriptionId = subscriptionId, Tags = tags
+| project SparkPoolName, SparkPoolResourceId, ResourceGroup, Location, SubscriptionName, SubscriptionId, Tags, NodeSizeFamily, NodeSize, SparkVersion, AutoPause, AutoScale, MinNodeCount, MaxNodeCount, WorkspaceName, WorkspaceResourceId
