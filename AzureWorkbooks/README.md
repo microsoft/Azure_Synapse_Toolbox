@@ -16,7 +16,7 @@ Realize that there may still be some inaccurate data in some of the queries. If 
 # To configure additional components to be monitored: 
 
 ## Spark Pools
-Follow these instructions to configure diagnostic settings and download the workbook https://user-images.githubusercontent.com/14915318/126400447-5993f7e1-5f62-4161-8807-c6f8e195c920.png
+Follow these instructions to configure diagnostic settings and download the workbook https://docs.microsoft.com/en-us/azure/synapse-analytics/spark/apache-spark-azure-log-analytics
 
 ## Storage accounts
 When creating a workbook, search public templates for storage account and you will see storage account workbooks
