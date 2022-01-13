@@ -155,6 +155,14 @@
       "name": "parameters - 1"
     },
     {
+      "type": 1,
+      "content": {
+        "json": "All costs listed in this workbook are approximate based on $5/TB. The cost listed here has not yet been extensively validated.",
+        "style": "warning"
+      },
+      "name": "text - 4"
+    },
+    {
       "type": 11,
       "content": {
         "version": "LinkItem/1.0",
@@ -842,78 +850,6 @@
               "sortBy": []
             },
             "name": "Data Processed By Query",
-            "styleSettings": {
-              "showBorder": true
-            }
-          },
-          {
-            "type": 3,
-            "content": {
-              "version": "KqlItem/1.0",
-              "query": "//Queries by completion type\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| project BytesProcessed=Properties.dataProcessedBytes,tostring(Identity)\r\n| summarize TotalMBProcessed=sum(toint(BytesProcessed)/1024/1024),QueryCount=count(),MaxSingleQueryMBProcessed=max(toint(BytesProcessed)/1024/1024) by Identity\r\n| order by TotalMBProcessed\r\n",
-              "size": 0,
-              "title": "Data Processed By User",
-              "timeContext": {
-                "durationMs": 0
-              },
-              "timeContextFromParameter": "TimeRange",
-              "exportFieldName": "Identity",
-              "exportParameterName": "Identity",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "{LogAnalyticsWorkspace}"
-              ],
-              "visualization": "table",
-              "gridSettings": {
-                "formatters": [
-                  {
-                    "columnMatch": "TotalMBProcessed",
-                    "formatter": 3,
-                    "formatOptions": {
-                      "palette": "blue"
-                    }
-                  },
-                  {
-                    "columnMatch": "QueryCount",
-                    "formatter": 8,
-                    "formatOptions": {
-                      "min": 0,
-                      "palette": "turquoise"
-                    }
-                  },
-                  {
-                    "columnMatch": "MaxSingleQueryMBProcessed",
-                    "formatter": 8,
-                    "formatOptions": {
-                      "palette": "orange"
-                    }
-                  },
-                  {
-                    "columnMatch": "TotalBytesProcessed",
-                    "formatter": 3,
-                    "formatOptions": {
-                      "min": 0,
-                      "palette": "blue",
-                      "compositeBarSettings": {
-                        "labelText": "",
-                        "columnSettings": []
-                      },
-                      "customColumnWidthSetting": "866.007px"
-                    }
-                  },
-                  {
-                    "columnMatch": "MaxSingleQueryBytesProcessed",
-                    "formatter": 8,
-                    "formatOptions": {
-                      "min": 0,
-                      "palette": "orange"
-                    }
-                  }
-                ]
-              }
-            },
-            "name": "Data Processed By User - Copy",
             "styleSettings": {
               "showBorder": true
             }
