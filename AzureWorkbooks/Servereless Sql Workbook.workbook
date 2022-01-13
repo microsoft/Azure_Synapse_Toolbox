@@ -1,0 +1,926 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "value::all"
+        ],
+        "parameters": [
+          {
+            "id": "c4475a86-95ea-46b8-a5c0-3ee1c3f528bc",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "value": {
+              "durationMs": 43200000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ]
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          },
+          {
+            "id": "94b22c78-91c8-47e6-8833-70d458e199c3",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1",
+                "value::all"
+              ],
+              "includeAll": false,
+              "showDefault": false
+            },
+            "defaultValue": "value::all"
+          },
+          {
+            "id": "3dbc1029-1a17-4a4d-a133-2d47c1e7844e",
+            "version": "KqlParameterItem/1.0",
+            "name": "Synapse",
+            "type": 5,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Resources\r\n| where type == 'microsoft.synapse/workspaces'\r\n| project id\r\n",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1",
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "4d1459db-354e-4019-8e86-015d946ce892",
+            "version": "KqlParameterItem/1.0",
+            "name": "LogAnalyticsWorkspace",
+            "type": 5,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Resources\r\n| where type == 'microsoft.operationalinsights/workspaces'\r\n| project id\r\n",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1",
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "pills",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "parameters - 1"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "4ee15681-1a46-4207-ac59-efab22cd6d9b",
+            "cellValue": "GroupSelection",
+            "linkTarget": "parameter",
+            "linkLabel": "Summary",
+            "subTarget": "Summary",
+            "style": "link"
+          },
+          {
+            "id": "82d489b0-87d6-4875-a5de-c7eb2d1c8c4f",
+            "cellValue": "GroupSelection",
+            "linkTarget": "parameter",
+            "linkLabel": "Data Processed",
+            "subTarget": "DataProcessed",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "links - 4"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook9cfd0268-d682-40bb-870c-61e05013f973",
+              "version": "MetricsItem/2.0",
+              "size": 4,
+              "chartType": -1,
+              "resourceType": "microsoft.synapse/workspaces",
+              "metricScope": 0,
+              "resourceParameter": "Synapse",
+              "resourceIds": [
+                "{Synapse}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 43200000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.synapse/workspaces",
+                  "metric": "microsoft.synapse/workspaces-Builtin SQL Pool-BuiltinSqlPoolLoginAttempts",
+                  "aggregation": 1
+                }
+              ],
+              "title": "Login Attempts",
+              "gridFormatType": 1,
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Name",
+                  "formatter": 13
+                },
+                "leftContent": {
+                  "columnMatch": "Value",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "timeBrushParameterName": "TimeRange",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "33",
+            "name": "LoginAttemptsChart - Copy"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookdc90b0c5-4f40-4242-89b8-87eac7b9acaf",
+              "version": "MetricsItem/2.0",
+              "size": 4,
+              "chartType": -1,
+              "resourceType": "microsoft.synapse/workspaces",
+              "metricScope": 0,
+              "resourceParameter": "Synapse",
+              "resourceIds": [
+                "{Synapse}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 43200000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.synapse/workspaces",
+                  "metric": "microsoft.synapse/workspaces-Builtin SQL Pool-BuiltinSqlPoolRequestsEnded",
+                  "aggregation": 1,
+                  "columnName": "Requests Completed"
+                }
+              ],
+              "title": "Completed Requests",
+              "gridFormatType": 1,
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Name",
+                  "formatter": 13
+                },
+                "leftContent": {
+                  "columnMatch": "Value",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "timeBrushParameterName": "TimeRange",
+              "timeBrushExportOnlyWhenBrushed": true,
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "33",
+            "name": "CompletedRequestCountTile"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook1f0054e6-9715-47bb-a7fc-e92812c07403",
+              "version": "MetricsItem/2.0",
+              "size": 4,
+              "chartType": -1,
+              "resourceType": "microsoft.synapse/workspaces",
+              "metricScope": 0,
+              "resourceParameter": "Synapse",
+              "resourceIds": [
+                "{Synapse}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 43200000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.synapse/workspaces",
+                  "metric": "microsoft.synapse/workspaces-Builtin SQL Pool-BuiltinSqlPoolDataProcessedBytes",
+                  "aggregation": 1
+                }
+              ],
+              "title": "Data Processed",
+              "gridFormatType": 1,
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Name",
+                  "formatter": 13
+                },
+                "leftContent": {
+                  "columnMatch": "Value",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "timeBrushParameterName": "TimeRange",
+              "timeBrushExportOnlyWhenBrushed": true,
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "33",
+            "name": "DataProcessed - Copy"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookdc90b0c5-4f40-4242-89b8-87eac7b9acaf",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 1,
+              "resourceType": "microsoft.synapse/workspaces",
+              "metricScope": 0,
+              "resourceParameter": "Synapse",
+              "resourceIds": [
+                "{Synapse}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 43200000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.synapse/workspaces",
+                  "metric": "microsoft.synapse/workspaces-Builtin SQL Pool-BuiltinSqlPoolRequestsEnded",
+                  "aggregation": 1,
+                  "splitBy": null,
+                  "columnName": "Requests Completed"
+                }
+              ],
+              "title": "Completed Requests",
+              "timeBrushParameterName": "TimeRange",
+              "timeBrushExportOnlyWhenBrushed": true,
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "50",
+            "name": "CompletedRequestCount"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook1f0054e6-9715-47bb-a7fc-e92812c07403",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.synapse/workspaces",
+              "metricScope": 0,
+              "resourceParameter": "Synapse",
+              "resourceIds": [
+                "{Synapse}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 43200000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.synapse/workspaces",
+                  "metric": "microsoft.synapse/workspaces-Builtin SQL Pool-BuiltinSqlPoolDataProcessedBytes",
+                  "aggregation": 1,
+                  "splitBy": null
+                }
+              ],
+              "title": "Data Processed",
+              "timeBrushParameterName": "TimeRange",
+              "timeBrushExportOnlyWhenBrushed": true,
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "50",
+            "name": "DataProcessed"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook9cfd0268-d682-40bb-870c-61e05013f973",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.synapse/workspaces",
+              "metricScope": 0,
+              "resourceParameter": "Synapse",
+              "resourceIds": [
+                "{Synapse}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 43200000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.synapse/workspaces",
+                  "metric": "microsoft.synapse/workspaces-Builtin SQL Pool-BuiltinSqlPoolLoginAttempts",
+                  "aggregation": 1,
+                  "splitBy": null
+                }
+              ],
+              "title": "Login Attempts",
+              "timeBrushParameterName": "TimeRange",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "LoginAttemptsChart"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//Queries by completion type\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| summarize count() by ResultType\r\n| render piechart ",
+              "size": 3,
+              "title": "Queries by Result Type",
+              "timeContext": {
+                "durationMs": 43200000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "gridSettings": {
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_link_Properties_9",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "$gen_link_Properties_9",
+                  "sortOrder": 1
+                }
+              ]
+            },
+            "customWidth": "33",
+            "name": "QueriesByResultType"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//Queries by query type\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| project CommandType=tostring(Properties.command)\r\n| summarize count() by CommandType\r\n| render piechart \r\n\r\n",
+              "size": 3,
+              "title": "Queries by Query Type",
+              "timeContext": {
+                "durationMs": 43200000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ]
+            },
+            "customWidth": "33",
+            "name": "Queries by Query Type"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//Queries by completion type\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| project BytesProcessed=Properties.dataProcessedBytes,tostring(Identity)\r\n| summarize sum(toint(BytesProcessed)) by Identity\r\n| render piechart \r\n\r\n",
+              "size": 3,
+              "title": "Data Processed By User",
+              "timeContext": {
+                "durationMs": 43200000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ]
+            },
+            "customWidth": "33",
+            "name": "Data Processed By User"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//Most Recent Query Runs\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| order by TimeGenerated\r\n| where _ResourceId in~ ({Synapse})\r\n| project \r\n    StartTime=Properties.startTime,\r\n    EndTime=Properties.endTime, \r\n    Identity,\r\n    CommandType=Properties.command,\r\n    Result=ResultType,\r\n    BytesProcessed=Properties.dataProcessedBytes,\r\n    QueryText=Properties.queryText,\r\n    _ResourceId\r\n| extend elapsedTime_sec =(todatetime(EndTime) - StartTime)/1s\r\n| project-reorder StartTime,EndTime,elapsedTime_sec\r\n",
+              "size": 2,
+              "title": "Recent Queries",
+              "timeContext": {
+                "durationMs": 43200000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "StartTime",
+                    "formatter": 6
+                  },
+                  {
+                    "columnMatch": "EndTime",
+                    "formatter": 6
+                  },
+                  {
+                    "columnMatch": "elapsedTime_sec",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "Result",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "BytesProcessed",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "red"
+                    }
+                  },
+                  {
+                    "columnMatch": "QueryText",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "CellDetails",
+                      "linkIsContextBlade": true,
+                      "customColumnWidthSetting": "100ch"
+                    }
+                  }
+                ]
+              }
+            },
+            "name": "Recent Queries"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "GroupSelection",
+        "comparison": "isEqualTo",
+        "value": "Summary"
+      },
+      "name": "SummaryGroup"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook1f0054e6-9715-47bb-a7fc-e92812c07403",
+              "version": "MetricsItem/2.0",
+              "size": 4,
+              "chartType": -1,
+              "resourceType": "microsoft.synapse/workspaces",
+              "metricScope": 0,
+              "resourceParameter": "Synapse",
+              "resourceIds": [
+                "{Synapse}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.synapse/workspaces",
+                  "metric": "microsoft.synapse/workspaces-Builtin SQL Pool-BuiltinSqlPoolDataProcessedBytes",
+                  "aggregation": 1
+                }
+              ],
+              "title": "Total Data Processed",
+              "gridFormatType": 1,
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Name",
+                  "formatter": 13
+                },
+                "leftContent": {
+                  "columnMatch": "Value",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "timeBrushParameterName": "TimeRange",
+              "timeBrushExportOnlyWhenBrushed": true,
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "DataProcessed"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook1f0054e6-9715-47bb-a7fc-e92812c07403",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.synapse/workspaces",
+              "metricScope": 0,
+              "resourceParameter": "Synapse",
+              "resourceIds": [
+                "{Synapse}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.synapse/workspaces",
+                  "metric": "microsoft.synapse/workspaces-Builtin SQL Pool-BuiltinSqlPoolDataProcessedBytes",
+                  "aggregation": 1,
+                  "splitBy": null
+                }
+              ],
+              "title": "Data Processed and Request Completed Count",
+              "timeBrushParameterName": "TimeRange",
+              "timeBrushExportOnlyWhenBrushed": true,
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "DataProcessed - Copy"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//Queries by completion type\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| project \r\n    BytesProcessed=Properties.dataProcessedBytes,\r\n    tostring(Identity),\r\n    QueryHash=tostring(Properties.queryHash),\r\n    QueryText=tostring(Properties.queryText)\r\n| summarize \r\n    MaxSingleQueryBytesProcessed=max(toint(BytesProcessed)),\r\n    TotalBytesProcessed=sum(toint(BytesProcessed)),\r\n    QueryCount=count(),\r\n    QueryHash=any(QueryHash) \r\n    by QueryText //using queryText because queryHash doesn't seem to be different between queries\r\n| order by TotalBytesProcessed\r\n",
+              "size": 0,
+              "title": "Data Processed By Query",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "QueryText",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "CellDetails",
+                      "linkIsContextBlade": true
+                    }
+                  },
+                  {
+                    "columnMatch": "MaxSingleQueryBytesProcessed",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "orange"
+                    }
+                  },
+                  {
+                    "columnMatch": "TotalBytesProcessed",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "palette": "blue",
+                      "compositeBarSettings": {
+                        "labelText": "",
+                        "columnSettings": []
+                      },
+                      "customColumnWidthSetting": "866.007px"
+                    }
+                  },
+                  {
+                    "columnMatch": "QueryCount",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "turquoise"
+                    }
+                  },
+                  {
+                    "columnMatch": "I",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "any_QueryText",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "CellDetails",
+                      "linkIsContextBlade": true
+                    }
+                  }
+                ]
+              },
+              "sortBy": []
+            },
+            "name": "Data Processed By Query",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//Queries by completion type\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| project BytesProcessed=Properties.dataProcessedBytes,tostring(Identity)\r\n| summarize TotalBytesProcessed=sum(toint(BytesProcessed)),QueryCount=count(),MaxSingleQueryBytesProcessed=max(toint(BytesProcessed)) by Identity\r\n| order by TotalBytesProcessed\r\n",
+              "size": 0,
+              "title": "Data Processed By User",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "exportFieldName": "Identity",
+              "exportParameterName": "Identity",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "TotalBytesProcessed",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue",
+                      "compositeBarSettings": {
+                        "labelText": "",
+                        "columnSettings": []
+                      },
+                      "customColumnWidthSetting": "866.007px"
+                    }
+                  },
+                  {
+                    "columnMatch": "QueryCount",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "turquoise"
+                    }
+                  },
+                  {
+                    "columnMatch": "MaxSingleQueryBytesProcessed",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "orange"
+                    }
+                  }
+                ]
+              }
+            },
+            "name": "Data Processed By User - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//Query runs by user sorted by bytes processed\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| where Identity == '{Identity}'\r\n| project \r\n    StartTime=Properties.startTime,\r\n    EndTime=Properties.endTime, \r\n    Identity,\r\n    CommandType=Properties.command,\r\n    Result=ResultType,\r\n    BytesProcessed=Properties.dataProcessedBytes,\r\n    QueryText=Properties.queryText\r\n| order by toint(BytesProcessed)\r\n",
+              "size": 2,
+              "title": "Query Summary for User by Data Processed",
+              "noDataMessage": "Select a user to see their query history",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "StartTime",
+                    "formatter": 6
+                  },
+                  {
+                    "columnMatch": "EndTime",
+                    "formatter": 6
+                  },
+                  {
+                    "columnMatch": "Result",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "BytesProcessed",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "QueryText",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "CellDetails",
+                      "linkIsContextBlade": true,
+                      "customColumnWidthSetting": "100ch"
+                    }
+                  }
+                ]
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "Identity",
+              "comparison": "isNotEqualTo"
+            },
+            "name": "Query Summary for User by Data Processed"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "GroupSelection",
+        "comparison": "isEqualTo",
+        "value": "DataProcessed"
+      },
+      "name": "DataProcessed"
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
