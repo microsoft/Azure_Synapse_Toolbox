@@ -15,7 +15,7 @@
             "name": "TimeRange",
             "type": 4,
             "value": {
-              "durationMs": 43200000
+              "durationMs": 86400000
             },
             "typeSettings": {
               "selectableValues": [
@@ -201,7 +201,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 43200000
+                "durationMs": 86400000
               },
               "metrics": [
                 {
@@ -256,7 +256,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 43200000
+                "durationMs": 86400000
               },
               "metrics": [
                 {
@@ -313,7 +313,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 43200000
+                "durationMs": 86400000
               },
               "metrics": [
                 {
@@ -369,7 +369,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 43200000
+                "durationMs": 86400000
               },
               "metrics": [
                 {
@@ -405,7 +405,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 43200000
+                "durationMs": 86400000
               },
               "metrics": [
                 {
@@ -440,7 +440,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 43200000
+                "durationMs": 86400000
               },
               "metrics": [
                 {
@@ -466,7 +466,7 @@
               "size": 3,
               "title": "Queries by Result Type",
               "timeContext": {
-                "durationMs": 43200000
+                "durationMs": 86400000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -500,7 +500,7 @@
               "size": 3,
               "title": "Queries by Query Type",
               "timeContext": {
-                "durationMs": 43200000
+                "durationMs": 86400000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -520,7 +520,7 @@
               "size": 3,
               "title": "Data Processed By User",
               "timeContext": {
-                "durationMs": 43200000
+                "durationMs": 86400000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -536,11 +536,11 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "//Most Recent Query Runs\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| order by TimeGenerated\r\n| where _ResourceId in~ ({Synapse})\r\n| project \r\n    StartTime=Properties.startTime,\r\n    EndTime=Properties.endTime, \r\n    Identity,\r\n    CommandType=Properties.command,\r\n    Result=ResultType,\r\n    BytesProcessed=Properties.dataProcessedBytes,\r\n    QueryText=Properties.queryText,\r\n    _ResourceId\r\n| extend elapsedTime_sec =(todatetime(EndTime) - StartTime)/1s\r\n| project-reorder StartTime,EndTime,elapsedTime_sec\r\n",
+              "query": "//Most Recent Query Runs\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| order by TimeGenerated\r\n| where _ResourceId in~ ({Synapse})\r\n| project \r\n    StartTime=Properties.startTime,\r\n    EndTime=Properties.endTime, \r\n    Identity,\r\n    CommandType=Properties.command,\r\n    Result=ResultType,\r\n    MbProcessed=(Properties.dataProcessedBytes/1024/1024),\r\n    QueryText=Properties.queryText,\r\n    _ResourceId\r\n| extend elapsedTime_sec =(todatetime(EndTime) - StartTime)/1s\r\n| extend Approx_Cost=((MbProcessed)*0.000476837158203125)/100 //multiply by price per mb ($5 per TB from Microsoft Docs: https://azure.microsoft.com/en-us/pricing/details/synapse-analytics/)\r\n| project-reorder StartTime,EndTime,elapsedTime_sec,Identity,CommandType,Result,MbProcessed,Approx_Cost\r\n",
               "size": 2,
               "title": "Recent Queries",
               "timeContext": {
-                "durationMs": 43200000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -581,10 +581,25 @@
                     }
                   },
                   {
-                    "columnMatch": "BytesProcessed",
+                    "columnMatch": "MbProcessed",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "Approx_Cost",
                     "formatter": 8,
                     "formatOptions": {
-                      "palette": "red"
+                      "palette": "yellow"
+                    },
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": {
+                        "style": "decimal",
+                        "minimumFractionDigits": 2,
+                        "maximumFractionDigits": 6
+                      }
                     }
                   },
                   {
@@ -594,6 +609,13 @@
                       "linkTarget": "CellDetails",
                       "linkIsContextBlade": true,
                       "customColumnWidthSetting": "100ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "BytesProcessed",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "red"
                     }
                   }
                 ]
@@ -631,7 +653,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 86400000
               },
               "metrics": [
                 {
@@ -686,7 +708,7 @@
               ],
               "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 86400000
               },
               "metrics": [
                 {
@@ -709,7 +731,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "//Queries by completion type\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| project \r\n    BytesProcessed=Properties.dataProcessedBytes,\r\n    tostring(Identity),\r\n    QueryHash=tostring(Properties.queryHash),\r\n    QueryText=tostring(Properties.queryText)\r\n| summarize \r\n    MaxSingleQueryBytesProcessed=max(toint(BytesProcessed)),\r\n    TotalBytesProcessed=sum(toint(BytesProcessed)),\r\n    QueryCount=count(),\r\n    QueryHash=any(QueryHash) \r\n    by QueryText //using queryText because queryHash doesn't seem to be different between queries\r\n| order by TotalBytesProcessed\r\n",
+              "query": "//Queries by completion type\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| project \r\n    BytesProcessed=Properties.dataProcessedBytes,\r\n    tostring(Identity),\r\n    QueryHash=tostring(Properties.queryHash),\r\n    QueryText=tostring(Properties.queryText)\r\n| summarize \r\n    MaxSingleQueryMBProcessed=max(toint(BytesProcessed)/1024/1024),\r\n    TotalMBProcessed=sum(toint(BytesProcessed)/1024/1024),\r\n    QueryCount=count(),\r\n    QueryHash=any(QueryHash) \r\n    by QueryText //using queryText because queryHash doesn't seem to be different between queries\r\n| extend Approx_Accumulated_Cost=((TotalMBProcessed)*0.000476837158203125)/100 //multiply by price per mb ($5 per TB from Microsoft Docs: https://azure.microsoft.com/en-us/pricing/details/synapse-analytics/)\r\n| extend Approx_Cost_Per_Execution=((TotalMBProcessed)*0.000476837158203125)/100/QueryCount\r\n| order by TotalMBProcessed\r\n",
               "size": 0,
               "title": "Data Processed By Query",
               "timeContext": {
@@ -733,6 +755,55 @@
                     }
                   },
                   {
+                    "columnMatch": "MaxSingleQueryMBProcessed",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "orange"
+                    }
+                  },
+                  {
+                    "columnMatch": "TotalMBProcessed",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "QueryCount",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "turquoise"
+                    }
+                  },
+                  {
+                    "columnMatch": "Approx_Accumulated_Cost",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "yellow"
+                    },
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": {
+                        "style": "decimal",
+                        "minimumFractionDigits": 2,
+                        "maximumFractionDigits": 4
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Approx_Cost_Per_Execution",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": {
+                        "style": "decimal",
+                        "minimumFractionDigits": 2,
+                        "maximumFractionDigits": 6
+                      }
+                    }
+                  },
+                  {
                     "columnMatch": "MaxSingleQueryBytesProcessed",
                     "formatter": 8,
                     "formatOptions": {
@@ -749,14 +820,6 @@
                         "columnSettings": []
                       },
                       "customColumnWidthSetting": "866.007px"
-                    }
-                  },
-                  {
-                    "columnMatch": "QueryCount",
-                    "formatter": 8,
-                    "formatOptions": {
-                      "min": 0,
-                      "palette": "turquoise"
                     }
                   },
                   {
@@ -787,7 +850,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "//Queries by completion type\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| project BytesProcessed=Properties.dataProcessedBytes,tostring(Identity)\r\n| summarize TotalBytesProcessed=sum(toint(BytesProcessed)),QueryCount=count(),MaxSingleQueryBytesProcessed=max(toint(BytesProcessed)) by Identity\r\n| order by TotalBytesProcessed\r\n",
+              "query": "//Queries by completion type\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| project BytesProcessed=Properties.dataProcessedBytes,tostring(Identity)\r\n| summarize TotalMBProcessed=sum(toint(BytesProcessed)/1024/1024),QueryCount=count(),MaxSingleQueryMBProcessed=max(toint(BytesProcessed)/1024/1024) by Identity\r\n| order by TotalMBProcessed\r\n",
               "size": 0,
               "title": "Data Processed By User",
               "timeContext": {
@@ -805,6 +868,28 @@
               "gridSettings": {
                 "formatters": [
                   {
+                    "columnMatch": "TotalMBProcessed",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "QueryCount",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "turquoise"
+                    }
+                  },
+                  {
+                    "columnMatch": "MaxSingleQueryMBProcessed",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "orange"
+                    }
+                  },
+                  {
                     "columnMatch": "TotalBytesProcessed",
                     "formatter": 3,
                     "formatOptions": {
@@ -815,14 +900,6 @@
                         "columnSettings": []
                       },
                       "customColumnWidthSetting": "866.007px"
-                    }
-                  },
-                  {
-                    "columnMatch": "QueryCount",
-                    "formatter": 8,
-                    "formatOptions": {
-                      "min": 0,
-                      "palette": "turquoise"
                     }
                   },
                   {
@@ -845,12 +922,97 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
+              "query": "//Queries by completion type\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| project BytesProcessed=Properties.dataProcessedBytes,tostring(Identity)\r\n| summarize TotalMBProcessed=sum(toint(BytesProcessed)/1024/1024),QueryCount=count(),MaxSingleQueryMBProcessed=max(toint(BytesProcessed)/1024/1024) by Identity\r\n| extend Approx_Cost=((TotalMBProcessed)*0.000476837158203125)/100 //multiply by price per mb ($5 per TB from Microsoft Docs: https://azure.microsoft.com/en-us/pricing/details/synapse-analytics/)\r\n| order by TotalMBProcessed\r\n",
+              "size": 0,
+              "title": "Data Processed By User with $5 per TB cost",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "exportFieldName": "Identity",
+              "exportParameterName": "Identity",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "TotalMBProcessed",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "QueryCount",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "turquoise"
+                    }
+                  },
+                  {
+                    "columnMatch": "MaxSingleQueryMBProcessed",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "orange"
+                    }
+                  },
+                  {
+                    "columnMatch": "Approx_Cost",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": true,
+                        "minimumFractionDigits": 2,
+                        "maximumFractionDigits": 4
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "TotalBytesProcessed",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue",
+                      "compositeBarSettings": {
+                        "labelText": "",
+                        "columnSettings": []
+                      },
+                      "customColumnWidthSetting": "866.007px"
+                    }
+                  },
+                  {
+                    "columnMatch": "MaxSingleQueryBytesProcessed",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "orange"
+                    }
+                  }
+                ]
+              }
+            },
+            "name": "Data Processed By User - With Cost",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
               "query": "//Query runs by user sorted by bytes processed\r\nSynapseBuiltinSqlPoolRequestsEnded\r\n| where _ResourceId in~ ({Synapse})\r\n| where Identity == '{Identity}'\r\n| project \r\n    StartTime=Properties.startTime,\r\n    EndTime=Properties.endTime, \r\n    Identity,\r\n    CommandType=Properties.command,\r\n    Result=ResultType,\r\n    BytesProcessed=Properties.dataProcessedBytes,\r\n    QueryText=Properties.queryText\r\n| order by toint(BytesProcessed)\r\n",
               "size": 2,
               "title": "Query Summary for User by Data Processed",
               "noDataMessage": "Select a user to see their query history",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 86400000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
