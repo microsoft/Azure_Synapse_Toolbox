@@ -25,4 +25,4 @@ When creating a workbook, search public templates for storage account and you wi
 Workbook in progress, data sent to log analytics through workspace diagnostic settings
 
 ## Serverless
-Workbook in progress, data sent to log analytics through workspace diagnostic settings
+Early version of the serverless workbook has been posted. This includes query execution information including costing. You must have 'diagnostic settings' enabled at the workspace level to send 'BuiltinSqlReqsEnded' to Log Analytics. 
