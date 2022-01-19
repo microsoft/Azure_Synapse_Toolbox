@@ -1,0 +1,19 @@
+//Cost per query
+SynapseBuiltinSqlPoolRequestsEnded
+//| where _ResourceId has 'contosoprod'
+| project 
+    BytesProcessed=Properties.dataProcessedBytes,
+    tostring(Identity),
+    QueryHash=tostring(Properties.queryHash),
+    QueryText=tostring(Properties.queryText),
+    _ResourceId
+| summarize 
+    MaxSingleQueryMBProcessed=max(toint(BytesProcessed)/1024/1024),
+    TotalMBProcessed=sum(toint(BytesProcessed)/1024/1024),
+    QueryCount=count(),
+    QueryHash=any(QueryHash) ,
+    Resource=any(_ResourceId)
+    by QueryText //using queryText because queryHash doesn’t change if only literals are different
+| extend Approx_Accumulated_Cost=((TotalMBProcessed)*0.000476837158203125)/100 //multiply by price per mb ($5 per TB from Microsoft Docs: https://azure.microsoft.com/en-us/pricing/details/synapse-analytics/)
+| extend Approx_Cost_Per_Execution=((TotalMBProcessed)*0.000476837158203125)/100/QueryCount
+| order by TotalMBProcessed
