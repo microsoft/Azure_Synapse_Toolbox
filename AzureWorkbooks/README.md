@@ -1,6 +1,7 @@
-# This template for monitoring Synpase SQL Pools is a work in progress
-Realize that there may still be some inaccurate data in some of the queries. If this is used in a production environment it should be done so with this understanding. Especially when it comes to the "Query Activity" tab, which uses SQL Audit data. Results could be inconsistent. 
-
+# Monitor Synpase
+Use this template to monitor your dedicated SQL Pools. 
+If you have an instance that was created withint a Synapse workspace, then you will use the workspaces sql pool template. 
+If the instance was deployed standalone and was not originally part of a workspace, you will use the standalone template.
 ![DedicatedPoolWB1](/Collateral/Screenshots/DedicatedPoolWB1.png)
 
 ## Pre-Requisites
@@ -22,11 +23,11 @@ Follow these instructions to configure diagnostic settings and download the work
 ![SparkWB1](/Collateral/Screenshots/SparkWB1.png)
 
 ## Storage accounts
-When creating a workbook, search public templates for storage account and you will see storage account workbooks
+When creating a workbook, search public templates for storage account and you will see storage account workbooks. You can filter it just to be the storage accounts for your synapse instance or look at all at once. Clicking one of the storage accounts will take you to a separate workbook just for investigating that storage account. 
 ![StorageWB1](/Collateral/Screenshots/StorageAccountOverviewScreenshot_WB2.png)
 
 ## Pipeline/trigger runs
-Workbook in progress, data sent to log analytics through workspace diagnostic settings
+The pipeline workbook is an adaptation of an existing Azure Data Factory and serves both services. 
 ![PipelineWB1](/Collateral/Screenshots/StorageAccountOverviewScreenshot_WB2.png)
 
 ## Serverless
