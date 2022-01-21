@@ -1,0 +1,1103 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "d49554d4-694d-4606-89aa-510d92eb95cd",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "value": {
+              "durationMs": 604800000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ]
+            },
+            "label": "Time Range"
+          },
+          {
+            "id": "d0ad178a-e2af-4157-a902-86c94e4dad29",
+            "version": "KqlParameterItem/1.0",
+            "name": "LogAnalyticsSubscription",
+            "type": 6,
+            "value": null,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "includeAll": true,
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 7776000000
+            },
+            "timeContextFromParameter": "TimeRange",
+            "label": "Log Analytics Subsciption"
+          },
+          {
+            "id": "fe0740a1-545a-47d0-9b91-acbd7034a551",
+            "version": "KqlParameterItem/1.0",
+            "name": "LogAnalyticsWorkspace",
+            "type": 5,
+            "query": "Resources\r\n| where type == 'microsoft.operationalinsights/workspaces'\r\n| project id\r\n",
+            "crossComponentResources": [
+              "{LogAnalyticsSubscription}"
+            ],
+            "value": null,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 7776000000
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "label": "Log Analytics Workspace"
+          },
+          {
+            "id": "fd3f9b36-6e8f-4396-8478-1c9c46174057",
+            "version": "KqlParameterItem/1.0",
+            "name": "DataFactory",
+            "label": "Synpase/Data Factory",
+            "type": 5,
+            "isGlobal": true,
+            "query": "let synape = SynapseIntegrationPipelineRuns\r\n| extend ResourceId = _ResourceId;\r\n\r\nlet df = ADFPipelineRun;\r\n\r\nlet allPipelines =  df \r\n| union synape;\r\n\r\nallPipelines\r\n| distinct ResourceId",
+            "crossComponentResources": [
+              "{LogAnalyticsWorkspace}"
+            ],
+            "value": null,
+            "typeSettings": {
+              "resourceTypeFilter": {
+                "microsoft.datafactory/factories": true,
+                "microsoft.datafactory/datafactories": true,
+                "microsoft.synapse/workspaces": true,
+                "Microsoft.Synapse/workspaces": true,
+                "Microsoft.Synapse/workspaces/bigDataPools": true,
+                "Microsoft.Synapse/workspaces/kustopools": true,
+                "Microsoft.Synapse/workspaces/kustopools/databases": true,
+                "Microsoft.Synapse/workspaces/scopePools": true,
+                "Microsoft.Synapse/workspaces/sqlPools": true
+              },
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 7776000000
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "8dd2023d-6684-44e2-b910-82a0c0fbf879",
+            "version": "KqlParameterItem/1.0",
+            "name": "pipeline",
+            "label": "Pipeline",
+            "type": 2,
+            "isGlobal": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "let synape = SynapseIntegrationPipelineRuns\r\n| extend ResourceId = _ResourceId;\r\n\r\nlet df = ADFPipelineRun;\r\n\r\nlet allPipelines =  df \r\n| union synape;\r\n\r\nallPipelines\r\n| where ResourceId in (\"{DataFactory}\")\r\n| project pipeId= strcat(ResourceId , PipelineName) , PipelineName\r\n//| distinct pipeId, PipelineName\r\n| distinct PipelineName",
+            "crossComponentResources": [
+              "{LogAnalyticsWorkspace}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::all",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "e870a3f7-acab-4aac-93b8-35b8bab51c1c",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Overview Dashboard",
+            "subTarget": "overview",
+            "preText": "Overview Dashboard",
+            "style": "link"
+          },
+          {
+            "id": "a773b8fc-30b4-480a-b1b2-a73653aa1fe5",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Pipeline Details",
+            "subTarget": "pipeline",
+            "preText": "Pipeline Details ",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "links - 7"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let synape = SynapseIntegrationPipelineRuns\r\n| extend ResourceId = _ResourceId;\r\n\r\nlet df = ADFPipelineRun;\r\n\r\nlet allPipelines =  df \r\n| union synape;\r\n\r\nallPipelines\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| extend Resource = tostring(split(ResourceId, \"/\")[8])\r\n| summarize dcount(RunId) by Resource, ResourceId\r\n",
+              "size": 1,
+              "title": "⚙ Runs per Synapse/Datafactory",
+              "timeContext": {
+                "durationMs": 7776000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "exportFieldName": "ResourceId",
+              "exportParameterName": "DataFactory",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "piechart",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "ResourceId",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "dcount_RunId",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "chartSettings": {
+                "ySettings": {}
+              }
+            },
+            "customWidth": "33",
+            "name": "query - 2",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let synape = SynapseIntegrationPipelineRuns\r\n| extend ResourceId = _ResourceId;\r\n\r\nlet df = ADFPipelineRun;\r\n\r\nlet allPipelines =  df \r\n| union synape;\r\n\r\nlet T= allPipelines\r\n| where ResourceId in (\"{DataFactory}\")\r\n| where PipelineName in ({pipeline}) \r\n|summarize arg_max(TimeGenerated,* ) by RunId;\r\n\r\nT\r\n| summarize  Succeeded=dcountif(RunId, Status startswith \"Succeeded\"),Failed=dcountif(RunId, Status startswith \"Failed\"), Cancelled = dcountif(RunId, Status startswith \"Cancelled\") by PipelineName\r\n|render barchart with (series = PipelineName)\r\n",
+              "size": 1,
+              "title": "🎯 Runs per pipeline grouped by status",
+              "timeContext": {
+                "durationMs": 7776000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Succeeded",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "palette": "green"
+                    }
+                  },
+                  {
+                    "columnMatch": "Failed",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "palette": "red"
+                    }
+                  },
+                  {
+                    "columnMatch": "Cancelled",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "palette": "orange"
+                    },
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  }
+                ]
+              },
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "PipelineName",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "dcount_RunId",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "PipelineName",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "dcount_RunId",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "chartSettings": {
+                "xAxis": "PipelineName",
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "Succeeded",
+                    "color": "green"
+                  },
+                  {
+                    "seriesName": "Failed",
+                    "color": "red"
+                  },
+                  {
+                    "seriesName": "Cancelled",
+                    "color": "orange"
+                  },
+                  {
+                    "seriesName": "Total",
+                    "color": "blue"
+                  }
+                ],
+                "xSettings": {},
+                "ySettings": {}
+              }
+            },
+            "customWidth": "33",
+            "name": "query - 4 - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let synape = SynapseIntegrationPipelineRuns\r\n| extend ResourceId = _ResourceId;\r\n\r\nlet df = ADFPipelineRun;\r\n\r\nlet allPipelines =  df \r\n| union synape;\r\n\r\nallPipelines\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| where Status in ('Failed', 'Succeeded')\r\n| summarize arg_max(TimeGenerated,* ) by RunId\r\n| extend endd = iff(End == todatetime('1601-01-01T00:00:00Z'),now(),End)\r\n| extend Duration = datetime_diff('Second',endd, Start) \r\n| summarize avg(Duration) by PipelineName",
+              "size": 1,
+              "aggregation": 3,
+              "title": "⏲ Average duration per pipeline",
+              "timeContext": {
+                "durationMs": 7776000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "barchart",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "PipelineName",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "Duration",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0
+              },
+              "chartSettings": {
+                "showMetrics": false,
+                "showLegend": true
+              }
+            },
+            "customWidth": "34",
+            "name": "query - 5",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let synape = SynapseIntegrationPipelineRuns\r\n| extend ResourceId = _ResourceId, Link1 = \"https://ms.web.azuresynapse.net/en-us/monitoring/pipelineruns?workspace=\" , Link2 = \"https://ms.web.azuresynapse.net/en-us/monitoring/pipelineruns/\";\r\n\r\nlet df = ADFPipelineRun\r\n|extend Link1 = \"https://ms-adf.azure.com/monitoring/pipelineruns?factory=\", Link2 = \"https://ms-adf.azure.com/en-us/monitoring/pipelineruns/\", Link3= \"?factory=\";\r\n\r\nlet allPipelines =  df \r\n| union synape;\r\n\r\nlet allActivites = ADFActivityRun\r\n| union (SynapseIntegrationActivityRuns | extend ResourceId = _ResourceId) ;\r\n\r\n\r\nlet T = allPipelines\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| summarize arg_max(TimeGenerated,* ) by RunId\r\n| extend StatusIcon = case(Status == \"Succeeded\", '🟢', \r\n                       Status == \"InProgress\", '🟡', \r\n                       Status == \"Queued\", '🔵',\r\n                       Status == \"Cancelled\",'🟠', \r\n                       Status == \"Failed\", '🔴', \r\n                       '0')\r\n|order by TimeGenerated;\r\n\r\n\r\n\r\n\r\nlet T2 = T\r\n| summarize commands_details = make_list(pack('status', StatusIcon, 'TimeGenerated', TimeGenerated)) by PipelineName\r\n| mv-apply command_details = commands_details on\r\n(\r\n    order by todatetime(command_details['TimeGenerated']) asc\r\n    | summarize make_list(command_details['status'])\r\n)\r\n| project-away commands_details \r\n| extend ['Last runs'] = strcat_array(list_command_details_status,'');\r\n\r\n\r\n\r\n\r\nallPipelines\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| summarize arg_max(TimeGenerated,* ) by PipelineName\r\n| extend ParentId = ''\r\n        , Id = PipelineName\r\n        ,Link =  strcat(Link1, ResourceId)\r\n        , Resource = ResourceId\r\n        , endd = iff(End == todatetime('1601-01-01T00:00:00Z'),now(),End)\r\n| extend Duration = format_timespan(endd- Start,'hh:mm:ss') ,Pipeline =  strcat('🗜️ ', PipelineName) \r\n| join  T2 on PipelineName\r\n|project ParentId, Id , Resource, Pipeline, Status, Start, Duration, ['Last runs'], Link,TimeGenerated\r\n\r\n|union (T\r\n| extend ParentId = PipelineName\r\n        ,Id = RunId\r\n        ,Link = strcat(Link2,CorrelationId,\"?factory=\",ResourceId)\r\n        , endd = iff(End == todatetime('1601-01-01T00:00:00Z'),now(),End)\r\n|extend Duration = format_timespan(endd- Start,'hh:mm:ss')  \r\n|project ParentId,Id, Status,Start,Duration,Link,TimeGenerated)\r\n|union (allActivites \r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| summarize arg_max(TimeGenerated,* ) by ActivityRunId\r\n| extend endd = iff(End == todatetime('1601-01-01T00:00:00Z'),now(),End)\r\n| extend  ParentId = PipelineRunId,Id = ActivityRunId,Link=\"\",Duration = format_timespan(endd- Start,'hh:mm:ss')  , Resource = ActivityName\r\n| order by TimeGenerated desc \r\n| project ParentId,Id, Status,Start,Duration,Link,TimeGenerated, Resource)\r\n| union (allActivites \r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| summarize arg_max(TimeGenerated,* ) by ActivityRunId\r\n| where Status ==\"Failed\"\r\n| extend  ParentId = ActivityRunId, Id = \"*\", ['Last runs'] = ErrorMessage\r\n| project ParentId, Id, ['Last runs']);\r\n",
+              "size": 0,
+              "title": "📑 Last runs",
+              "timeContext": {
+                "durationMs": 7776000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "exportedParameters": [
+                {
+                  "fieldName": "PipelineName",
+                  "parameterName": "pipeline",
+                  "parameterType": 5
+                }
+              ],
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "ParentId",
+                    "formatter": 5,
+                    "formatOptions": {}
+                  },
+                  {
+                    "columnMatch": "Id",
+                    "formatter": 5,
+                    "formatOptions": {}
+                  },
+                  {
+                    "columnMatch": "Resource",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Status",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Failed",
+                          "representation": "critical",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Succeeded",
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "InProgress",
+                          "representation": "pending"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Queued",
+                          "representation": "1",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Cancelled",
+                          "representation": "2",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "more",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "Start",
+                    "formatter": 6,
+                    "formatOptions": {}
+                  },
+                  {
+                    "columnMatch": "Link",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "Url",
+                      "linkLabel": "🌐 (url)"
+                    }
+                  },
+                  {
+                    "columnMatch": "TimeGenerated",
+                    "formatter": 5,
+                    "formatOptions": {}
+                  }
+                ],
+                "hierarchySettings": {
+                  "idColumn": "Id",
+                  "parentColumn": "ParentId",
+                  "treeType": 0,
+                  "expanderColumn": "Pipeline"
+                },
+                "sortBy": [
+                  {
+                    "itemKey": "Last runs",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "Last runs",
+                  "sortOrder": 1
+                }
+              ]
+            },
+            "name": "query - 3",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let synape = SynapseIntegrationPipelineRuns\r\n| extend ResourceId = _ResourceId;\r\n\r\nlet df = ADFPipelineRun;\r\n\r\nlet allPipelines =  df \r\n| union synape;\r\n\r\nallPipelines\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| where Status in ('Failed', 'Succeeded')\r\n| summarize arg_max(TimeGenerated,* ) by RunId\r\n| summarize count() by ResourceId, PipelineName, format_datetime(bin(TimeGenerated, 1d),'yyyy-MM-dd')",
+              "size": 1,
+              "aggregation": 3,
+              "showAnnotations": true,
+              "title": "🗓 Number of runs by date",
+              "timeContext": {
+                "durationMs": 7776000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "barchart",
+              "graphSettings": {
+                "type": 0
+              },
+              "chartSettings": {
+                "xAxis": "TimeGenerated",
+                "group": "PipelineName",
+                "createOtherGroup": null,
+                "showMetrics": false,
+                "showLegend": true,
+                "xSettings": {
+                  "numberFormatSettings": {
+                    "unit": 0,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": false
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "50",
+            "name": "query - 5 - Copy - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let synape = SynapseIntegrationPipelineRuns\r\n| extend ResourceId = _ResourceId;\r\n\r\nlet df = ADFPipelineRun;\r\n\r\nlet allPipelines =  df \r\n| union synape;\r\n\r\nallPipelines\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| where Status in ('Failed', 'Succeeded')\r\n| summarize arg_max(TimeGenerated,* ) by RunId\r\n| summarize count() by ResourceId, PipelineName, format_datetime(bin(TimeGenerated, 1h),'HH:mm')\r\n|order by TimeGenerated asc",
+              "size": 1,
+              "aggregation": 3,
+              "showAnnotations": true,
+              "title": "🕓 Number of runs over time",
+              "timeContext": {
+                "durationMs": 7776000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "barchart",
+              "graphSettings": {
+                "type": 0
+              },
+              "chartSettings": {
+                "xAxis": "TimeGenerated",
+                "group": "PipelineName",
+                "createOtherGroup": null,
+                "showMetrics": false,
+                "showLegend": true,
+                "xSettings": {
+                  "numberFormatSettings": {
+                    "unit": 0,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": false
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "50",
+            "name": "query - 5 - Copy - Copy - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "overview"
+      },
+      "name": "group - 8",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let synape = SynapseIntegrationPipelineRuns\r\n| extend ResourceId = _ResourceId;\r\n\r\nlet df = ADFPipelineRun;\r\n\r\nlet allPipelines =  df \r\n| union synape;\r\n\r\nallPipelines\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| where Status in ('Failed', 'Succeeded')\r\n| summarize arg_max(TimeGenerated,* ) by RunId\r\n| extend endd = iff(End == todatetime('1601-01-01T00:00:00Z'),now(),End)\r\n| extend Duration = datetime_diff('Second',endd, Start) \r\n| summarize avg(Duration) by PipelineName, Start",
+              "size": 1,
+              "aggregation": 3,
+              "title": "⏱ Duration over time ",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "linechart",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "PipelineName",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "Duration",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0
+              },
+              "chartSettings": {
+                "showMetrics": false,
+                "showLegend": true,
+                "ySettings": {
+                  "numberFormatSettings": {
+                    "unit": 24,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": true
+                    }
+                  }
+                }
+              }
+            },
+            "name": "query - 5 - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let allActivites = ADFActivityRun\r\n| union (SynapseIntegrationActivityRuns | extend ResourceId = _ResourceId) ;\r\n\r\nlet Activites =  allActivites\r\n| extend a = todynamic(Output)\r\n| summarize Rows=  sum(toint(a.rowsCopied)) by CorrelationId ;\r\n//, sum(toint(a.dataWritten)), sum(toint(a.filesRead)), sum(toint(a.rowsCopied))\r\n\r\n\r\nlet synape = SynapseIntegrationPipelineRuns\r\n| extend ResourceId = _ResourceId;\r\n\r\nlet df = ADFPipelineRun;\r\n\r\nlet allPipelines =  df \r\n| union synape;\r\n\r\nallPipelines\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| summarize arg_max(TimeGenerated,* ) by RunId\r\n| join Activites on CorrelationId\r\n| project PipelineName, TimeGenerated, Rows",
+              "size": 1,
+              "title": "💾 Rows copied over time",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "areachart"
+            },
+            "customWidth": "32",
+            "name": "query - 1 - Copy - Copy - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let allActivites = ADFActivityRun\r\n| union (SynapseIntegrationActivityRuns | extend ResourceId = _ResourceId) ;\r\n\r\nlet Activites =  allActivites\r\n| extend a = todynamic(Output)\r\n| summarize Read=  sum(toint(a.dataRead)),Written =  sum(toint(a.dataWritten)) by CorrelationId ;\r\n//, sum(toint(a.dataWritten)), sum(toint(a.filesRead)), sum(toint(a.rowsCopied))\r\n\r\n\r\nlet synape = SynapseIntegrationPipelineRuns\r\n| extend ResourceId = _ResourceId;\r\n\r\nlet df = ADFPipelineRun;\r\n\r\nlet allPipelines =  df \r\n| union synape;\r\n\r\nallPipelines\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| summarize arg_max(TimeGenerated,* ) by RunId\r\n| join Activites on CorrelationId\r\n| project PipelineName, TimeGenerated, Read, Written",
+              "size": 1,
+              "title": "💻 Data read/written over time",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "areachart"
+            },
+            "customWidth": "33",
+            "name": "query - 1 - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let allActivites = ADFActivityRun\r\n| union (SynapseIntegrationActivityRuns | extend ResourceId = _ResourceId) ;\r\n\r\nlet Activites =  allActivites\r\n| extend a = todynamic(Output)\r\n| summarize Read=  sum(toint(a.filesRead)),Written =  sum(toint(a.filesWritten)) by CorrelationId ;\r\n//, sum(toint(a.dataWritten)), sum(toint(a.filesRead)), sum(toint(a.rowsCopied))\r\n\r\n\r\nlet synape = SynapseIntegrationPipelineRuns\r\n| extend ResourceId = _ResourceId;\r\n\r\nlet df = ADFPipelineRun;\r\n\r\nlet allPipelines =  df \r\n| union synape;\r\n\r\nallPipelines\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| summarize arg_max(TimeGenerated,* ) by RunId\r\n| join Activites on CorrelationId\r\n| project PipelineName, TimeGenerated, Read, Written",
+              "size": 1,
+              "title": "📄  Files read / written over time",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "areachart"
+            },
+            "customWidth": "33",
+            "name": "query - 1 - Copy - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let allActivites = ADFActivityRun\r\n| union (SynapseIntegrationActivityRuns | extend ResourceId = _ResourceId) ;\r\n\r\nallActivites\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| where Status == \"Failed\"\r\n| extend a = todynamic(Output)\r\n| summarize count() by TimeGenerated; //, ErrorMessage, FailureType, ActivityName, ActivityType;\r\n",
+              "size": 1,
+              "title": "🛑 Errors over time",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "categoricalbar",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "PipelineName",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "ErrorCode",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "PipelineName",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "ErrorCode",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "chartSettings": {
+                "showMetrics": false,
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "count_",
+                    "color": "redBright"
+                  }
+                ]
+              }
+            },
+            "name": "query - 1 - Copy - Copy - Copy - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let allActivites = ADFActivityRun\r\n| union (SynapseIntegrationActivityRuns | extend ResourceId = _ResourceId) ;\r\n\r\nallActivites\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| where Status == \"Failed\"\r\n| extend a = todynamic(Output)\r\n| summarize count() by ActivityType; //, ErrorMessage, FailureType, ActivityName, ActivityType;\r\n",
+              "size": 1,
+              "title": "🛑 Errors per Activity type",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "categoricalbar",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "PipelineName",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "ErrorCode",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "PipelineName",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "ErrorCode",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "33",
+            "name": "query - 1 - Copy - Copy - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let allActivites = ADFActivityRun\r\n| union (SynapseIntegrationActivityRuns | extend ResourceId = _ResourceId) ;\r\n\r\nallActivites\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| where Status == \"Failed\"\r\n| extend a = todynamic(Output)\r\n| summarize count() by FailureType; //, ErrorMessage, FailureType, ActivityName, ActivityType;\r\n",
+              "size": 1,
+              "title": "🛑 Errors per failure type",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "categoricalbar",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "PipelineName",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "ErrorCode",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "PipelineName",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "ErrorCode",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "33",
+            "name": "query - 1 - Copy - Copy - Copy - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let allActivites = ADFActivityRun\r\n| union (SynapseIntegrationActivityRuns | extend ResourceId = _ResourceId) ;\r\n\r\nallActivites\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| where Status == \"Failed\"\r\n| extend a = todynamic(Output)\r\n| summarize count() by ActivityName; //, ErrorMessage, FailureType, ActivityName, ActivityType;\r\n",
+              "size": 1,
+              "title": "🛑 Errors per activity name",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "visualization": "categoricalbar",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "PipelineName",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "ErrorCode",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "PipelineName",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "ErrorCode",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "33",
+            "name": "query - 1 - Copy - Copy - Copy - Copy - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let allActivites = ADFActivityRun\r\n| union (SynapseIntegrationActivityRuns | extend ResourceId = _ResourceId) ;\r\n\r\nallActivites\r\n| where ResourceId in (\"{DataFactory}\") \r\n| where PipelineName in ({pipeline}) \r\n| where Status == \"Failed\"\r\n| extend a = todynamic(Output)\r\n| project TimeGenerated, PipelineName, ErrorCode, ErrorMessage, FailureType, ActivityName, ActivityType\r\n| order by TimeGenerated desc;",
+              "size": 0,
+              "title": "❗ Last failing activites",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalyticsWorkspace}"
+              ],
+              "gridSettings": {
+                "rowLimit": 1000
+              }
+            },
+            "name": "query - 7",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "pipeline"
+      },
+      "name": "PipelineGroup",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
