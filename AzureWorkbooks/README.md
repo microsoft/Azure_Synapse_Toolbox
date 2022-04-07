@@ -28,7 +28,7 @@ When creating a workbook, search public templates for storage account and you wi
 
 ## Pipeline/trigger runs
 The pipeline workbook is an adaptation of an existing Azure Data Factory and serves both services. 
-![PipelineWB1](/Collateral/Screenshots/StorageAccountOverviewScreenshot_WB2.png)
+![PipelineWB1](/Collateral/Screenshots/SynapsePipelineWorkbook1.png)
 
 ## Serverless
 Early version of the serverless workbook has been posted. This includes query execution information including costing. You must have 'diagnostic settings' enabled at the workspace level to send 'BuiltinSqlReqsEnded' to Log Analytics. 
