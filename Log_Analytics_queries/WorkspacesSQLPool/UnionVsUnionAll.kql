@@ -1,0 +1,20 @@
+//Usage of Union vs Union ALL
+let databaseName = '<database_name>';
+SynapseSqlPoolExecRequests
+| where _ResourceId  endswith databaseName
+| where StatementType !in ('Batch','Execute')
+| summarize 
+    Request_Id=max(RequestId), 
+    Submit_Time=min(TimeGenerated), 
+    Start_Time=max(StartTime), 
+    End_Time=max(EndTime), 
+    Command=max(Command), 
+    Status=min(Status),
+    Statement_Type=max(StatementType),
+    Resource_class=max(ResourceClass) 
+    by RequestId
+| extend elapsedTime_min = (End_Time - Submit_Time)/1m
+| where Command has 'Union' and Command !has 'union all'
+| order by elapsedTime_min
+| project Request_Id,Submit_Time,Start_Time,End_Time,elapsedTime_min,Command,Status,Statement_Type,Resource_class
+| limit 50

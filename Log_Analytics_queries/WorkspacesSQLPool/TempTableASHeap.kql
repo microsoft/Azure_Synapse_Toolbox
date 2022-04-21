@@ -1,0 +1,27 @@
+let databaseName = '<database_name>';
+//If 'Command' is empty - you need to set a bigger time window, the older record with the command is outside of your window
+SynapseSqlPoolExecRequests
+| where _ResourceId  endswith databaseName
+| where StatementType !in ('Batch','Execute')
+| where tolower(Command) contains "create table #" and tolower(Command) !has 'heap'
+ | summarize 
+    Request_ID=any(RequestId),
+    Submit_Time=min(TimeGenerated),
+    Start_Time=max(StartTime),
+    End_Time=max(EndTime),
+    Command=any(Command),
+    Status=min(Status), //This works because Completed/Failed/Cancelled are all below running, below suspended. This happens to work out where the min is the current status
+    Statement_Type=any(StatementType),
+    Resource_class=any(ResourceClass)
+    by RequestId
+| summarize 
+    ElapsedTime_min=anyif((End_Time - Start_Time)/1m,Start_Time > ago(30d))
+    , Submit_Time=any(Submit_Time) 
+    ,Start_Time=any(Start_Time)
+    , End_Time=any(End_Time)
+    ,Command=any(Command)
+    ,Status=any(Status)
+    ,Statement_Type=any(Statement_Type)
+    ,Resource_class=any(Resource_class) 
+    by Request_ID
+| order by ElapsedTime_min desc

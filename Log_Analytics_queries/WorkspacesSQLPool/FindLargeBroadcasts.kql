@@ -1,0 +1,7 @@
+let databaseName="<database_name>";
+SynapseSqlPoolRequestSteps
+| where _ResourceId endswith databaseName
+| where OperationType == 'BroadcastMoveOperation'
+| summarize rowcount=max(RowCount),max(TimeGenerated),max(OperationType) by RequestId,StepIndex
+| order by rowcount
+

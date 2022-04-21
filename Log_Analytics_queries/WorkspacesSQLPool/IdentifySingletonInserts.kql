@@ -1,0 +1,13 @@
+//This query identifies Sessions with large numbers of insert statements, including the max rows inserted. It is mainly used to identify singleton or small inserts. 
+let databaseName="<Database_name>";
+SynapseSqlPoolExecRequests
+| where _ResourceId endswith databaseName
+| where StatementType in ('InsertIntoValues')
+| summarize max(StatementType),min(Status),max(Command) by RequestId
+| join (SynapseSqlPoolRequestSteps
+    | where _ResourceId endswith databaseName
+    | summarize max(RowCount) by RequestId
+    | where max_RowCount == 1
+) on RequestId
+| limit 100
+
