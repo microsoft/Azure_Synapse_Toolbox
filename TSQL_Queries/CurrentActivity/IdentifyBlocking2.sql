@@ -30,7 +30,7 @@ WaitingSidsList AS (
 	LEFT JOIN sys.dm_pdw_exec_sessions blocking_sessions
 		ON blocking_waits.session_id = blocking_sessions.session_id
 	LEFT JOIN sys.dm_pdw_exec_requests waiting_PER
-		ON waiting_PER.request_id = Waiting_waits.request_id
+		ON waiting_PER.request_id = waiting_waits.request_id
 	LEFT JOIN sys.dm_pdw_exec_requests blocking_PER
 		ON blocking_PER.request_id = blocking_waits.request_id
 	WHERE waiting_waits.state = 'queued'
@@ -39,7 +39,7 @@ MAX_WaitingSidsList AS (
 	SELECT    Waiting_SID,
 			MAX(waiting_waitID) as 'MAX_WaitID'
 	FROM WaitingSidsList
-	GROUP BY waiting_SID
+	GROUP BY Waiting_SID
 ) SELECT 
 	 WaitingSidsList.Wait_Time AS 'Wait_Time_(M)',
 	 WaitingSidsList.Waiting_SID,
@@ -54,5 +54,5 @@ MAX_WaitingSidsList AS (
 	 WaitingSidsList.Blocking_command
 FROM MAX_WaitingSidsList
 JOIN WaitingSidsList
-	ON MAX_WaitingSidsList.waiting_SID = WaitingSidsList.Waiting_SID
+	ON MAX_WaitingSidsList.Waiting_SID = WaitingSidsList.Waiting_SID
 	AND MAX_WaitingSidsList.MAX_WaitID = WaitingSidsList.waiting_waitID
