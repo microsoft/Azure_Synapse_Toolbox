@@ -1,4 +1,4 @@
---Mapping details + effective grants + specified grants
+--Mapping details per classifier + effective grants + specified grants
 SELECT * FROM 
 (SELECT 
     wc.name AS 'ClassifierName'
