@@ -392,7 +392,7 @@ LEFT JOIN (
 	) w
 ON w.request_id = r.request_id
 
-GO
+
 /***************************************************************************
 	Procedure name: sp_datamovement
 	Description: 
