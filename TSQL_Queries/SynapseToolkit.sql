@@ -9,7 +9,7 @@ GO
 
 ALTER PROC [dbo].[sp_status] AS
 
-PRINT 'Synapse Toolkit v0.0'
+PRINT 'Synapse Toolkit v1.0, 06/03/22'
 
 EXEC sp_concurrency;
 EXEC sp_requests;
@@ -38,14 +38,12 @@ SELECT
 	,s.login_name
 	,r.submit_time
 	,r.end_compile_time
-	--,r.start_time
-	--,r.end_time
 	,r.total_elapsed_time
 	,r.[label]
 	,r.classifier_name
 	,r.group_name
 	,r.resource_allocation_percentage AS 'allocation_%'
-	,r.command
+	,r.command AS 'query_text'
 	,r.result_cache_hit
 	,'EXEC sp_requests_detail @Request_id=''' + r.request_id + '''' AS 'detail_command'
 FROM sys.dm_pdw_exec_requests r
@@ -53,6 +51,7 @@ JOIN sys.dm_pdw_exec_sessions s
 on r.session_id = s.session_id
 WHERE (r.group_name is not null OR r.result_cache_hit = 1)
 AND r.[status] = 'Running'
+OPTION(LABEL='SynapseToolkit')
 
 SELECT 'Suspended Request' AS 'Suspended Requests'
 	,s.session_id
@@ -62,7 +61,7 @@ SELECT 'Suspended Request' AS 'Suspended Requests'
 	,r.total_elapsed_time AS 'wait_time'
 	,r.[label]
 	,r.classifier_name
-	,r.command
+	,r.command AS 'query_text'
 	,w.resource_waits AS 'concurrency_waits'
 	,w.object_waits AS 'object_waits'
 	,'EXEC sp_waits_detail @Request_id=''' + r.request_id + '''' AS 'waits_detail'
@@ -79,7 +78,8 @@ LEFT JOIN (
 	GROUP BY request_id
 ) w
 ON r.request_id = w.request_id
-WHERE r.[status] = 'Suspended';
+WHERE r.[status] = 'Suspended'
+OPTION(LABEL='SynapseToolkit')
 GO
 
 /***************************************************************************
@@ -168,6 +168,7 @@ RIGHT JOIN sys.dm_pdw_request_steps rs
 	AND rs.step_index = dist.step_index
 WHERE rs.request_id = @request_id
 ORDER BY rs.step_index,dist.pdw_node_id,dist.distribution_id
+OPTION(LABEL='SynapseToolkit')
 GO
 
 /***************************************************************************
@@ -184,73 +185,110 @@ GO
 ALTER PROC [dbo].[sp_waits] AS
 		--Granted Object Locks
 		SELECT 'Granted Object Lock' AS 'Granted Object Locks'
-		,session_id
-		,request_id
-		,wait_id
-		,[state]
-		,[type]
-		,object_type
-		,[object_name]
-		,priority
-		,request_time
-		,acquire_time
-		,'EXEC sp_waits_detail @Request_id=''' + request_id + '''' AS 'detail_command'
-		FROM sys.dm_pdw_waits
-		WHERE object_type != 'SYSTEM'
-		AND [state]='Granted'
-		ORDER BY session_id,request_id,wait_id
+				,w.session_id
+				,w.request_id
+				,r.[status] AS 'request_status'
+				,w.[state] AS 'wait_state'
+				,w.[type]
+				,w.object_type
+				,w.[object_name]
+				,r.importance
+				,r.classifier_name
+				,r.group_name
+				,w.priority
+				,w.request_time
+				,w.acquire_time
+				,r.total_elapsed_time AS 'request_elapsed_time'
+				,r.[label]
+				,r.command AS 'query_text'
+				--,'EXEC sp_waits_detail @Request_id=''' + w.request_id + '''' AS 'detail_command'
+				FROM sys.dm_pdw_waits w
+				JOIN sys.dm_pdw_exec_requests r 
+				ON w.request_id = r.request_id
+				WHERE w.object_type != 'SYSTEM'
+				AND w.[state]='Granted'
+				AND r.[status] != 'Completed'
+				AND w.session_id != SESSION_ID()
+				ORDER BY r.[status],r.start_time,r.submit_time,w.priority asc
+				OPTION(LABEL='SynapseToolkit')
 
 		--Queued Locks
-		SELECT 'Queued Object Lock' AS 'Queued Object Locks'
-		,session_id
-		,request_id
-		,wait_id
-		,[state]
-		,[type]
-		,object_type
-		,[object_name]
-		,priority
-		,request_time
-		,'EXEC sp_waits_detail @Request_id=''' + request_id + '''' AS 'detail_command'
-		FROM sys.dm_pdw_waits
-		WHERE object_type != 'SYSTEM'
-		AND [state]!='Granted'
-		ORDER BY session_id,wait_id
+				SELECT 'Queued Object Lock' AS 'Queued Object Locks'
+				,w.session_id
+				,w.request_id
+				,r.[status] AS 'request_status'
+				,w.[state] AS 'wait_state'
+				,w.[type]
+				,w.object_type
+				,w.[object_name]
+				,r.importance
+				,r.classifier_name
+				,r.group_name
+				,w.priority
+				,w.request_time
+				,w.acquire_time
+				,r.total_elapsed_time AS 'request_elapsed_time'
+				,r.[label]
+				,r.command AS 'query_text'
+				,'EXEC sp_waits_detail @Request_id=''' + w.request_id + '''' AS 'detail_command'
+				FROM sys.dm_pdw_waits w
+				JOIN sys.dm_pdw_exec_requests r 
+				ON w.request_id = r.request_id
+				WHERE w.object_type != 'SYSTEM'
+				AND w.[state]!='Granted'
+				AND r.[status] != 'Completed'
+				ORDER BY r.[status],r.start_time,r.submit_time,w.priority asc
+				OPTION(LABEL='SynapseToolkit')
 
-				--Granted Object Locks
-		SELECT 'granted_resource_lock' AS 'Granted Concurrency Waits'
-		,session_id
-		,request_id
-		,wait_id
-		,[state]
-		,[type]
-		,object_type
-		,[object_name]
-		,priority
-		,request_time
-		,acquire_time
-		,'EXEC sp_waits_detail @Request_id=''' + request_id + '''' AS 'detail_command'
-		FROM sys.dm_pdw_waits
+				--Granted concurrency waits
+				SELECT 'Granted Concurrency Wait' AS 'Granted Concurrency Waits'
+			,w.session_id
+			,w.request_id
+			,r.[status] AS 'request_status'
+			,w.[state] AS 'wait_state'
+			,r.resource_allocation_percentage
+			,r.importance
+			,r.classifier_name
+			,r.group_name
+			,w.priority
+			,w.request_time
+			,w.acquire_time
+			,r.total_elapsed_time AS 'request_elapsed_time'
+			,r.[label]
+			,r.command AS 'query_text'
+		FROM sys.dm_pdw_waits w
+		JOIN sys.dm_pdw_exec_requests r
+		on w.request_id = r.request_id
 		WHERE object_type = 'SYSTEM'
-		AND [state]='Granted'
-		ORDER BY session_id,request_id,wait_id
+		AND w.[state]='Granted'
+		AND w.[type] NOT IN ('ConcurrencyResourceType','LocalQueriesConcurrencyResourceType')
+		ORDER BY w.session_id,w.request_id,w.wait_id
+		OPTION(LABEL='SynapseToolkit')
 
-		--Queued Locks
-		SELECT 'Queued Resource Lock' AS 'Queued Concurrency Waits'
-		,session_id
-		,request_id
-		,wait_id
-		,[state]
-		,[type]
-		,object_type
-		,[object_name]
-		,priority
-		,request_time
-		--,'EXEC sp_waits_detail @Request_id=''' + request_id + '''' AS 'Detail Command'
-		FROM sys.dm_pdw_waits
+		--Queued concurrency waits
+		SELECT 'Queued Concurrency Wait' AS 'Queued Concurrency Waits'
+			,w.session_id
+			,w.request_id
+			,r.[status] AS 'request_status'
+			,w.[state] AS 'wait_state'
+			,r.resource_allocation_percentage
+			,r.importance
+			,r.classifier_name
+			,r.group_name
+			,w.priority
+			,w.request_time
+			,w.acquire_time
+			,r.total_elapsed_time AS 'request_elapsed_time'
+			,r.[label]
+			,r.command AS 'query_text'
+		FROM sys.dm_pdw_waits w
+		JOIN sys.dm_pdw_exec_requests r
+		on w.request_id = r.request_id
 		WHERE object_type = 'SYSTEM'
-		AND [state]!='Granted'
-		ORDER BY session_id,wait_id
+		AND w.[state]!='Granted'
+		AND w.[type] NOT IN ('ConcurrencyResourceType','LocalQueriesConcurrencyResourceType')
+		ORDER BY w.session_id,w.request_id,w.wait_id
+		OPTION(LABEL='SynapseToolkit')
 	
 GO
 
@@ -260,10 +298,7 @@ GO
 	When providing a suspended requestID:
 		This sp will return all queries that have object locks on the same objects
 		the provided query is queued on
-	When providing a runnign requestID:
-		This sp will return all other object-level locks that this query MAY 
-		be locking. Specifically, it will return queued locks for objects the provided
-		query has a granted lock on. 
+	This query returns a message if a query with no waiting object locks is provided
 
 ****************************************************************************/
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_NAME = 'sp_waits_detail')
@@ -273,85 +308,55 @@ GO
 ALTER PROC [dbo].[sp_waits_detail] @request_id [varchar](20) AS
 
 --If the provided statement is suspended, show what's blocking it
---ELSE show what the provided query may be blocking
 
 IF (SELECT [status] FROM sys.dm_pdw_exec_requests WHERE request_id = @request_id) = 'Suspended'
 	BEGIN
-		--Queued Object Locks for provided query
-		SELECT 'Blocked Object Lock' AS 'Blocked Object Locks'
-		,session_id
-		,request_id
-		,wait_id
-		,[state]
-		,[type]
-		,object_type
-		,[object_name]
-		,priority
-		,request_time
-		,acquire_time
-		FROM sys.dm_pdw_waits
-		WHERE object_type != 'SYSTEM'
-		AND [state]!='Granted'
-		AND request_id = @request_id
-		ORDER BY session_id,wait_id
+		IF (SELECT TOP 1 [object_type] FROM sys.dm_pdw_waits WHERE request_id = @request_id AND STATE != 'GRANTED' ) != 'SYSTEM'
+		BEGIN
+			--Queued Object Locks for provided query
+			SELECT 'Blocked Object Lock' AS 'Blocked Object Locks'
+			,session_id
+			,request_id
+			,wait_id
+			,[state]
+			,[type]
+			,object_type
+			,[object_name]
+			,priority
+			,request_time
+			,acquire_time
+			FROM sys.dm_pdw_waits
+			WHERE object_type != 'SYSTEM'
+			AND [state]!='Granted'
+			AND request_id = @request_id
+			ORDER BY session_id,wait_id
+			OPTION(LABEL='SynapseToolkit')
 		
-		--Granted Locks on the same objects as in query
-		SELECT 'Possible Blocker' AS 'Possible Blockers'
-		,w2.session_id
-		,w2.request_id
-		,w2.wait_id
-		,w2.[state]
-		,w2.[type]
-		,w2.object_type
-		,w2.[object_name]
-		,w2.priority
-		,w2.request_time
-		,w2.acquire_time 
-		,'EXEC sp_waits_detail @Request_id=''' + w2.request_id + '''' AS 'detail_command'
-		FROM sys.dm_pdw_waits w1
-		JOIN sys.dm_pdw_waits w2
-		ON w1.[object_name] = w2.[object_name]
-		WHERE w1.request_id = @request_id
-		AND w2.[state] = 'Granted'
-		ORDER BY w2.session_id,w2.wait_id
-	END
-ELSE 
-	BEGIN
-		--Granted locks for provided query
-		SELECT 'Possible Blocker' AS 'Possible Blockers'
-		,session_id
-		,request_id
-		,wait_id
-		,[state]
-		,[type]
-		,object_type
-		,[object_name]
-		,priority
-		,request_time
-		,acquire_time
-		FROM sys.dm_pdw_waits
-		WHERE request_id = @request_id
-		AND [state] = 'Granted';
-
-		SELECT 'Related queued wait' AS 'Related queued waits'
-		,w2.session_id
-		,w2.request_id
-		,w2.wait_id
-		,w2.[state]
-		,w2.[type]
-		,w2.object_type
-		,w2.[object_name]
-		,w2.priority
-		,w2.request_time
-		,w2.acquire_time 
-		,'EXEC sp_waits_detail @Request_id=''' + w2.request_id + '''' AS 'detail_command'
-		FROM sys.dm_pdw_waits w1
-		JOIN sys.dm_pdw_waits w2
-		ON w1.[object_name] = w2.[object_name]
-		WHERE w1.request_id = @request_id
-		AND w2.[state] != 'Granted'
-		ORDER BY w2.session_id,w2.wait_id;
-	
+			--Granted Locks on the same objects as in query
+			SELECT 'Possible Blocker' AS 'Possible Blockers'
+			,w2.session_id
+			,w2.request_id
+			,w2.wait_id
+			,w2.[state]
+			,w2.[type]
+			,w2.object_type
+			,w2.[object_name]
+			,w2.priority
+			,w2.request_time
+			,w2.acquire_time 
+			,'EXEC sp_waits_detail @Request_id=''' + w2.request_id + '''' AS 'detail_command'
+			FROM sys.dm_pdw_waits w1
+			JOIN sys.dm_pdw_waits w2
+			ON w1.[object_name] = w2.[object_name]
+			WHERE w1.request_id = @request_id
+			AND w2.[state] = 'Granted'
+			ORDER BY w2.session_id,w2.wait_id
+			OPTION(LABEL='SynapseToolkit')
+		END
+		ELSE
+		BEGIN
+			SELECT 'No queued object Locks' AS 'Message'
+		END
 	END
 
 GO
@@ -391,6 +396,7 @@ LEFT JOIN (
 	GROUP BY request_id
 	) w
 ON w.request_id = r.request_id
+OPTION(LABEL='SynapseToolkit')
 
 GO
 /***************************************************************************
@@ -453,6 +459,7 @@ ON step_data.request_id = rs.request_id
 AND step_data.step_index = rs.step_index
 WHERE per.status = 'Running'
 ORDER BY step_data.Step_rows_processed DESC
+OPTION(LABEL='SynapseToolkit')
 
 /***************************************************************************
 	Procedure name: 
