@@ -1,4 +1,28 @@
 /***************************************************************************
+	Synapse Toolkit v1.1, 06/13/22 
+	
+	The Synapse Toolkit is a set of stored procedures that help investigate
+	current activity on your Synapse Dedicated SQL Pool. sp_status is the overall
+	summary procedure that calls various other procedures to provide a picture
+	of current activity. Use the detail_command columns to deep dive into a 
+	particular session, query, or wait. 
+	
+	List of SPs currently included:
+		sp_status
+		sp_concurrency
+		sp_requests
+		sp_reqeusts_detail
+		sp_sessions
+		sp_sessions_detail
+		sp_waits
+		sp_waits_detail
+		sp_datamovement
+	
+****************************************************************************/
+
+
+
+/***************************************************************************
 	Procedure name: sp_status
 	Description: 
 		Runs a few of the included SPs to give overall system utilization.
@@ -9,11 +33,12 @@ GO
 
 ALTER PROC [dbo].[sp_status] AS
 
-PRINT 'Synapse Toolkit v1.0, 06/03/22'
+PRINT 'Synapse Toolkit v1.1, 06/13/22'
 
 EXEC sp_concurrency;
 EXEC sp_requests;
 EXEC sp_datamovement
+--EXEC sp_sessions
 
 GO
 
@@ -45,7 +70,8 @@ SELECT
 	,r.resource_allocation_percentage AS 'allocation_%'
 	,r.command AS 'query_text'
 	,r.result_cache_hit
-	,'EXEC sp_requests_detail @Request_id=''' + r.request_id + '''' AS 'detail_command'
+	,'EXEC sp_requests_detail @Request_id=''' + r.request_id + '''' AS 'request_detail_command'
+	,'EXEC sp_sessions_detail @session_id=''' + r.session_id + '''' AS 'session_detail_command'
 FROM sys.dm_pdw_exec_requests r
 JOIN sys.dm_pdw_exec_sessions s
 on r.session_id = s.session_id
@@ -65,6 +91,7 @@ SELECT 'Suspended Request' AS 'Suspended Requests'
 	,w.resource_waits AS 'concurrency_waits'
 	,w.object_waits AS 'object_waits'
 	,'EXEC sp_waits_detail @Request_id=''' + r.request_id + '''' AS 'waits_detail'
+	,'EXEC sp_sessions_detail @session_id=''' + r.session_id + '''' AS 'session_detail_command'
 FROM sys.dm_pdw_exec_requests r
 JOIN sys.dm_pdw_exec_sessions s
 on r.session_id = s.session_id
@@ -376,9 +403,13 @@ GO
 ALTER PROC [dbo].[sp_concurrency] AS 
 
 SELECT
-	sum(case when r.status = 'Running' AND (r.group_name is not null OR r.result_cache_hit = 1) then 1 else 0 end) as running_queries
+	sum(case when r.status = 'Running' then r.resource_allocation_percentage else 0 end) as 'resource_allocated_percentage'
+	--,sum(case when s.status = 'Active' then 1 else 0 end) as 'active_sessions'
+	--sum(case when s.status = 'Idle' then 1 else 0 end) as 'idle_sessions'
+	,(SELECT count(1) FROM sys.dm_pdw_exec_sessions where status = 'Active') AS 'active_sessions'
+	,(SELECT count(1) FROM sys.dm_pdw_exec_sessions where status = 'Idle') AS 'idle_sessions'
+	,sum(case when r.status = 'Running' AND (r.group_name is not null OR r.result_cache_hit = 1) then 1 else 0 end) as running_queries
 	,sum(case when r.status = 'suspended' then 1 else 0 end) as queued_queries
-	,sum(case when r.status = 'Running' then r.resource_allocation_percentage else 0 end) as 'resource_allocated_percentage'
 	,sum(case when w.queued_resource_waits > 0 then 1 else 0 end) AS concurrency_waits
 	,sum(case when w.queued_object_locks > 0 then 1 else 0 end) AS object_waits
 FROM 
@@ -397,6 +428,8 @@ LEFT JOIN (
 	) w
 ON w.request_id = r.request_id
 OPTION(LABEL='SynapseToolkit')
+
+
 
 GO
 /***************************************************************************
@@ -448,7 +481,7 @@ SELECT
 	, per.command AS 'QID_Command'
 	, per.resource_class
 	, per.importance
-	,'EXEC sp_requests_detail @Request_id=''' + per.request_id + '''' AS 'detail_command'
+	,'EXEC sp_requests_detail @Request_id=''' + per.request_id + '''' AS 'request_detail_command'
 FROM step_data
 LEFT JOIN sys.dm_pdw_exec_requests per
 ON step_data.request_id = per.request_id
@@ -459,6 +492,87 @@ ON step_data.request_id = rs.request_id
 AND step_data.step_index = rs.step_index
 WHERE per.status = 'Running'
 ORDER BY step_data.Step_rows_processed DESC
+OPTION(LABEL='SynapseToolkit')
+
+GO
+/***************************************************************************
+	Procedure name: sp_sessions
+	Description: status of all open sessions
+
+****************************************************************************/
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_NAME = 'sp_sessions')
+    EXEC ('CREATE PROC dbo.sp_sessions AS SELECT ''TEMPORARY''')
+
+GO
+
+ALTER PROC sp_sessions AS
+
+SELECT 
+	'Active Session' AS 'Active Sessions'
+	,s.session_id
+	,s.request_id
+	,s.login_name
+	,s.login_time
+	,s.query_count
+	,s.client_id
+	,s.[app_name]
+	,'EXEC sp_sessions_detail @session_id=''' + s.session_id + '''' AS 'detail_command'
+FROM sys.dm_pdw_exec_sessions s
+WHERE s.[status] = 'active'
+order by login_time asc
+OPTION(LABEL='SynapseToolkit')
+
+SELECT 
+	'Idle Session' AS 'Idle Sessions'
+	,s.session_id
+	,s.request_id
+	,s.login_name
+	,s.login_time
+	,s.query_count
+	,s.client_id
+	,s.[app_name]
+	,'EXEC sp_sessions_detail @session_id=''' + s.session_id + '''' AS 'detail_command'
+FROM sys.dm_pdw_exec_sessions s
+WHERE s.[status] = 'idle'
+order by login_time asc
+OPTION(LABEL='SynapseToolkit')
+
+GO
+
+/***************************************************************************
+	Procedure name: sp_sessions_detail
+	Description: 
+
+****************************************************************************/
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_NAME = 'sp_sessions_detail')
+    EXEC ('CREATE PROC dbo.sp_sessions_detail AS SELECT ''TEMPORARY''')
+
+GO
+
+ALTER PROC sp_sessions_detail @session_id [varchar](20) AS
+
+SELECT 
+	Session_id
+	,request_id
+	,[status]
+	,submit_time
+	,end_compile_time
+	,start_time
+	,end_time
+	,total_elapsed_time/1000 AS 'total_elapsed_time_s'
+	,[label]
+	,error_id
+	,command
+	,command2
+	,classifier_name
+	,group_name
+	,importance
+	,resource_allocation_percentage
+	,result_cache_hit
+	,'EXEC sp_requests_detail @Request_id=''' + request_id + '''' AS 'detail_command'
+FROM sys.dm_pdw_exec_requests
+WHERE session_id = @session_id
+ORDER BY submit_time ASC
 OPTION(LABEL='SynapseToolkit')
 
 /***************************************************************************
