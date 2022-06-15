@@ -47,6 +47,7 @@ SELECT
 	--,ic.column_id as 'Index_Column_ID'
 	,CL.[Column]
 	,CL.column_id
+	,i.index_id
 	,CL.[Type]
 	,CL.max_length
 	,CL.precision
