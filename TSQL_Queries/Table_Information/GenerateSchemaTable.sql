@@ -43,7 +43,7 @@ SELECT
 	,ptdp.Distribution_policy_desc AS 'Table_Type' 
 	,dist.column_name AS Distribution_Column
 	,i.name AS Index_name
-	,i.type_desc AS Index_Type
+	,ISNULL(i.type_desc,'HEAP') AS Index_Type
 	--,ic.column_id as 'Index_Column_ID'
 	,CL.[Column]
 	,CL.column_id
