@@ -37,16 +37,14 @@ WITH ColumnList AS
 )
 
 SELECT
-	s.name AS 'Schema',
-	t.name AS 'Table',
-	t.object_id,
-	t.create_date,
-	t.modify_date,
-	ptdp.Distribution_policy_desc AS 'Table_Type', 
-	dist.column_name AS Distribution_Column
+	s.name AS 'Schema'
+	,t.name AS 'Table'
+	,t.object_id
+	,ptdp.Distribution_policy_desc AS 'Table_Type' 
+	,dist.column_name AS Distribution_Column
 	,i.name AS Index_name
 	,i.type_desc AS Index_Type
-	,ic.column_id as 'Index_Column_ID'
+	--,ic.column_id as 'Index_Column_ID'
 	,CL.[Column]
 	,CL.column_id
 	,CL.[Type]
@@ -56,6 +54,8 @@ SELECT
 	,CL.is_nullable 
 	,CL.ColumnDefinition
 	,CL.Ctas_version
+	,t.create_date
+	,t.modify_date
 FROM sys.tables t
 JOIN sys.schemas s
 ON t.schema_id = s.schema_id
