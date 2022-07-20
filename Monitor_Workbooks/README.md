@@ -1,4 +1,4 @@
-# Monitor Synpase
+# Monitor Synapse
 Use this template to monitor your dedicated SQL Pools. 
 If you have an instance that was created withint a Synapse workspace, then you will use the workspaces sql pool template. 
 If the instance was deployed standalone and was not originally part of a workspace, you will use the standalone template.
