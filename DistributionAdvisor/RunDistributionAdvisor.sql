@@ -10,7 +10,6 @@ go
 EXEC dbo.read_dist_recommendation;
 go
 
-
 -- *******************************************************************************************
 -- This portion is for running DA on top @MaxNumQueries queries.
 -- @MaxNumQueries parameter value can be in [1...100] range.
@@ -19,3 +18,20 @@ EXEC dbo.write_dist_recommendation 100, NULL
 go
 EXEC dbo.read_dist_recommendation;
 go
+
+-- *******************************************************************************************
+-- The below is an example usage of format_recommendation stored procedure.
+-- It takes the recommendation result as a parameter and displays in a formatted readable manner.
+set recommendations on;
+go
+
+select 1;
+
+set recommendations off;
+go
+
+DECLARE @sessionid nvarchar(100);
+DECLARE @recommendation nvarchar(MAX);
+select @sessionid = SESSION_ID();
+select @recommendation = recommendation from sys.dm_pdw_distrib_advisor_results where session_id = @sessionid
+EXEC dbo.format_recommendation @recommendation;
