@@ -1,0 +1,2 @@
+SparkListenerEvent_CL
+| summarize Total_vCores_Used=sum(Executor_Info_Total_Cores_d), Total_Memory_Used_GB=sum(Maximum_Memory_d)/(1024*1024*1024) by applicationId_s, clusterName_s, livyId_s;
