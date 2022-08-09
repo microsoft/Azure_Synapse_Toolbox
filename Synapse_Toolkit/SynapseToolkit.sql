@@ -371,7 +371,8 @@ IF (SELECT [status] FROM sys.dm_pdw_exec_requests WHERE request_id = @request_id
 			,w2.priority
 			,w2.request_time
 			,w2.acquire_time 
-			,'EXEC sp_waits_detail @Request_id=''' + w2.request_id + '''' AS 'detail_command'
+			,'EXEC sp_requests_detail @Request_id=''' + w2.request_id + '''' AS 'request_detail_command'
+			,'EXEC sp_sessions_detail @session_id=''' + w2.session_id + '''' AS 'session_detail_command'
 			FROM sys.dm_pdw_waits w1
 			JOIN sys.dm_pdw_waits w2
 			ON w1.[object_name] = w2.[object_name]
@@ -380,13 +381,16 @@ IF (SELECT [status] FROM sys.dm_pdw_exec_requests WHERE request_id = @request_id
 			ORDER BY w2.session_id,w2.wait_id
 			OPTION(LABEL='SynapseToolkit')
 		END
-		ELSE
-		BEGIN
-			SELECT 'No queued object Locks' AS 'Message'
-		END
+
 	END
+	ELSE
+		BEGIN
+			SELECT 'No queued object Locks found for ' + @request_id AS 'Message'
+		END
 
 GO
+
+
 
 /***************************************************************************
 	Procedure name: sp_concurrency
