@@ -36,7 +36,7 @@ left join
          INNER JOIN sys.dm_pdw_nodes_db_partition_stats rg     ON rg.object_id = nt.object_id
             AND rg.pdw_node_id = nt.pdw_node_id
             AND rg.distribution_id = nt.distribution_id
-    WHERE rg.index_id = 1
+    --WHERE rg.index_id = 1 --this woudl only include CCI tables
     GROUP BY sm.name, tb.name, tb.object_id
 ) actualRowCounts
 on objIdsWithStats.object_id = actualRowCounts.object_id
