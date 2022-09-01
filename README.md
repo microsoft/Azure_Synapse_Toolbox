@@ -32,7 +32,7 @@ The Azure Synapse Analyzer Report was created to help you identify common issues
 
 ![Tables with Issues](Synapse_Analyzer/Synapse_BPA_Report/img/Tables-with-Issues.png "Tables with Issues")
 
-## Synpase Toolkit
+## Synapse Toolkit
 
 The Synapse Toolkit is a set of stored procedures that help investigate
 current activity on your Synapse Dedicated SQL Pool. sp_status is the overall
