@@ -34,7 +34,7 @@ AS BEGIN
 			END
 		ELSE
 			DECLARE @FirstDistrib nvarchar(max);
-			SELECT @FirstDistrib = REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(SUBSTRING(@recommendation, @FirstDistribBegin, @DistribLength), CHAR(9), ''), '->', ''), '  ', ' '), ' ', '","'), CHAR(10), '"],["'); 
+			SELECT @FirstDistrib = REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(SUBSTRING(@recommendation, @FirstDistribBegin, @DistribLength), CHAR(9), ''), CHAR(13), ''), '->', ''), '  ', ' '), ' ', '","'), CHAR(10), '"],["'); 
 			SELECT @FirstDistrib = REPLACE(REPLACE(@FirstDistrib, 'Distributed', 'Hash'), ':', '');
 			SELECT @FirstDistrib = '[["' + @FirstDistrib + '"]]';
 
@@ -62,6 +62,7 @@ AS BEGIN
 						) base
 				pivot (max (base.[value]) for base.col_no in ([0], [1], [2])) pvt
 				) x
+				where [1] is not null and [2] is not null
 			) y
 	END
 END
