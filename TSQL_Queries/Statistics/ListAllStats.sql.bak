@@ -5,7 +5,6 @@ Select
     , sch.name as [Schema]
     , t.name as [Table]
     , t.object_id as Table_ID
-	, s.user_created as [is_user_created]
     , s.name as [Statistic]
     , s.stats_id as stats_id
     , c.name as [Column]
@@ -24,4 +23,3 @@ From sys.tables t
 WHERE 1=1
 --AND sch.name like '%dbo%' --uncomment to choose a schema
 --AND t.name like '%Trips%' --Uncomment to pick a specific table
---AND s.user_created=1
