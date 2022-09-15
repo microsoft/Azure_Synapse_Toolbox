@@ -13,17 +13,10 @@ go
 CREATE PROCEDURE dbo.format_recommendation @recommendation NVARCHAR(MAX)
 AS
 BEGIN
-    IF (
-            @recommendation IS NULL
-            OR len(@recommendation) = 0
-            )
-    BEGIN
-        RAISERROR (
-                N'No recommendation was found'
-                , 18
-                , - 1
-                );
-    END
+    IF (@recommendation IS NULL OR len(@recommendation) = 0)
+      BEGIN
+          RAISERROR (N'No recommendation was found', 18, - 1);
+      END
     ELSE
     BEGIN
         -- Parse the recommendation result
@@ -31,18 +24,14 @@ BEGIN
         DECLARE @FirstDistribEnd INT = PATINDEX('%------------------------------------------------------------%', @recommendation);
         DECLARE @JumpPast NVARCHAR(max) = 'Table Distribution Changes';
 
-        SET @FirstDistribBegin = @FirstDistribBegin + LEN(@JumpPast) + 2;-- +1 to eat newline at the beginning
-
+			  SET @FirstDistribBegin = @FirstDistribBegin + LEN(@JumpPast) + 2; -- +1 to eat newline at the beginning
+			  DECLARE @DistribLength int = @FirstDistribEnd - @FirstDistribBegin - 2; -- extra -2 to remove newlines at the end
         DECLARE @DistribLength INT = @FirstDistribEnd - @FirstDistribBegin - 3;-- extra -2 to remove newlines at the end
 
         IF (@DistribLength <= 0)
-        BEGIN
-            RAISERROR (
-                    N'No distribution to show. The query does not involve any tables, or the tables do not exist.'
-                    , 18
-                    , - 1
-                    );
-        END
+          BEGIN
+              RAISERROR (N'No distribution to show. The query does not involve any tables, or the tables do not exist.', 18, - 1);
+          END
         ELSE
             DECLARE @FirstDistrib NVARCHAR(max);
 
@@ -61,11 +50,11 @@ BEGIN
                     THEN N'<no change>'
                 ELSE CONCAT (
                         N'CREATE TABLE ', y.TableName, N'_changed 
-WITH (DISTRIBUTION=', REPLACE(REPLACE(SuggestedDistribution, 'replicated', 'REPLICATE'), 'Hash', 'HASH'), N', ', i.TableIndex, ') 
-AS SELECT * FROM ', y.TableName, N'; 
+                        WITH (DISTRIBUTION=', REPLACE(REPLACE(SuggestedDistribution, 'replicated', 'REPLICATE'), 'Hash', 'HASH'), N', ', i.TableIndex, ') 
+                        AS SELECT * FROM ', y.TableName, N';
 
-DROP TABLE ', y.TableName, '; 
-RENAME OBJECT ', y.TableName, N'_changed TO ', i.tableName, ';')
+                        DROP TABLE ', y.TableName, '; 
+                        RENAME OBJECT ', y.TableName, N'_changed TO ', i.tableName, ';')
                 END
             , Remarks = CASE 
                 WHEN PATINDEX('%Hash%', CurrentDistribution) > 0
@@ -109,13 +98,7 @@ RENAME OBJECT ', y.TableName, N'_changed TO ', i.tableName, ';')
                     WHEN 0
                         THEN 'HEAP'
                     WHEN 1
-                        THEN CONCAT (
-                                'CLUSTERED INDEX ('
-                                , STRING_AGG(c.Name, ', ') WITHIN GROUP (
-                                        ORDER BY ic.key_ordinal ASC
-                                        )
-                                    , ')'
-                                )
+                        THEN CONCAT ('CLUSTERED INDEX (', STRING_AGG(c.Name, ', ') WITHIN GROUP (ORDER BY ic.key_ordinal ASC), ')')
                     WHEN 5
                         THEN 'CLUSTERED COLUMNSTORE INDEX'
                     END AS TableIndex
