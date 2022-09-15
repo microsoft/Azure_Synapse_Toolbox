@@ -10,63 +10,117 @@ IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'dbo.format_re
 	DROP PROCEDURE dbo.format_recommendation
 go
 
-CREATE PROCEDURE format_recommendation
-	@recommendation NVARCHAR(MAX)
-AS BEGIN
-	
-	IF (@recommendation is null or len(@recommendation) = 0)
-		BEGIN
-			RAISERROR(N'No recommendation was found', 18, -1);
-		END
-	ELSE
-		BEGIN
-			-- Parse the recommendation result
-			DECLARE @FirstDistribBegin int = PATINDEX('%Table Distribution Changes%', @recommendation);
-			DECLARE @FirstDistribEnd int = PATINDEX('%------------------------------------------------------------%', @recommendation);
-			DECLARE @JumpPast nvarchar(max) = 'Table Distribution Changes';
+CREATE PROCEDURE dbo.format_recommendation @recommendation NVARCHAR(MAX)
+AS
+BEGIN
+    IF (@recommendation IS NULL OR len(@recommendation) = 0)
+      BEGIN
+          RAISERROR (N'No recommendation was found', 18, - 1);
+      END
+    ELSE
+    BEGIN
+        -- Parse the recommendation result
+        DECLARE @FirstDistribBegin INT = PATINDEX('%Table Distribution Changes%', @recommendation);
+        DECLARE @FirstDistribEnd INT = PATINDEX('%------------------------------------------------------------%', @recommendation);
+        DECLARE @JumpPast NVARCHAR(max) = 'Table Distribution Changes';
 
-			SET @FirstDistribBegin = @FirstDistribBegin + LEN(@JumpPast) + 2; -- +1 to eat newline at the beginning
-			DECLARE @DistribLength int = @FirstDistribEnd - @FirstDistribBegin - 2; -- extra -2 to remove newlines at the end
+			  SET @FirstDistribBegin = @FirstDistribBegin + LEN(@JumpPast) + 2; -- +1 to eat newline at the beginning
+			  DECLARE @DistribLength int = @FirstDistribEnd - @FirstDistribBegin - 2; -- extra -2 to remove newlines at the end
+        DECLARE @DistribLength INT = @FirstDistribEnd - @FirstDistribBegin - 3;-- extra -2 to remove newlines at the end
 
-		IF (@DistribLength <= 0)
-			BEGIN
-				RAISERROR(N'No distribution to show. The query does not involve any tables, or the tables do not exist.', 18, -1);
-			END
-		ELSE
-			DECLARE @FirstDistrib nvarchar(max);
-			SELECT @FirstDistrib = REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(SUBSTRING(@recommendation, @FirstDistribBegin, @DistribLength), CHAR(9), ''), CHAR(13), ''), '->', ''), '  ', ' '), ' ', '","'), CHAR(10), '"],["'); 
-			SELECT @FirstDistrib = REPLACE(REPLACE(@FirstDistrib, 'Distributed', 'Hash'), ':', '');
-			SELECT @FirstDistrib = '[["' + @FirstDistrib + '"]]';
+        IF (@DistribLength <= 0)
+          BEGIN
+              RAISERROR (N'No distribution to show. The query does not involve any tables, or the tables do not exist.', 18, - 1);
+          END
+        ELSE
+            DECLARE @FirstDistrib NVARCHAR(max);
 
-			-- Format the recommendation output 
-			select TableName, CurrentDistribution, SuggestedDistribution, ChangeCommand = 
-				case 
-					when CurrentDistribution = SuggestedDistribution
-					then N'<no change>' 
-				else CONCAT(N'create table ', TableName, N'_changed with (distribution=', SuggestedDistribution, N', clustered columnstore index) as select * from ', TableName, N';') 
-				end,
-				Remarks = 
-				case when PATINDEX('%Hash%', CurrentDistribution) > 0 and CHARINDEX(',', CurrentDistribution) > 0 
-				then N'MCD tables are not considered by the current DA version.'
-				else ''
-				end
-			from (
-				select [0] as TableName, [1] as CurrentDistribution, [2] as SuggestedDistribution
-				from (
-				select pvt.*
-				from (select row_no = [rows].[key], col_no = [cols].[key], cols.[value]
-						from 
-						(select [json] = @FirstDistrib) step1
-						cross apply openjson([json]) [rows]
-						cross apply openjson([rows].[value]) [cols]
-						) base
-				pivot (max (base.[value]) for base.col_no in ([0], [1], [2])) pvt
-				) x
-				where [1] is not null and [2] is not null
-			) y
-	END
+        SELECT @FirstDistrib = REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(SUBSTRING(@recommendation, @FirstDistribBegin, @DistribLength), CHAR(9), ''), CHAR(13), ''), '->', ''), '  ', ' '), ' ', '","'), CHAR(10), '"],["');
+
+        SELECT @FirstDistrib = REPLACE(REPLACE(@FirstDistrib, 'Distributed', 'Hash'), ':', '');
+
+        SELECT @FirstDistrib = '[["' + @FirstDistrib + '"]]';
+
+        -- Format the recommendation output 
+        SELECT y.TableName
+            , CurrentDistribution
+            , SuggestedDistribution
+            , ChangeCommand = CASE 
+                WHEN CurrentDistribution = SuggestedDistribution
+                    THEN N'<no change>'
+                ELSE CONCAT (
+                        N'CREATE TABLE ', y.TableName, N'_changed 
+                        WITH (DISTRIBUTION=', REPLACE(REPLACE(SuggestedDistribution, 'replicated', 'REPLICATE'), 'Hash', 'HASH'), N', ', i.TableIndex, ') 
+                        AS SELECT * FROM ', y.TableName, N';
+
+                        DROP TABLE ', y.TableName, '; 
+                        RENAME OBJECT ', y.TableName, N'_changed TO ', i.tableName, ';')
+                END
+            , Remarks = CASE 
+                WHEN PATINDEX('%Hash%', CurrentDistribution) > 0
+                    AND CHARINDEX(',', CurrentDistribution) > 0
+                    THEN N'MCD tables are not considered by the current DA version.'
+                ELSE ''
+                END
+        FROM (
+            SELECT [0] AS TableName
+                , [1] AS CurrentDistribution
+                , [2] AS SuggestedDistribution
+            FROM (
+                SELECT pvt.*
+                FROM (
+                    SELECT row_no = [rows].[key]
+                        , col_no = [cols].[key]
+                        , cols.[value]
+                    FROM (
+                        SELECT [json] = @FirstDistrib
+                        ) step1
+                    CROSS APPLY openjson([json]) [rows]
+                    CROSS APPLY openjson([rows].[value]) [cols]
+                    ) base
+                pivot(max(base.[value]) FOR base.col_no IN ([0], [1], [2])) pvt
+                ) x
+            WHERE [1] IS NOT NULL
+                AND [2] IS NOT NULL
+            ) y
+        JOIN (
+            SELECT CONCAT (
+                    DB_NAME()
+                    , '.'
+                    , OBJECT_SCHEMA_NAME(t.object_id)
+                    , '.'
+                    , t.name
+                    ) AS FullObjectName
+                , OBJECT_SCHEMA_NAME(t.object_id) AS schemaName
+                , t.name AS tableName
+                , i.type
+                , CASE i.type
+                    WHEN 0
+                        THEN 'HEAP'
+                    WHEN 1
+                        THEN CONCAT ('CLUSTERED INDEX (', STRING_AGG(c.Name, ', ') WITHIN GROUP (ORDER BY ic.key_ordinal ASC), ')')
+                    WHEN 5
+                        THEN 'CLUSTERED COLUMNSTORE INDEX'
+                    END AS TableIndex
+            FROM sys.tables t
+            LEFT JOIN sys.indexes i
+                ON t.object_id = i.object_id
+                    AND i.type IN (0, 1, 5)
+            LEFT JOIN sys.index_columns ic
+                ON i.index_id = ic.index_id
+                    AND i.object_id = ic.object_id
+            LEFT JOIN sys.columns c
+                ON ic.column_id = c.column_id
+                    AND ic.object_id = c.object_id
+            GROUP BY t.name
+                , t.object_id
+                , i.name
+                , i.type
+            ) i
+            ON y.TableName = i.FullObjectName
+    END
 END
-go
+GO
 
 CREATE PROCEDURE write_dist_recommendation
 	@NumMaxQueries int, 
