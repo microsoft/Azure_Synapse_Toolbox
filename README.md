@@ -26,13 +26,13 @@ In-depth, interactive workbooks for exploring monitoring data for your Serverles
 
 PowerBI templates to monitor your Synapse Dedicated SQL Pool. PowerBI has the ability to query the front-end of your SQL endpoint as well as the back-end Log Analytics data so you can build powerful reports. 
 
-## Synpase Analyzer
+## Synapse Analyzer
 
 The Azure Synapse Analyzer Report was created to help you identify common issues that may be present in your database that can lead to performance issues. This report focuses on known best practices that Microsoft has identified with SQL Dedicated Pools. Following these best practices will help to get the best performance out of your solution. The Azure Synapse Best Practice Analyzer Report should help give you insights into the health of your database. We will continue to update the report to call out defined best practices that Microsoft has defined.
 
 ![Tables with Issues](Synapse_Analyzer/Synapse_BPA_Report/img/Tables-with-Issues.png "Tables with Issues")
 
-## Synpase Toolkit
+## Synapse Toolkit
 
 The Synapse Toolkit is a set of stored procedures that help investigate
 current activity on your Synapse Dedicated SQL Pool. sp_status is the overall

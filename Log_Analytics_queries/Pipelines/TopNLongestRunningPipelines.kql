@@ -1,0 +1,28 @@
+// Synapse Pipelines - Chart - Top N Longest Running Pipelines
+// N == 5 
+SynapseIntegrationActivityRuns 
+| extend e_Resource = tostring(array_reverse(split(tolower(_ResourceId), '/'))[0])
+| join kind = leftouter (
+    SynapseIntegrationPipelineRuns    
+    | extend TriggerId = tostring(parse_json(Predecessors)[0].Id)
+    | join kind = leftouter (
+        SynapseIntegrationTriggerRuns
+        | project TriggerId, TriggerName
+        )
+        on $left.TriggerId == $right.TriggerId
+    | project TriggerName, TriggerId, RunId
+    )
+    on $left.PipelineRunId == $right.RunId
+| extend ActivityDuration = iif(Status in ('Succeeded', 'Failed'), datetime_diff('second', End, Start), 0)
+| project
+    e_Resource,
+    ActivityName,
+    Start,
+    End,
+    ActivityDuration,
+    PipelineName,
+    TriggerName,
+    ActivityType
+| summarize Avg_Duration = avg(ActivityDuration), Max_Duration = max(ActivityDuration) by e_Resource, TriggerName, PipelineName, ActivityName, ActivityType
+| order by Max_Duration, Avg_Duration
+| limit 5

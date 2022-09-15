@@ -68,7 +68,7 @@ SELECT
 	,r.classifier_name
 	,r.group_name
 	,r.resource_allocation_percentage AS 'allocation_%'
-	,r.command AS 'query_text'
+	,ISNULL(r.command2, r.command) AS 'query_text'
 	,r.result_cache_hit
 	,'EXEC sp_requests_detail @Request_id=''' + r.request_id + '''' AS 'request_detail_command'
 	,'EXEC sp_sessions_detail @session_id=''' + r.session_id + '''' AS 'session_detail_command'
@@ -87,7 +87,7 @@ SELECT 'Suspended Request' AS 'Suspended Requests'
 	,r.total_elapsed_time AS 'wait_time'
 	,r.[label]
 	,r.classifier_name
-	,r.command AS 'query_text'
+	,ISNULL(r.command2, r.command) AS 'query_text'
 	,w.resource_waits AS 'concurrency_waits'
 	,w.object_waits AS 'object_waits'
 	,'EXEC sp_waits_detail @Request_id=''' + r.request_id + '''' AS 'waits_detail'
@@ -227,7 +227,7 @@ ALTER PROC [dbo].[sp_waits] AS
 				,w.acquire_time
 				,r.total_elapsed_time AS 'request_elapsed_time'
 				,r.[label]
-				,r.command AS 'query_text'
+				,ISNULL(r.command2, r.command) AS 'query_text'
 				--,'EXEC sp_waits_detail @Request_id=''' + w.request_id + '''' AS 'detail_command'
 				FROM sys.dm_pdw_waits w
 				JOIN sys.dm_pdw_exec_requests r 
@@ -256,7 +256,7 @@ ALTER PROC [dbo].[sp_waits] AS
 				,w.acquire_time
 				,r.total_elapsed_time AS 'request_elapsed_time'
 				,r.[label]
-				,r.command AS 'query_text'
+				,ISNULL(r.command2, r.command)  AS 'query_text'
 				,'EXEC sp_waits_detail @Request_id=''' + w.request_id + '''' AS 'detail_command'
 				FROM sys.dm_pdw_waits w
 				JOIN sys.dm_pdw_exec_requests r 
@@ -282,7 +282,7 @@ ALTER PROC [dbo].[sp_waits] AS
 			,w.acquire_time
 			,r.total_elapsed_time AS 'request_elapsed_time'
 			,r.[label]
-			,r.command AS 'query_text'
+			,ISNULL(r.command2, r.command)  AS 'query_text'
 		FROM sys.dm_pdw_waits w
 		JOIN sys.dm_pdw_exec_requests r
 		on w.request_id = r.request_id
@@ -307,7 +307,7 @@ ALTER PROC [dbo].[sp_waits] AS
 			,w.acquire_time
 			,r.total_elapsed_time AS 'request_elapsed_time'
 			,r.[label]
-			,r.command AS 'query_text'
+			,ISNULL(r.command2, r.command)  AS 'query_text'
 		FROM sys.dm_pdw_waits w
 		JOIN sys.dm_pdw_exec_requests r
 		on w.request_id = r.request_id
@@ -482,7 +482,7 @@ SELECT
 	, step_data.status as Step_status
 	--, per.status AS QID_Status
 	, per.total_elapsed_time/1000/60 as 'QID_elapsed_time(m)'
-	, per.command AS 'QID_Command'
+	, ISNULL(per.command2, per.command) AS 'QID_Command'
 	, per.resource_class
 	, per.importance
 	,'EXEC sp_requests_detail @Request_id=''' + per.request_id + '''' AS 'request_detail_command'

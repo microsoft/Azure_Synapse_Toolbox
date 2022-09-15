@@ -1,0 +1,10 @@
+// Pipeline Durations in Seconds
+SynapseIntegrationPipelineRuns
+| where Status in ('Succeeded', 'Failed')
+| extend PipelineDuration = iif(Status in ('Succeeded', 'Failed'),datetime_diff('second', End, Start),0)
+| extend TriggerId = tostring(parse_json(Predecessors)[0].Id)
+| join kind = leftouter (
+            SynapseIntegrationTriggerRuns
+                | project TriggerId, TriggerName
+        ) on $left.TriggerId == $right.TriggerId
+| project Start, TriggerName, TriggerId, PipelineName, RunId, PipelineDuration, Status
