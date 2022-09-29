@@ -70,7 +70,7 @@ SELECT
 	,r.resource_allocation_percentage AS 'allocation_%'
 	,ISNULL(r.command2, r.command) AS 'query_text'
 	,r.result_cache_hit
-	,'EXEC sp_requests_detail @request_id=''' + r.request_id + '''' AS 'request_detail_command'
+	,'EXEC sp_requests_detail @Request_id=''' + r.request_id + '''' AS 'request_detail_command'
 	,'EXEC sp_sessions_detail @session_id=''' + r.session_id + '''' AS 'session_detail_command'
 FROM sys.dm_pdw_exec_requests r
 JOIN sys.dm_pdw_exec_sessions s
@@ -90,7 +90,7 @@ SELECT 'Suspended Request' AS 'Suspended Requests'
 	,ISNULL(r.command2, r.command) AS 'query_text'
 	,w.resource_waits AS 'concurrency_waits'
 	,w.object_waits AS 'object_waits'
-	,'EXEC sp_waits_detail @request_id=''' + r.request_id + '''' AS 'waits_detail'
+	,'EXEC sp_waits_detail @Request_id=''' + r.request_id + '''' AS 'waits_detail'
 	,'EXEC sp_sessions_detail @session_id=''' + r.session_id + '''' AS 'session_detail_command'
 FROM sys.dm_pdw_exec_requests r
 JOIN sys.dm_pdw_exec_sessions s
@@ -228,7 +228,7 @@ ALTER PROC [dbo].[sp_waits] AS
 				,r.total_elapsed_time AS 'request_elapsed_time'
 				,r.[label]
 				,ISNULL(r.command2, r.command) AS 'query_text'
-				--,'EXEC sp_waits_detail @request_id=''' + w.request_id + '''' AS 'detail_command'
+				--,'EXEC sp_waits_detail @Request_id=''' + w.request_id + '''' AS 'detail_command'
 				FROM sys.dm_pdw_waits w
 				JOIN sys.dm_pdw_exec_requests r 
 				ON w.request_id = r.request_id
@@ -257,7 +257,7 @@ ALTER PROC [dbo].[sp_waits] AS
 				,r.total_elapsed_time AS 'request_elapsed_time'
 				,r.[label]
 				,ISNULL(r.command2, r.command)  AS 'query_text'
-				,'EXEC sp_waits_detail @request_id=''' + w.request_id + '''' AS 'detail_command'
+				,'EXEC sp_waits_detail @Request_id=''' + w.request_id + '''' AS 'detail_command'
 				FROM sys.dm_pdw_waits w
 				JOIN sys.dm_pdw_exec_requests r 
 				ON w.request_id = r.request_id
@@ -371,7 +371,7 @@ IF (SELECT [status] FROM sys.dm_pdw_exec_requests WHERE request_id = @request_id
 			,w2.priority
 			,w2.request_time
 			,w2.acquire_time 
-			,'EXEC sp_requests_detail @request_id=''' + w2.request_id + '''' AS 'request_detail_command'
+			,'EXEC sp_requests_detail @Request_id=''' + w2.request_id + '''' AS 'request_detail_command'
 			,'EXEC sp_sessions_detail @session_id=''' + w2.session_id + '''' AS 'session_detail_command'
 			FROM sys.dm_pdw_waits w1
 			JOIN sys.dm_pdw_waits w2
@@ -485,7 +485,7 @@ SELECT
 	, ISNULL(per.command2, per.command) AS 'QID_Command'
 	, per.resource_class
 	, per.importance
-	,'EXEC sp_requests_detail @request_id=''' + per.request_id + '''' AS 'request_detail_command'
+	,'EXEC sp_requests_detail @Request_id=''' + per.request_id + '''' AS 'request_detail_command'
 FROM step_data
 LEFT JOIN sys.dm_pdw_exec_requests per
 ON step_data.request_id = per.request_id
@@ -573,7 +573,7 @@ SELECT
 	,importance
 	,resource_allocation_percentage
 	,result_cache_hit
-	,'EXEC sp_requests_detail @request_id=''' + request_id + '''' AS 'detail_command'
+	,'EXEC sp_requests_detail @Request_id=''' + request_id + '''' AS 'detail_command'
 FROM sys.dm_pdw_exec_requests
 WHERE session_id = @session_id
 ORDER BY submit_time ASC
