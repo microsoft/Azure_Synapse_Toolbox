@@ -16,6 +16,8 @@
 		sp_waits
 		sp_waits_detail
 		sp_datamovement
+
+- BETA Version includes new fields in the 'running queries' output to show cpu, IO, and cost metrics. These metrics are being tested for accuracy. 
     
 ## Installation
 
