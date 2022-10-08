@@ -80,7 +80,7 @@ SELECT
 	,sum(ner.writes) AS 'step_writes'
 	--,sum(ner.logical_reads) AS 'total_logical_reads'
 	,max(ner.granted_query_memory) AS 'step_total_granted_memory_pages'
-	,round(log(sum(g.query_cost)),2) AS 'query_step_cost'
+	,round(log(sum(g.query_cost)),2) AS 'step_cost'
 	,'EXEC sp_requests_detail @request_id=''' + r.request_id + '''' AS 'request_detail_command'
 	,'EXEC sp_sessions_detail @session_id=''' + s.session_id + '''' AS 'session_detail_command'
 FROM sys.dm_pdw_exec_requests r
