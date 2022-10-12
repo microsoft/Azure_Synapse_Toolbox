@@ -10,7 +10,7 @@
 		sp_status
 		sp_concurrency
 		sp_requests
-		sp_reqeusts_detail
+		sp_requests_detail
 		sp_sessions
 		sp_sessions_detail
 		sp_waits
