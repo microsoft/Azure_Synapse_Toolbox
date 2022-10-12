@@ -1,4 +1,5 @@
-# Azure Synapse Toolbox
+# Azure Synapse Toolbox     
+![CSELogo.png](https://github.com/microsoft/Azure_Synapse_Toolbox/blob/master/Collateral/CSELogo.png) 
 
 The Azure Synapse Toolbox is a place for useful tools and scripts to use with Azure Synapse Analytics. 
 
