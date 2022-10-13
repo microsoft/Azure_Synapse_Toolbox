@@ -1,16 +1,7 @@
-/*
-	=============================
-	   Row count per partition
-	=============================
-	This query will use sys.partitions to return the row count in each partition
-	for the specified table. Using sys.dm_pdw_nodes_db_partition_stats is much more 
-	accurate than just using sys.partition_stats, so this is the query that shoudl be 
-	used
-	
-*/
 SELECT 
 	pnp.partition_number
-	,t.name
+	,s.[name]
+	,t.[name]
 	,sum(nps.[row_count])
 	,sum(nps.[used_page_count]*8.0/1024) as usedSpaceMB
  FROM
@@ -31,7 +22,9 @@ INNER JOIN sys.dm_pdw_nodes_db_partition_stats nps
     AND nt.[pdw_node_id] = nps.[pdw_node_id]
     AND nt.[distribution_id] = nps.[distribution_id]
     AND pnp.[partition_id]=nps.[partition_id]
-WHERE t.name='FactInternetSales' --Enter your table name here or comment line for all tables
-GROUP BY pnp.partition_number,t.name
-ORDER BY pnp.partition_number DESC;
-;
+JOIN sys.schemas s
+	ON s.[schema_id] = t.[schema_id]
+WHERE s.name = 'dbo' --comment out for all schemas 
+AND t.name='FactInternetSales_partitioned' --comment out for all tables
+GROUP BY pnp.partition_number,s.[name],t.[name]
+ORDER BY pnp.partition_number ASC;
