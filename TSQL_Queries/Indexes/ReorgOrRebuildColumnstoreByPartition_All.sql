@@ -35,8 +35,8 @@ BEGIN
 	DECLARE @s NVARCHAR(4000) = N''
 
 	--Choose whether or not you want to do a rebuild or reorganize by uncommenting the proper command. Default is reorganize.
-	--SET @s = ('ALTER INDEX ALL ON ' + @schemaName + '.' + @tableName + ' REBUILD PARTITION = ' + CAST(@counter AS varchar(2))) --rebuild command (offline operation)
-	SET @s = ('ALTER INDEX ALL ON ' + @schemaName + '.' + @tableName + ' REORGANIZE PARTITION = ' + CAST(@counter AS varchar(2)) + ' WITH (COMPRESS_ALL_ROW_GROUPS = ON)') --REORGANIZE command (online operation)
+	--SET @s = ('ALTER INDEX ALL ON ' + @schemaName + '.' + @tableName + ' REBUILD PARTITION = ' + CAST(@counter AS varchar(10))) --rebuild command (offline operation)
+	SET @s = ('ALTER INDEX ALL ON ' + @schemaName + '.' + @tableName + ' REORGANIZE PARTITION = ' + CAST(@counter AS varchar(10)) + ' WITH (COMPRESS_ALL_ROW_GROUPS = ON)') --REORGANIZE command (online operation)
 	PRINT @s
 
 	EXEC sp_executesql @s
