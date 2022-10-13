@@ -1,3 +1,12 @@
+/*
+	=============================
+	   Row count per partition
+	=============================
+	This query will use sys.dm_pdw_nodes_db_partition_stats to return the row count in each partition
+	for the specified table. Using sys.dm_pdw_nodes_db_partition_stats is much more 
+	accurate than just using sys.partition_stats.
+	
+*/
 SELECT 
 	pnp.partition_number
 	,s.[name]

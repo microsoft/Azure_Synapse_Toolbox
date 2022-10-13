@@ -1,9 +1,19 @@
+/*
+	=============================
+	   Max Parititon With Data
+	=============================
+	This query will use sys.dm_pdw_nodes_db_partition_stats to return the last partition that has data
+	for the specified table. Using sys.dm_pdw_nodes_db_partition_stats is much more 
+	accurate than just using sys.partition_stats. This is useful if you have pre-built partitions, but 
+	need to identify the last one that contains data for maintenance activities like columnstore rebuilds.
+	
+*/
 SELECT 
-	pnp.partition_number
-	,s.[name]
+	s.[name]
 	,t.[name]
-	,sum(nps.[row_count])
-	,sum(nps.[used_page_count]*8.0/1024) as usedSpaceMB
+	,sum(nps.[row_count]) AS 'Table_Row_Count'
+	,sum(nps.[used_page_count]*8.0/1024) AS 'Table_Used_Space_MB'
+	,max(pnp.partition_number) AS 'Max_Parititon_With_Data'
  FROM
    sys.tables t
 INNER JOIN sys.indexes i
@@ -25,6 +35,6 @@ INNER JOIN sys.dm_pdw_nodes_db_partition_stats nps
 JOIN sys.schemas s
 	ON s.[schema_id] = t.[schema_id]
 WHERE s.name = 'dbo' --comment out for all schemas 
-AND t.name='FactInternetSales_partitioned' --comment out for all tables
-GROUP BY pnp.partition_number,s.[name],t.[name]
-ORDER BY pnp.partition_number ASC;
+AND t.name='FactInternetSales' --comment out for all tables
+AND nps.[row_count] > 0
+GROUP BY s.[name],t.[name]
