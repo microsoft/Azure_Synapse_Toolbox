@@ -1,5 +1,5 @@
 /***************************************************************************
-	Synapse Toolkit v2.0_beta, 10/13/22 
+	Synapse Toolkit v1.2, 10/07/22 
 	
 	The Synapse Toolkit is a set of stored procedures that help investigate
 	current activity on your Synapse Dedicated SQL Pool. sp_status is the overall
@@ -33,11 +33,12 @@ GO
 
 ALTER PROC [dbo].[sp_status] AS
 
-PRINT 'Synapse Toolkit v2.0_beta, 10/13/22'
+PRINT 'Synapse Toolkit v1.1, 06/13/22'
 
 EXEC sp_concurrency;
 EXEC sp_requests;
 EXEC sp_datamovement
+--EXEC sp_sessions
 
 GO
 
@@ -61,7 +62,7 @@ SELECT
 	,r.request_id
 	--,r.status
 	,r.command
-	,r.resource_allocation_percentage AS 'resource_grant'
+	,r.resource_allocation_percentage
 	,s.login_name
 	,r.submit_time
 	,r.end_compile_time
@@ -445,8 +446,7 @@ GO
 ALTER PROC [dbo].[sp_concurrency] AS 
 
 SELECT
-	sum(case when r.status = 'Running' then r.resource_allocation_percentage else 0 end) as 'total_resources_granted'
-	,tempdb_metrics.percent_used as 'approx_tempdb_used_percent'
+	sum(case when r.status = 'Running' then r.resource_allocation_percentage else 0 end) as 'resource_allocated_percentage'
 	--,sum(case when s.status = 'Active' then 1 else 0 end) as 'active_sessions'
 	--sum(case when s.status = 'Idle' then 1 else 0 end) as 'idle_sessions'
 	,(SELECT count(1) FROM sys.dm_pdw_exec_sessions where status = 'Active') AS 'active_sessions'
@@ -455,7 +455,6 @@ SELECT
 	,sum(case when r.status = 'suspended' then 1 else 0 end) as queued_queries
 	,sum(case when w.queued_resource_waits > 0 then 1 else 0 end) AS concurrency_waits
 	,sum(case when w.queued_object_locks > 0 then 1 else 0 end) AS object_waits
-	,'EXEC sp_tempdb' AS 'tempdb_usage_detail'
 FROM 
 sys.dm_pdw_exec_requests r
 JOIN sys.dm_pdw_exec_sessions s
@@ -471,24 +470,6 @@ LEFT JOIN (
 	GROUP BY request_id
 	) w
 ON w.request_id = r.request_id
-JOIN (
-	SELECT 
-		sum(pdw.bytes_processed) as 'bytes_written'
-		,CAST(sum(pdw.bytes_processed)/1024.0/1024.0/1024.0 AS Decimal(10,1)) AS 'GB_written'
-		,sum(pdw.rows_processed) as 'rows_written'
-		,total_tempdb.total_tempdb_gb
-		,CAST(((sum(pdw.bytes_processed)/1024.0/1024.0/1024.0)/total_tempdb.total_tempdb_gb)*100.0 AS Decimal(10,1)) AS 'percent_used'
-		FROM Sys.dm_pdw_dms_workers pdw
-		JOIN sys.dm_pdw_exec_requests req
-			ON pdw.request_id = req.request_id
-		JOIN (SELECT (count(1) * 1995) AS total_tempdb_gb FROM sys.dm_pdw_nodes WHERE type='COMPUTE') AS total_tempdb
-		ON 1=1
-		WHERE pdw.type = 'Writer'
-		AND req.status = 'running'
-		GROUP BY total_tempdb.total_tempdb_gb
-		) AS tempdb_metrics
-ON 1=1
-GROUP BY tempdb_metrics.percent_used
 OPTION(LABEL='SynapseToolkit')
 
 
@@ -523,6 +504,7 @@ WITH step_data AS
 		  request_id
 		, step_index
 		, status
+		--, type
 ) 
 SELECT 
 	'Data Movement' AS 'Data Movements'
@@ -635,71 +617,6 @@ FROM sys.dm_pdw_exec_requests
 WHERE session_id = @session_id
 ORDER BY submit_time ASC
 OPTION(LABEL='SynapseToolkit')
-
-/***************************************************************************
-	Procedure name:  sp_tempdb
-	Description: lists various information about tempdb usage
-
-****************************************************************************/
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_NAME = 'sp_tempDB')
-    EXEC ('CREATE PROC dbo.sp_tempDB AS SELECT ''TEMPORARY''')
-GO
-
-ALTER PROC sp_tempDB AS
-
---Total TempDB Usage
-SELECT
-	'Total TempDB usage' AS 'Total TempDB usage'
-	,sum(pdw.rows_processed) as 'rows_written'
-	,sum(pdw.bytes_processed) as 'bytes_written'
-	,CAST(sum(pdw.bytes_processed)/1024.0/1024.0/1024.0 AS Decimal(10,1)) AS 'GB_written'
-	,total_tempdb.total_tempdb_gb as 'Total_tempDB_size_GB'
-	,CAST(((sum(pdw.bytes_processed)/1024.0/1024.0/1024.0)/total_tempdb.total_tempdb_gb)*100.0 AS Decimal(10,1)) AS 'approx_percent_used'
-FROM Sys.dm_pdw_dms_workers pdw
-JOIN sys.dm_pdw_exec_requests req
-	ON pdw.request_id = req.request_id
-JOIN (SELECT (count(1) * 1995) AS total_tempdb_gb FROM sys.dm_pdw_nodes WHERE type='COMPUTE') AS total_tempdb
-	ON 1=1
-WHERE pdw.type = 'Writer'
-AND req.status = 'running'
-GROUP BY total_tempdb.total_tempdb_gb
-
-
---Tempdb usage per query
-SELECT 
-	'TempDB per query' AS 'TempDB per query'
-	,req.request_id
-	,sum(pdw.bytes_processed) as 'bytes_written'
-	,CAST(sum(pdw.bytes_processed)/1024.0/1024.0/1024.0 AS Decimal(10,1)) AS 'GB_written'
-	,sum(pdw.rows_processed) as 'rows_written'
-	,'EXEC sp_requests_detail @request_id=''' + req.request_id + '''' AS 'request_detail_command'
-from	Sys.dm_pdw_dms_workers pdw
-JOIN sys.dm_pdw_exec_requests req
-ON pdw.request_id = req.request_id
-WHERE pdw.type = 'Writer'
-AND req.status = 'running'
-GROUP BY req.request_id
-ORDER BY bytes_written desc
-
---Tempdb usage per node
-SELECT 
-	'TempDB per node' AS 'TempDB per node'
-	,pdw.pdw_node_id
-	,n.type
-	,sum(pdw.bytes_processed) as 'bytes_written'
-	,CAST(sum(pdw.bytes_processed)/1024.0/1024.0/1024.0 AS Decimal(10,1)) AS 'GB_written'
-	,'1995' AS 'Total_tempDB_size_GB'
-	,CAST(((sum(pdw.bytes_processed)/1024.0/1024.0/1024.0)/1995.0)*100 AS Decimal(10,1)) AS 'percent_used'
-	,sum(pdw.rows_processed) as 'rows_written'
-FROM sys.dm_pdw_nodes n
-LEFT JOIN Sys.dm_pdw_dms_workers pdw
-	ON n.pdw_node_id = pdw.pdw_node_id
-LEFT JOIN sys.dm_pdw_exec_requests req
-	ON pdw.request_id = req.request_id
-WHERE pdw.type = 'Writer'
-AND req.status = 'running'
-GROUP BY n.type,pdw.pdw_node_id
-ORDER BY bytes_written desc
 
 /***************************************************************************
 	Procedure name: 
