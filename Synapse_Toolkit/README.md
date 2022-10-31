@@ -1,4 +1,4 @@
-# Synpase Toolkit
+# Synapse Toolkit
 
 	The Synapse Toolkit is a set of stored procedures that help investigate
 	current activity on your Synapse Dedicated SQL Pool. sp_status is the overall
