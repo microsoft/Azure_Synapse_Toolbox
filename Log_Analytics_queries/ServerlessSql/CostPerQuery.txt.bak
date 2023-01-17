@@ -7,15 +7,13 @@ SynapseBuiltinSqlPoolRequestsEnded
     QueryHash=tostring(Properties.queryHash),
     QueryText=tostring(Properties.queryText),
     _ResourceId
-| extend MbProcessed = case (BytesProcessed < 10000000,10000000,
-							BytesProcessed)/1000/1000
 | summarize 
-    MaxSingleQueryMBProcessed=max(toint(MbProcessed)),
-    TotalMBProcessed=sum(toint(MbProcessed)),
+    MaxSingleQueryMBProcessed=max(toint(BytesProcessed)/1024/1024),
+    TotalMBProcessed=sum(toint(BytesProcessed)/1024/1024),
     QueryCount=count(),
     QueryHash=any(QueryHash) ,
     Resource=any(_ResourceId)
     by QueryText //using queryText because queryHash doesn’t change if only literals are different
-| extend Approx_Accumulated_Cost=((TotalMBProcessed)*5.0/100000.0)/100 
-| extend Approx_Cost_Per_Execution=((TotalMBProcessed)*5.0/100000.0)/100/QueryCount
+| extend Approx_Accumulated_Cost=((TotalMBProcessed)*0.000476837158203125)/100 //multiply by price per mb ($5 per TB from Microsoft Docs: https://azure.microsoft.com/en-us/pricing/details/synapse-analytics/)
+| extend Approx_Cost_Per_Execution=((TotalMBProcessed)*0.000476837158203125)/100/QueryCount
 | order by TotalMBProcessed
