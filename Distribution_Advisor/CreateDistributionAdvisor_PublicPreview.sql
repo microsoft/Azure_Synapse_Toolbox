@@ -24,9 +24,8 @@ BEGIN
         DECLARE @FirstDistribEnd INT = PATINDEX('%------------------------------------------------------------%', @recommendation);
         DECLARE @JumpPast NVARCHAR(max) = 'Table Distribution Changes';
 
-			  SET @FirstDistribBegin = @FirstDistribBegin + LEN(@JumpPast) + 2; -- +1 to eat newline at the beginning
-			  DECLARE @DistribLength int = @FirstDistribEnd - @FirstDistribBegin - 2; -- extra -2 to remove newlines at the end
-        DECLARE @DistribLength INT = @FirstDistribEnd - @FirstDistribBegin - 3;-- extra -2 to remove newlines at the end
+		SET @FirstDistribBegin = @FirstDistribBegin + LEN(@JumpPast) + 2; -- +1 to eat newline at the beginning
+		DECLARE @DistribLength int = @FirstDistribEnd - @FirstDistribBegin - 2; -- extra -2 to remove newlines at the end
 
         IF (@DistribLength <= 0)
           BEGIN

@@ -17,6 +17,7 @@ The report has following main pages:
 	- All Tables
 	- Table Details
 	- External Table Details
+	- Workload management
 
 ### About
 
