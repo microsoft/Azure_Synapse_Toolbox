@@ -97,7 +97,7 @@ BEGIN
                     WHEN 0
                         THEN 'HEAP'
                     WHEN 1
-                        THEN CONCAT ('CLUSTERED INDEX (', STRING_AGG(c.Name, ', ') WITHIN GROUP (ORDER BY ic.key_ordinal ASC), ')')
+                        THEN CONCAT ('CLUSTERED INDEX (', STRING_AGG(CAST(c.Name as VARCHAR(MAX)), ', ') WITHIN GROUP (ORDER BY ic.key_ordinal ASC), ')')
                     WHEN 5
                         THEN 'CLUSTERED COLUMNSTORE INDEX'
                     END AS TableIndex
