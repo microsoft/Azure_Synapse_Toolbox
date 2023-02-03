@@ -1,0 +1,516 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "parameters": [
+          {
+            "id": "15a2c4b1-1223-428f-80a0-53ec8e8e86a5",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 259200000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            }
+          },
+          {
+            "id": "bc3b3200-d39a-4d72-adc3-8473457d9b30",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1",
+                "value::all"
+              ],
+              "includeAll": false
+            }
+          }
+        ],
+        "style": "pills",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "parameters - 1"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "d29d564f-9326-433b-8b87-678461724323",
+            "cellValue": "objectType",
+            "linkTarget": "parameter",
+            "linkLabel": "Dedicated Pools",
+            "subTarget": "dedicated",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "links - 6"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "parameters": [
+                {
+                  "id": "8998a008-ea1b-4f4b-bcc2-44e15deba715",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "SQLDWDBs",
+                  "type": 5,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "where type =~ 'microsoft.sql/servers/databases'\r\n| where sku has \"DataWarehouse\"\r\n| project id",
+                  "crossComponentResources": [
+                    "{Subscriptions}"
+                  ],
+                  "value": [
+                    "value::all"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::1",
+                      "value::all"
+                    ]
+                  },
+                  "timeContext": {
+                    "durationMs": 0
+                  },
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                }
+              ],
+              "style": "pills",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            "name": "Parameters - SQL DW"
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "tabs",
+              "links": [
+                {
+                  "id": "933d2413-fcd3-4a62-827d-de0aeefd2632",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Metrics",
+                  "subTarget": "metrics",
+                  "preText": "selec",
+                  "style": "link"
+                }
+              ]
+            },
+            "name": "links - 3"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbookf1358ff0-0e10-4ac2-ab2d-2fdfdb74dc2f",
+                    "version": "MetricsItem/2.0",
+                    "size": 2,
+                    "chartType": 0,
+                    "resourceType": "microsoft.sql/servers/databases",
+                    "metricScope": 0,
+                    "resourceParameter": "SQLDWDBs",
+                    "resourceIds": [
+                      "{SQLDWDBs}"
+                    ],
+                    "timeContextFromParameter": "TimeRange",
+                    "timeContext": {
+                      "durationMs": 604800000
+                    },
+                    "metrics": [
+                      {
+                        "namespace": "microsoft.sql/servers/databases",
+                        "metric": "microsoft.sql/servers/databases-Basic-dwu_limit",
+                        "aggregation": 3,
+                        "columnName": "DWU"
+                      },
+                      {
+                        "namespace": "microsoft.sql/servers/databases",
+                        "metric": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent",
+                        "aggregation": 3
+                      },
+                      {
+                        "namespace": "microsoft.sql/servers/databases",
+                        "metric": "microsoft.sql/servers/databases-Basic-cpu_percent",
+                        "aggregation": 3
+                      },
+                      {
+                        "namespace": "microsoft.sql/servers/databases",
+                        "metric": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+                        "aggregation": 3
+                      },
+                      {
+                        "namespace": "microsoft.sql/servers/databases",
+                        "metric": "microsoft.sql/servers/databases-Basic-local_tempdb_usage_percent",
+                        "aggregation": 3,
+                        "columnName": "TempDB Usage"
+                      },
+                      {
+                        "namespace": "microsoft.sql/servers/databases",
+                        "metric": "microsoft.sql/servers/databases-Basic-queued_queries",
+                        "aggregation": 1
+                      }
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "$gen_group",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "Group",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "Subscription",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "Name",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "DWU",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "palette": "magenta"
+                          }
+                        },
+                        {
+                          "columnMatch": "DWU Timeline",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 100,
+                            "palette": "greenRed"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal",
+                              "useGrouping": false
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent Timeline",
+                          "formatter": 21,
+                          "formatOptions": {
+                            "palette": "blue"
+                          }
+                        },
+                        {
+                          "columnMatch": "microsoft.sql/servers/databases-Basic-cpu_percent",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 100,
+                            "palette": "greenRed"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "microsoft.sql/servers/databases-Basic-cpu_percent Timeline",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 100,
+                            "palette": "greenRed"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "microsoft.sql/servers/databases-Basic-physical_data_read_percent Timeline",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "TempDB Usage",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 100,
+                            "palette": "greenRed"
+                          }
+                        },
+                        {
+                          "columnMatch": "TempDB Usage Timeline",
+                          "formatter": 21,
+                          "formatOptions": {
+                            "palette": "red"
+                          }
+                        },
+                        {
+                          "columnMatch": "microsoft.sql/servers/databases-Basic-queued_queries",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 1024,
+                            "palette": "yellowOrangeRed"
+                          },
+                          "numberFormat": {
+                            "unit": 0,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "microsoft.sql/servers/databases-Basic-queued_queries Timeline",
+                          "formatter": 21,
+                          "formatOptions": {
+                            "palette": "yellow"
+                          }
+                        },
+                        {
+                          "columnMatch": "microsoft.sql/servers/databases-Basic-local_tempdb_usage_percent",
+                          "formatter": 21,
+                          "formatOptions": {
+                            "palette": "blue"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "microsoft.sql/servers/databases-Basic-local_tempdb_usage_percent Timeline",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "palette": "blue"
+                          }
+                        },
+                        {
+                          "columnMatch": "microsoft.sql/servers/databases-Basic-dwu_limit",
+                          "formatter": 21,
+                          "formatOptions": {
+                            "palette": "yellow"
+                          },
+                          "numberFormat": {
+                            "unit": 0,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        }
+                      ],
+                      "rowLimit": 10000,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "Subscription"
+                        ],
+                        "expandTopLevel": true,
+                        "finalBy": "Name"
+                      },
+                      "sortBy": [
+                        {
+                          "itemKey": "$gen_heatmap_DWU_3",
+                          "sortOrder": 1
+                        }
+                      ],
+                      "labelSettings": [
+                        {
+                          "columnId": "DWU",
+                          "label": "DWU"
+                        },
+                        {
+                          "columnId": "DWU Timeline",
+                          "label": "DWU Timeline"
+                        },
+                        {
+                          "columnId": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent",
+                          "label": "DWU (Max)"
+                        },
+                        {
+                          "columnId": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent Timeline",
+                          "label": "DWU percentage Timeline"
+                        },
+                        {
+                          "columnId": "microsoft.sql/servers/databases-Basic-cpu_percent",
+                          "label": "CPU (Max)"
+                        },
+                        {
+                          "columnId": "microsoft.sql/servers/databases-Basic-cpu_percent Timeline",
+                          "label": "CPU percentage Timeline"
+                        },
+                        {
+                          "columnId": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+                          "label": "Data IO (Max)"
+                        },
+                        {
+                          "columnId": "microsoft.sql/servers/databases-Basic-physical_data_read_percent Timeline",
+                          "label": "Data IO percentage Timeline"
+                        },
+                        {
+                          "columnId": "TempDB Usage",
+                          "label": "TempDB (Max)"
+                        },
+                        {
+                          "columnId": "TempDB Usage Timeline",
+                          "label": "TempDB Usage Timeline"
+                        },
+                        {
+                          "columnId": "microsoft.sql/servers/databases-Basic-queued_queries",
+                          "label": "Queued queries (Sum)"
+                        },
+                        {
+                          "columnId": "microsoft.sql/servers/databases-Basic-queued_queries Timeline",
+                          "label": "Queued queries Timeline"
+                        }
+                      ]
+                    },
+                    "sortBy": [
+                      {
+                        "itemKey": "$gen_heatmap_DWU_3",
+                        "sortOrder": 1
+                      }
+                    ]
+                  },
+                  "showPin": true,
+                  "name": "Metrics - SQL DW DTU/CPU"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "metrics"
+            },
+            "name": "dedicatedMetricsGroup"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "objectType",
+        "comparison": "isEqualTo",
+        "value": "dedicated"
+      },
+      "name": "Dedicated Pool Group"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
