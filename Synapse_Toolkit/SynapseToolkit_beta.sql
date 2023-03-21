@@ -459,7 +459,7 @@ WHERE pdw.type = 'Writer'
 AND req.status = 'running'
 GROUP BY total_tempdb.total_tempdb_gb
 
-
+/*
 --Tempdb usage per query
 SELECT 
 	'TempDB per query' AS 'TempDB per query'
@@ -475,6 +475,18 @@ WHERE pdw.type = 'Writer'
 AND req.status = 'running'
 GROUP BY req.request_id
 ORDER BY bytes_written desc
+*/
+
+/***************************************************************************
+	Procedure name:  sp_tempdb_node
+	Description: lists various information about tempdb usage
+
+****************************************************************************/
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_NAME = 'sp_tempdb_node')
+    EXEC ('CREATE PROC dbo.sp_tempdb_node AS SELECT ''TEMPORARY''')
+GO
+
+ALTER PROC sp_tempdb_node AS
 
 --Tempdb usage per node
 SELECT 
@@ -585,6 +597,7 @@ WITH step_data AS
 		--, type
 	FROM sys.dm_pdw_dms_workers 
 	WHERE status != 'StepComplete'
+	AND type != 'Writer' --including writers gives you double counts on operations
 	Group by 
 		  request_id
 		, step_index
@@ -598,7 +611,7 @@ SELECT
 	, rs.operation_type
 	, (step_data.Step_elapsed_time/1000/60) AS 'step_elapsed_time_(m)'
 	, step_data.Step_rows_processed
-	, step_data.step_bytes_processed
+	--, step_data.step_bytes_processed
 	, (step_data.Step_Bytes_Processed/1024/1024/1024) AS Step_GB_Processed
 	, step_data.step_index
 	--, step_data.type

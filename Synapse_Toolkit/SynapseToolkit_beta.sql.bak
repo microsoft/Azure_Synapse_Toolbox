@@ -181,6 +181,7 @@ SELECT
 	,dist.end_time
 	,dist.spid
 	,rs.command
+	,dist.source_info AS 'distribution_source_command'
 	,dist.error_id
  FROM 
 	(--dms
@@ -201,6 +202,7 @@ SELECT
 		,bytes_processed
 		,rows_processed AS row_count
 		,command AS dist_text
+		,source_info
 	FROM sys.dm_pdw_dms_workers
 	WHERE request_id = @request_id
 
@@ -217,7 +219,8 @@ SELECT
 		,start_time
 		,end_time
 		,total_elapsed_time
-		,command
+		,command 
+		,-1 AS 'distribution_source_command'
 		,error_id
 		,spid
 		,-1 AS bytes_per_sec
@@ -582,6 +585,7 @@ WITH step_data AS
 		--, type
 	FROM sys.dm_pdw_dms_workers 
 	WHERE status != 'StepComplete'
+	AND type != 'Writer' --including writers gives you double counts on operations
 	Group by 
 		  request_id
 		, step_index
@@ -595,7 +599,7 @@ SELECT
 	, rs.operation_type
 	, (step_data.Step_elapsed_time/1000/60) AS 'step_elapsed_time_(m)'
 	, step_data.Step_rows_processed
-	, step_data.step_bytes_processed
+	--, step_data.step_bytes_processed
 	, (step_data.Step_Bytes_Processed/1024/1024/1024) AS Step_GB_Processed
 	, step_data.step_index
 	--, step_data.type
