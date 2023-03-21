@@ -1,39 +1,53 @@
 # Azure Synapse Toolbox     
 ![CSELogo.png](https://github.com/microsoft/Azure_Synapse_Toolbox/blob/master/Collateral/CSELogo.png) 
 
-The Azure Synapse Toolbox is a place for useful tools and scripts to use with Azure Synapse Analytics. 
+The Azure Synapse Toolbox is a place for useful tools and scripts to help you manage and monitor Azure Synapse Analytics.
+<br> 
+<br> 
+  
+# Training Resources
+### Blogs
+[Historical Dashboards for Dedicated Pool](https://techcommunity.microsoft.com/t5/azure-synapse-analytics-blog/historical-monitoring-dashboards-for-azure-synapse-dedicated-sql/ba-p/3725322)<br> 
+[Monitoring Serverless Query History](https://techcommunity.microsoft.com/t5/azure-synapse-analytics-blog/monitoring-synapse-serverless-sql-pool-query-history/ba-p/3710423)
 
-## Azure Resource Graph Queries
+### Videos
+[Azure Synapse Analytics Youtube Channel](https://www.youtube.com/@AzureSynapse/featured)
+
+<br> 
+<br> 
+
+# Overview
+### Azure Resource Graph Queries
 
 The Azure Resource Graph queries assist with gathering Azure tenant inventory for Azure resources related to Azure Synapse Analytics. They are intended to aid cost optimization, general inventory needs, normalizing or standardization of configuration, and more.
 
-## Distribution Advisor
+### Distribution Advisor
 
 The Distribution Advisor (DA) feature of Azure Synapse SQL analyzes customer queries and recommends the best distribution strategies for tables to improve query performance. Queries to be considered by the advisor can be provided by the customer or pulled from historic queries available in DMV. See [Microsoft documentation](https://docs.microsoft.com/en-us/azure/synapse-analytics/sql/distribution-advisor) for more information
 
 ![DistributionAdvisorRecommendations.png](Collateral/Screenshots/DistributionAdvisorRecommendations.png "Distribution Advisor")
 
-## Log Analytics Queries
+### Log Analytics Queries
 
 Helpful KQL queries for querying diagnostic data that has been sent to Log Analytics for your serverless and dedicated SQL pools.
 
-## Monitor Workbooks
+### Monitor Workbooks
 
 In-depth, interactive workbooks for exploring monitoring data for your Serverless and Dedicated SQL Pools, Synapse Spark Pools, Synapse Pipelines, and ADLS storage. 
 
 ![SynapsePipelineWorkbook1](Collateral/Screenshots/SynapsePipelineWorkbook1.png)
 
-## PowerBI
+### PowerBI
 
 PowerBI templates to monitor your Synapse Dedicated SQL Pool. PowerBI has the ability to query the front-end of your SQL endpoint as well as the back-end Log Analytics data so you can build powerful reports. 
 
-## Synapse Analyzer
+### Synapse Analyzer
 
 The Azure Synapse Analyzer Report was created to help you identify common issues that may be present in your database that can lead to performance issues. This report focuses on known best practices that Microsoft has identified with SQL Dedicated Pools. Following these best practices will help to get the best performance out of your solution. The Azure Synapse Best Practice Analyzer Report should help give you insights into the health of your database. We will continue to update the report to call out defined best practices that Microsoft has defined.
 
 ![Tables with Issues](Synapse_Analyzer/Synapse_BPA_Report/img/Tables-with-Issues.png "Tables with Issues")
 
-## Synapse Toolkit
+### Synapse Toolkit
 
 The Synapse Toolkit is a set of stored procedures that help investigate
 current activity on your Synapse Dedicated SQL Pool. sp_status is the overall
@@ -54,7 +68,7 @@ List of SPs currently included:
 
 ![sp_status_screenshot.png](Collateral/Screenshots/SynapseToolkit/sp_status_screenshot.png "Synapse Toolkit")
 
-## TSQL Queries
+### TSQL Queries
 
 Helpful queries for managing and monitoring various aspects of your Dedicated SQL Pool. 
 
