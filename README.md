@@ -8,7 +8,8 @@ The Azure Synapse Toolbox is a place for useful tools and scripts to help you ma
 # Training Resources
 ### Blogs
 [Historical Dashboards for Dedicated Pool](https://techcommunity.microsoft.com/t5/azure-synapse-analytics-blog/historical-monitoring-dashboards-for-azure-synapse-dedicated-sql/ba-p/3725322)<br> 
-[Monitoring Serverless Query History](https://techcommunity.microsoft.com/t5/azure-synapse-analytics-blog/monitoring-synapse-serverless-sql-pool-query-history/ba-p/3710423)
+[Monitoring Serverless Query History](https://techcommunity.microsoft.com/t5/azure-synapse-analytics-blog/monitoring-synapse-serverless-sql-pool-query-history/ba-p/3710423) <br>
+[Create Alerts for your Dedicated SQL Pool](https://techcommunity.microsoft.com/t5/azure-synapse-analytics-blog/create-alerts-for-your-synapse-dedicated-sql-pool/ba-p/3773256)
 
 ### Videos
 [Azure Synapse Analytics Youtube Channel](https://www.youtube.com/@AzureSynapse/featured)
